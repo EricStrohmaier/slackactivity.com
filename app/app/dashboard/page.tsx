@@ -41,7 +41,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
+    <div className="w-full h-screen flex justify-center mt-10">
       <h1>Dashboard</h1>
       <p>{status}</p>
       {!token && <a href="/api/slack/auth">Authenticate with Slack</a>}

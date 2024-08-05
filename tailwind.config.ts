@@ -115,7 +115,8 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        lightBlue: "#DFECFF",
+        lightGreen: "#E7F9F5",
+        stone: "#F7F9FA",
       },
       backgroundImage: {
         "main-mobile": "url('/bg-main-mobile.png')",

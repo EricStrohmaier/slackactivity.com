@@ -3,82 +3,82 @@ import code2 from "@/public/landingpage/code2.jpg";
 
 export const landingpageContent = {
   header: {
-    companyName: "Next.js Supabase Boilerplate",
+    companyName: "Schleude",
     NavAndFooterLinks: [
-      {
-        active: false,
-        text: "Setup",
-        href: "#setup",
-      },
       {
         active: false,
         text: "Features",
         href: "#features",
       },
+      {
+        active: false,
+        text: "Pricing",
+        href: "#pricing",
+      },
     ],
     button: {
       active: true,
-      text: "Get Started",
+      text: "Try It Now",
       href: "/signin",
     },
   },
   hero: {
-    preHeadline: "Effortless Project Initialization",
-    headline: "Next.js and Supabase",
-    highlightedText: "Boilerplate Setup",
-    suffix: "Simplified",
+    preHeadline: "Keep Your Status Active",
+    headline: "Schleude for Slack",
+    highlightedText: "Stay Present",
+    suffix: "Even When You're Away",
     subheadline:
-      "Kickstart your project with an easy-to-use template for rapid landing page validation and development.",
+      "Ensure your Slack status remains active even when you're not at your desk with Schleude. Effortless status management to keep you connected.",
     cta: {
       actions: {
         email: {
-          active: true,
+          active: false,
           placeholder: "Enter your email for updates",
         },
         links: {
           howItWorks: {
-            active: false,
+            active: true,
             text: "Learn More",
-            link: "#setup",
+            link: "#features",
           },
         },
       },
       button: {
-        text: "Get Started",
-        link: "/signup",
+        text: "Try It Free",
+        link: "/signin",
       },
     },
   },
   primaryfeatures: {
     id: "features",
-    headline: "Why Choose This",
-    highlightedText: "Boilerplate",
-    suffix: "Setup",
+    headline: "Why Schleude?",
+    highlightedText: "Top Features",
+    suffix: "",
     subheadline:
-      "Experience the ease and efficiency of starting your project with our comprehensive boilerplate.",
+      "Discover how Schleude enhances your Slack experience with these powerful features.",
     features: [
       {
-        title: "Quick Setup",
+        title: "Continuous Presence",
         description:
-          "Clone the repository, install dependencies, and start your server in minutes.",
+          "Keep your Slack status active, ensuring you stay visible even when you’re not at your computer.",
+        image: code,
+      },
+      {
+        title: "Customizable Status",
+        description:
+          "Set and customize your status to reflect your current activity or mood, automatically updated for you.",
+        image: code2,
+      },
+      {
+        title: "Automatic Updates",
+        description:
+          "Easily manage and update your status based on your calendar, activity, or custom rules.",
         image: code,
       },
       {
         title: "Seamless Integration",
         description:
-          "Easily integrate with Supabase for authentication, database management, and more.",
-        image: code2,
-      },
-      {
-        title: "Optimized for Development",
-        description:
-          "Pre-configured settings and tools to streamline your development process.",
-        image: code,
-      },
-      {
-        title: "Landing Page Validation",
-        description:
-          "Validate your landing page concepts quickly with built-in components and templates.",
+          "Integrates effortlessly with Slack, requiring minimal setup for maximum impact.",
         image: code2,
       },
     ],
@@ -89,26 +89,28 @@ export const landingpageContent = {
     highlightedText: "in 3 Simple Steps",
     suffix: "",
     subheadline:
-      "Follow these steps to set up your Next.js and Supabase project effortlessly.",
+      "Follow these straightforward steps to start using Schleude and keep your Slack status active effortlessly.",
     howItWorks: [
       {
-        step: "Clone the Repository",
-        summary: "Get the codebase locally.",
-        description: "Use Git to clone the repository to your local machine.",
-        iconKey: "clone",
-      },
-      {
-        step: "Install Dependencies",
-        summary: "Set up your project environment.",
-        description: "Run `npm install` to install all necessary dependencies.",
+        step: "Install the App",
+        summary: "Add Schleude to your Slack workspace.",
+        description:
+          "Visit the Slack App Directory, search for Schleude, and add it to your workspace.",
         iconKey: "install",
       },
       {
-        step: "Start the Development Server",
-        summary: "Launch your project.",
+        step: "Configure Settings",
+        summary: "Set your preferences and rules.",
         description:
-          "Run `npm run dev` to start the development server and see your project in action.",
-        iconKey: "start",
+          "Adjust settings to customize your status updates and rules according to your needs.",
+        iconKey: "settings",
+      },
+      {
+        step: "Enjoy Seamless Presence",
+        summary: "Let Schleude handle your Slack status.",
+        description:
+          "Relax as Schleude ensures your Slack status reflects your availability, even when you're away.",
+        iconKey: "enjoy",
       },
     ],
   },
@@ -116,30 +118,30 @@ export const landingpageContent = {
     id: "image-section",
     features: [
       {
-        title: "Pre-built Components",
+        title: "Effortless Integration",
         description:
-          "Utilize a library of pre-built components to speed up your development process.",
+          "Easily integrate Schleude with your Slack workspace and start managing your status effortlessly.",
         image: "",
-        background: "bg-stone-900",
+        background: "bg-secondary",
       },
       {
-        title: "Responsive Design",
+        title: "Customizable Settings",
         description:
-          "Ensure your landing page looks great on all devices with responsive design principles.",
+          "Tailor the status updates and rules to fit your unique needs and preferences.",
         image: code,
         background: "",
       },
       {
-        title: "Customizable Templates",
+        title: "Reliable Performance",
         description:
-          "Easily customize templates to match your brand and project requirements.",
+          "Enjoy consistent and reliable performance with minimal setup and maintenance required.",
         image: code2,
         background: "",
       },
       {
-        title: "SEO Optimized",
+        title: "User-Friendly Interface",
         description:
-          "Improve your search engine ranking with SEO best practices integrated into the boilerplate.",
+          "Navigate through an intuitive interface designed for ease of use and efficiency.",
         image: "",
         background: "bg-accent",
       },
@@ -148,10 +150,10 @@ export const landingpageContent = {
   emailSignUp: {
     id: "email-sign-up",
     headline: "Stay Updated",
-    highlightedText: "with Our Progress",
+    highlightedText: "with Schleude News",
     suffix: "",
     subheadline:
-      "Enter your email to receive the latest updates and features for our Next.js and Supabase boilerplate.",
+      "Sign up to receive the latest updates, features, and tips for getting the most out of Schleude.",
     placeholder: "Enter your email",
     buttonText: "Subscribe",
   },

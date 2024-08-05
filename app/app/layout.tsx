@@ -8,11 +8,6 @@ import { createClient } from "@/utils/supabase/server";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "",
-  description: "",
-};
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -26,7 +21,7 @@ export default async function RootLayout({
   return (
     <body className={`h-full ${inter.className}`}>
       <div className="flex flex-col w-full h-full ">
-        <div className="absolute inset-0 bg-gradient-to-b from-lightBlue to-stone-50 opacity-70 -z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-lightGreen to-stone-50 opacity-70 -z-10"></div>
         <Header user={user} />
         <main className="flex-auto">{children}</main>
       </div>
