@@ -1,8 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+    serverActions: {
+      allowedOrigins: ["partner.localhost:3000"],
+    },
+  },
   images: {
     domains: ["api.slack.com"],
+    remotePatterns: [
+      {
+        hostname: "utfs.io",
+        protocol: "https",
+        port: "",
+      },
+      {
+        hostname: "vhxkjwczllimkfbbowmf.supabase.co",
+        protocol: "https",
+      },
+    ],
   },
 };
 
