@@ -7,3 +7,9 @@ export async function getSession() {
   const { data: session } = await supabase.auth.getUser();
   return session;
 }
+
+export async function getAllUsers() {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("users").select("*");
+  return data;
+}
