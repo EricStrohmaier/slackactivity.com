@@ -1,6 +1,15 @@
 "use server";
 import moment from "moment";
 import { WebClient } from "@slack/web-api";
+import { createClient } from "@/utils/supabase/server";
+
+export const getUser = async () => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user;
+};
 
 export interface UserConfig {
   token: string;

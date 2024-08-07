@@ -1,7 +1,7 @@
 "use server";
 
-import { getUser } from "@/app/actions";
-import { Navbar } from "./Navbar";
+import { getUser } from "@/app/app/action";
+import { Navbar } from "@/components/app/Navbar";
 
 export async function NavbarServer() {
   const user = await getUser();

@@ -2,7 +2,7 @@ import React from "react";
 import "@/styles/prosemirror.css";
 import Editor from "@/components/editor/advanced-editor";
 
-import { getUser } from "@/app/actions";
+import { getUser } from "@/app/app/action";
 import { fetchDefaultValue } from "@/actions/powerpointstuff";
 import { Metadata } from "next/types";
 

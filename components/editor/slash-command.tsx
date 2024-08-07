@@ -7,14 +7,12 @@ import {
   ImageIcon,
   List,
   ListOrdered,
-  MessageSquarePlus,
   Text,
   TextQuote,
 } from "lucide-react";
 import { createSuggestionItems } from "novel/extensions";
 import { Command, renderItems } from "novel/extensions";
 import { uploadFn } from "./image-upload";
-import { getUser } from "@/app/actions";
 
 export const suggestionItems = createSuggestionItems([
   {

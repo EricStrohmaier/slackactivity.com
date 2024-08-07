@@ -1,5 +1,4 @@
-import { getUser } from "@/app/actions";
-
+import { getUser } from "@/app/app/action";
 import { createImageUpload } from "novel/plugins";
 import { toast } from "sonner";
 
