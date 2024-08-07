@@ -12,12 +12,11 @@ import {
   PopoverPanel,
 } from "@headlessui/react";
 import clsx from "clsx";
-import { Container } from "@/components/landingpage/container";
-import logo from "@/public/logo.png";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { landingpageContent } from "@/constants/landingpage";
 import { UserNav } from "../app/UserNav";
+import { Container } from "./Container";
 
 function CloseIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   return (
@@ -195,13 +194,13 @@ function Avatar({
 }) {
   return (
     <Link
-      href="/"
+      href={landingpageContent.header.company.logoHref || "/"}
       aria-label="Home"
       className={clsx(className, "pointer-events-auto")}
       {...props}
     >
       <Image
-        src={logo}
+        src={landingpageContent.header.company.logo}
         alt=""
         sizes={large ? "4rem" : "2.25rem"}
         className={clsx(
@@ -388,10 +387,10 @@ export function Header({ user }: { user: any }) {
         <Container className="w-full">
           <div className="relative flex gap-4">
             <div className="flex flex-1">
-              <Link href="/">
+              <Link href={landingpageContent.header.company.logoHref || "/"}>
                 <Image
-                  src={logo}
-                  alt="company logo"
+                  src={landingpageContent.header.company.logo}
+                  alt={`${landingpageContent.header.company.name} logo`}
                   className="md:h-20 md:w-20 h-12 w-12 bg-transparent cursor-pointer"
                 />
               </Link>

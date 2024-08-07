@@ -153,7 +153,7 @@ export const landingpageContent = {
     subheadline:
       "Follow these steps to set up your Next.js and Supabase project effortlessly.",
     iconView: {
-      active: true,
+      active: false,
       steps: [
         {
           step: "Clone the Repository",
@@ -178,7 +178,7 @@ export const landingpageContent = {
       ],
     },
     imageView: {
-      active: false,
+      active: true,
       steps: [
         {
           // step is the title
@@ -206,7 +206,7 @@ export const landingpageContent = {
 
   // middle cta
   middleCTA: {
-    active: false,
+    active: true,
     id: "get-started-today",
     headline: "Ready to Get Started?",
     subheadline:
@@ -222,7 +222,7 @@ export const landingpageContent = {
 
   // Testimonials
   testimonials: {
-    active: false,
+    active: true,
     id: "testimonials",
     headline: "What People Say",
     highlightedText: "About Us",
@@ -295,7 +295,7 @@ export const landingpageContent = {
 
   // partner companies section
   partnerCompanies: {
-    active: false,
+    active: true,
     id: "partner-companies",
     headline: "Trusted by leading",
     highlightedText: "financial institutions",

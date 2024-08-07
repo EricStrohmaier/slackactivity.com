@@ -33,7 +33,7 @@ export default function ImageSection() {
                     key={index}
                     title={feature.title}
                     description={feature.description}
-                    background={feature.background || "bg-stone-900"}
+                    background={feature.background}
                     className={`w-[37%] max-md:ml-0 max-md:w-full `}
                   />
                 );

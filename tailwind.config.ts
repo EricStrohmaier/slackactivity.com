@@ -1,14 +1,13 @@
 import type { Config } from "tailwindcss";
 
-const config = {
-  darkMode: ["class"],
+const config: Config = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -115,13 +114,8 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        lightGreen: "#E7F9F5",
-        stone: "#F7F9FA",
-      },
-      backgroundImage: {
-        "main-mobile": "url('/bg-main-mobile.png')",
-        "main-tablet": "url('/bg-main-tablet.png')",
-        "main-desktop": "url('/bg-main-desktop.png')",
+        lightBlue: "#DFECFF",
+        lightGreen: "#E9F7F1",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -147,11 +141,11 @@ const config = {
   plugins: [
     require("tailwindcss"),
     require("autoprefixer"),
-    require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
     require("@tailwindcss/aspect-ratio"),
     require("@tailwindcss/forms"),
   ],
-} satisfies Config;
+  safelist: ["bg-stone-900"],
+};
 
 export default config;

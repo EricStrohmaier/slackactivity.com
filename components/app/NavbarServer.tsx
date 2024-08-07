@@ -1,6 +1,6 @@
 "use server";
 
-import { getUser } from "@/app/app/action";
+import { getUser } from "@/app/action";
 import { Navbar } from "@/components/app/Navbar";
 
 export async function NavbarServer() {
