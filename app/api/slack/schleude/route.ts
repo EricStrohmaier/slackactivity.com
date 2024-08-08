@@ -31,22 +31,34 @@ export async function GET() {
     const users = await getAllUsers();
     if (!users || users.length === 0) {
       console.error("No users found");
-      return NextResponse.json({ message: "No users found" }, { status: 404 });
+      return new Response(JSON.stringify({ message: "No users found" }), {
+        status: 404,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     }
     console.log("Updating Slack presence for", users, users.length, "users");
 
     const updatePromises = users.map(updateUserPresence);
     await Promise.all(updatePromises);
 
-    return NextResponse.json(
-      { message: "Slack presence updated successfully" },
-      { status: 200 }
-    );
+    return new Response(JSON.stringify({ message: "Slack presence updated" }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error) {
     console.error("Error updating Slack presence:", error);
-    return NextResponse.json(
-      { message: "Error updating Slack presence" },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({ message: "Error updating Slack presence" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
   }
 }
