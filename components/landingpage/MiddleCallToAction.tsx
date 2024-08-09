@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { Container } from "@/components/landingpage/Container";
+import { Container } from "@/components/landingpage/container";
 import { Button } from "../ui/button";
 import { landingpageContent } from "@/constants/landingpage";
 import Link from "next/link";

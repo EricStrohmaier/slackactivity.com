@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   ContainerInner,
   ContainerOuter,
-} from "@/components/landingpage/Container";
+} from "@/components/landingpage/container";
 import { landingpageContent } from "@/constants/landingpage";
 
 function NavLink({
