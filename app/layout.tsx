@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
-import "react-data-grid/lib/styles.css";
 
 import { Toaster } from "@/components/ui/sonner";
 import { Provider } from "@/components/Provider";

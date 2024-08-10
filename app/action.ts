@@ -14,7 +14,7 @@ export const getUser = async () => {
 
 export const getRowUser = async () => {
   const user = await getUser();
-
+  if (!user) return null;
   const supabase = supabaseAdmin();
   const { data, error } = await supabase
     .from("users")
