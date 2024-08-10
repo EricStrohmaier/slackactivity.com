@@ -1,58 +1,65 @@
-// api/slack/schleude/route.ts
-import { NextResponse } from "next/server";
-import { WebClient } from "@slack/web-api";
+import { NextRequest, NextResponse } from "next/server";
 import { getAllUsers } from "@/lib/auth";
+import { updateUserPresence } from "@/app/action";
 
-async function updateUserPresence(user: any) {
-  const { token, workHours } = user;
-  if (!token || !workHours) {
-    console.error("Missing token or work hours");
-    return;
+export async function GET(request: NextRequest) {
+  // Get the secret token from the query parameters
+  const secretToken = request.nextUrl.searchParams.get("secret");
+
+  // Check if the secret token matches the environment variable
+  if (secretToken !== process.env.SLACK_SCHEDULE_SECRET) {
+    return new NextResponse(JSON.stringify({ message: "Unauthorized" }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }
-  const slack = new WebClient(token);
 
-  const now = new Date();
-  const currentDay = now.getDay();
-  const currentHour = now.getHours();
-
-  if (
-    workHours.daysOfWeek.includes(currentDay) &&
-    currentHour >= workHours.startHour &&
-    currentHour < workHours.endHour
-  ) {
-    await slack.users.setPresence({ presence: "auto" });
-  } else {
-    await slack.users.setPresence({ presence: "away" });
-  }
-}
-
-export async function GET() {
   try {
     const users = await getAllUsers();
     if (!users || users.length === 0) {
       console.error("No users found");
-      return new Response(JSON.stringify({ message: "No users found" }), {
+      return new NextResponse(JSON.stringify({ message: "No users found" }), {
         status: 404,
         headers: {
           "Content-Type": "application/json",
         },
       });
     }
-    console.log("Updating Slack presence for", users, users.length, "users");
+    console.log(`Updating Slack presence for ${users.length} users`);
 
-    const updatePromises = users.map(updateUserPresence);
-    await Promise.all(updatePromises);
+    const updateResults = await Promise.all(
+      users.map(async (user) => {
+        try {
+          await updateUserPresence(user);
+          return { id: user.id, status: "success" };
+        } catch (error) {
+          console.error(`Error updating presence for user ${user.id}:`, error);
+          return { id: user.id, status: "error", message: error };
+        }
+      })
+    );
 
-    return new Response(JSON.stringify({ message: "Slack presence updated" }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return new NextResponse(
+      JSON.stringify({
+        message: "Slack presence update complete",
+        results: updateResults,
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error updating Slack presence:", error);
-    return new Response(
-      JSON.stringify({ message: "Error updating Slack presence" }),
+    return new NextResponse(
+      JSON.stringify({
+        message: "Error updating Slack presence",
+        error: error,
+      }),
       {
         status: 500,
         headers: {

@@ -11,26 +11,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import Signout from "@/components/auth-form/Signout";
+import { User } from "@/types/supabase";
 
 interface iAppProps {
-  user: any;
+  user: User;
 }
 
 export function UserNav({ user }: iAppProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-12 w-12 rounded-full">
+        <Button className="relative h-12 w-12 rounded-full">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={user.metadata} alt="User Image" />
-            <AvatarFallback>{""}</AvatarFallback>
+            <AvatarImage src={user.avatar_url as string} alt="User Image" />
+            <AvatarFallback>{user.full_name?.charAt(0)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.email}</p>
+            <p className="text-sm font-medium leading-none">{user.full_name}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>

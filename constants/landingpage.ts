@@ -1,5 +1,5 @@
-import code from "@/public/landingpage/code.jpg";
-import code2 from "@/public/landingpage/code2.jpg";
+import appScreenshot1 from "@/public/landingpage/app_screenshot1.jpg";
+import appScreenshot2 from "@/public/landingpage/app_screenshot2.jpg";
 import avatarImage1 from "@/public/landingpage/avatars/avatar-1.png";
 import avatarImage2 from "@/public/landingpage/avatars/avatar-2.png";
 import avatarImage3 from "@/public/landingpage/avatars/avatar-3.png";
@@ -7,13 +7,13 @@ import avatarImage4 from "@/public/landingpage/avatars/avatar-4.png";
 import avatarImage5 from "@/public/landingpage/avatars/avatar-5.png";
 import backgroundImageMiddleCTA from "@/public/landingpage/bluebackgroundtree.jpg";
 import abstractBackgroundImage from "@/public/landingpage/abstract-background.png";
-import socialcareImg from "@/public/landingpage/socialcare.png";
+import productivityImg from "@/public/landingpage/socialcare.png";
 import logo from "@/public/logo.png";
 
 export const landingpageContent = {
   header: {
     company: {
-      name: "Company Name",
+      name: "Schleude",
       logo: logo,
       logoHref: "/",
     },
@@ -25,7 +25,7 @@ export const landingpageContent = {
     NavAndFooterLinks: [
       {
         active: false,
-        text: "Setup",
+        text: "How It Works",
         href: "#setup",
       },
       {
@@ -37,21 +37,18 @@ export const landingpageContent = {
   },
   // hero section
   hero: {
-    preHeadline: "Effortless Project Initialization",
-    headline: "Next.js and Supabase",
-    highlightedText: "Boilerplate Setup",
+    preHeadline: "Maximize Your Slack Presence",
+    headline: "Schleude",
+    highlightedText: "Activity Scheduler",
     suffix: "Simplified",
     subheadline:
-      "Kickstart your project with an easy-to-use template for rapid landing page validation and development.",
+      "Set your working hours, stay online, and maintain your productivity effortlessly with our Slack integration.",
     socialCare: {
       active: true,
-      image: socialcareImg,
-      fatPrefix: "4k+ ",
-      text: "members already joined",
+      image: productivityImg,
+      fatPrefix: "1k+ ",
+      text: "users boosting their productivity",
     },
-    // todo make a main cta object
-    // that controlls all the cta sections
-    // if email or link (example)
     cta: {
       actions: {
         email: {
@@ -78,30 +75,30 @@ export const landingpageContent = {
     id: "image-section",
     features: [
       {
-        title: "Pre-built Components",
+        title: "Easy Scheduling",
         description:
-          "Utilize a library of pre-built components to speed up your development process.",
+          "Set your working hours and automate your Slack status effortlessly.",
         image: "",
         background: "bg-stone-900",
       },
       {
-        title: "Responsive Design",
+        title: "Stay Online",
         description:
-          "Ensure your landing page looks great on all devices with responsive design principles.",
-        image: code,
+          "Ensure you're always available during work hours with our seamless online status feature.",
+        image: appScreenshot1,
         background: "",
       },
       {
-        title: "Customizable Templates",
+        title: "Custom Notifications",
         description:
-          "Easily customize templates to match your brand and project requirements.",
-        image: code2,
+          "Receive reminders and notifications to keep your productivity on track.",
+        image: appScreenshot2,
         background: "",
       },
       {
-        title: "SEO Optimized",
+        title: "Seamless Integration",
         description:
-          "Improve your search engine ranking with SEO best practices integrated into the boilerplate.",
+          "Integrate smoothly with your Slack workspace without any hassle.",
         image: "",
         background: "bg-accent",
       },
@@ -111,35 +108,35 @@ export const landingpageContent = {
   // benefits of the product
   benefitsFeature: {
     id: "features",
-    headline: "Why Choose This",
-    highlightedText: "Boilerplate",
-    suffix: "Setup",
+    headline: "Why Choose Schleude",
+    highlightedText: "Scheduler",
+    suffix: "App",
     subheadline:
-      "Experience the ease and efficiency of starting your project with our comprehensive boilerplate.",
+      "Boost your productivity and manage your Slack presence like a pro.",
     features: [
       {
-        title: "Quick Setup",
+        title: "Automatic Status Updates",
         description:
-          "Clone the repository, install dependencies, and start your server in minutes.",
-        image: code,
+          "Your Slack status updates automatically based on your set schedule.",
+        image: appScreenshot1,
       },
       {
-        title: "Seamless Integration",
+        title: "Effortless Setup",
         description:
-          "Easily integrate with Supabase for authentication, database management, and more.",
-        image: code2,
+          "Set up your working hours and Slack integration in just a few minutes.",
+        image: appScreenshot2,
       },
       {
-        title: "Optimized for Development",
+        title: "Customizable Notifications",
         description:
-          "Pre-configured settings and tools to streamline your development process.",
-        image: code,
+          "Receive notifications tailored to your work schedule and preferences.",
+        image: appScreenshot1,
       },
       {
-        title: "Landing Page Validation",
+        title: "Enhanced Productivity",
         description:
-          "Validate your landing page concepts quickly with built-in components and templates.",
-        image: code2,
+          "Stay focused and present during your working hours with minimal effort.",
+        image: appScreenshot2,
       },
     ],
   },
@@ -151,29 +148,29 @@ export const landingpageContent = {
     highlightedText: "in 3 Simple Steps",
     suffix: "",
     subheadline:
-      "Follow these steps to set up your Next.js and Supabase project effortlessly.",
+      "Follow these steps to set up your working hours and optimize your Slack presence.",
     iconView: {
       active: true,
       steps: [
         {
-          step: "Clone the Repository",
-          summary: "Get the codebase locally.",
-          description: "Use Git to clone the repository to your local machine.",
-          iconKey: "clone",
+          step: "Set Your Working Hours",
+          summary: "Define your availability.",
+          description: "Easily set the hours when you want to be online.",
+          iconKey: "schedule",
         },
         {
-          step: "Install Dependencies",
-          summary: "Set up your project environment.",
+          step: "Integrate with Slack",
+          summary: "Connect your workspace.",
           description:
-            "Run `npm install` to install all necessary dependencies.",
-          iconKey: "install",
+            "Authorize Schleude to update your Slack status automatically.",
+          iconKey: "integrate",
         },
         {
-          step: "Start the Development Server",
-          summary: "Launch your project.",
+          step: "Stay Productive",
+          summary: "Focus on your work.",
           description:
-            "Run `npm run dev` to start the development server and see your project in action.",
-          iconKey: "start",
+            "Let Schleude manage your online presence so you can focus on what matters.",
+          iconKey: "focus",
         },
       ],
     },
@@ -181,23 +178,22 @@ export const landingpageContent = {
       active: false,
       steps: [
         {
-          // step is the title
-          step: "Clone the Repository",
-          description: "Use Git to clone the repository to your local machine.",
+          step: "Set Your Working Hours",
+          description: "Easily set the hours when you want to be online.",
           image: abstractBackgroundImage,
         },
         {
-          step: "Install Dependencies",
-          summary: "Set up your project environment.",
+          step: "Integrate with Slack",
+          summary: "Connect your workspace.",
           description:
-            "Run `npm install` to install all necessary dependencies.",
+            "Authorize Schleude to update your Slack status automatically.",
           image: abstractBackgroundImage,
         },
         {
-          step: "Start the Development Server",
-          summary: "Launch your project.",
+          step: "Stay Productive",
+          summary: "Focus on your work.",
           description:
-            "Run `npm run dev` to start the development server and see your project in action.",
+            "Let Schleude manage your online presence so you can focus on what matters.",
           image: abstractBackgroundImage,
         },
       ],
@@ -210,7 +206,7 @@ export const landingpageContent = {
     id: "get-started-today",
     headline: "Ready to Get Started?",
     subheadline:
-      "Join our community and start building your Next.js and Supabase project today.",
+      "Join our community and start optimizing your Slack activity today.",
     button: {
       className: "bg-accent",
       text: "Sign Up",
@@ -225,27 +221,27 @@ export const landingpageContent = {
     active: false,
     id: "testimonials",
     headline: "What People Say",
-    highlightedText: "About Us",
+    highlightedText: "About Schleude",
     suffix: "",
     subheadline:
-      "Hear what our users have to say about their experience with our boilerplate.",
+      "Hear how our users are enhancing their productivity with Schleude.",
     testimonials: [
       [
         {
           content:
-            "TaxPal is so easy to use I can’t help but wonder if it’s really doing the things the government expects me to do.",
+            "Schleude makes it so easy to manage my Slack status. I can focus on work without worrying about appearing offline.",
           author: {
             name: "Sheryl Berge",
-            role: "CEO at Lynch LLC",
+            role: "Product Manager at Tech Corp",
             image: avatarImage1,
           },
         },
         {
           content:
-            "I’m trying to get a hold of someone in support, I’m in a lot of trouble right now and they are saying it has something to do with my books. Please get back to me right away.",
+            "I love how Schleude helps me stay on top of my work hours and Slack presence. It's a game-changer!",
           author: {
             name: "Amy Hahn",
-            role: "Director at Velocity Industries",
+            role: "Team Lead at Velocity Industries",
             image: avatarImage4,
           },
         },
@@ -253,16 +249,16 @@ export const landingpageContent = {
       [
         {
           content:
-            "The best part about TaxPal is every time I pay my employees, my bank balance doesn’t go down like it used to. Looking forward to spending this extra cash when I figure out why my card is being declined.",
+            "The best productivity tool I've added to my workflow. Schleude ensures I'm always online during work hours.",
           author: {
             name: "Leland Kiehn",
-            role: "Founder of Kiehn and Sons",
+            role: "Founder at Kiehn and Sons",
             image: avatarImage5,
           },
         },
         {
           content:
-            "There are so many things I had to do with my old software that I just don’t do at all with TaxPal. Suspicious but I can’t say I don’t love it.",
+            "With Schleude, I no longer have to worry about missing important Slack messages during work hours.",
           author: {
             name: "Erin Powlowski",
             role: "COO at Armstrong Inc",
@@ -273,7 +269,7 @@ export const landingpageContent = {
       [
         {
           content:
-            "I used to have to remit tax to the EU and with TaxPal I somehow don’t have to do that anymore. Nervous to travel there now though.",
+            "Schleude has simplified how I manage my Slack presence. It's so intuitive and effective.",
           author: {
             name: "Peter Renolds",
             role: "Founder of West Inc",
@@ -282,7 +278,7 @@ export const landingpageContent = {
         },
         {
           content:
-            "This is the fourth email I’ve sent to your support team. I am literally being held in jail for tax fraud. Please answer your damn emails, this is important.",
+            "Schleude support is fantastic! Quick responses and really helpful in setting everything up.",
           author: {
             name: "Amy Hahn",
             role: "Director at Velocity Industries",
@@ -298,25 +294,19 @@ export const landingpageContent = {
     active: false,
     id: "partner-companies",
     headline: "Trusted by leading",
-    highlightedText: "financial institutions",
+    highlightedText: "productivity enthusiasts",
     suffix: "",
     subheadline:
-      "We're proud to work with some of the most respected names in the industry.",
+      "Join the ranks of professionals who trust Schleude for their Slack management.",
     companies: [
-      { name: "Global Bank", logo: "/images/logos/global-bank.svg" },
+      { name: "Tech Corp", logo: "/images/logos/tech-corp.svg" },
       {
-        name: "Secure Investments",
-        logo: "/images/logos/secure-investments.svg",
+        name: "Velocity Industries",
+        logo: "/images/logos/velocity-industries.svg",
       },
-      { name: "Trust Financial", logo: "/images/logos/trust-financial.svg" },
-      {
-        name: "Fidelity Partners",
-        logo: "/images/logos/fidelity-partners.svg",
-      },
-      {
-        name: "Pinnacle Insurance",
-        logo: "/images/logos/pinnacle-insurance.svg",
-      },
+      { name: "Kiehn and Sons", logo: "/images/logos/kiehn-and-sons.svg" },
+      { name: "West Inc", logo: "/images/logos/west-inc.svg" },
+      { name: "Armstrong Inc", logo: "/images/logos/armstrong-inc.svg" },
     ],
   },
 
@@ -324,10 +314,10 @@ export const landingpageContent = {
   emailSignUp: {
     id: "email-sign-up",
     headline: "Stay Updated",
-    highlightedText: "with Our Progress",
+    highlightedText: "with Schleude",
     suffix: "",
     subheadline:
-      "Enter your email to receive the latest updates and features for our Next.js and Supabase boilerplate.",
+      "Enter your email to receive the latest updates and features for Schleude.",
     placeholder: "Enter your email",
     buttonText: "Subscribe",
   },

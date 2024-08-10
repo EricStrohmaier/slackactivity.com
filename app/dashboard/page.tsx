@@ -1,92 +1,31 @@
-"use client";
+import Dashboard from "@/components/app/dashboard/dashboard";
+import React from "react";
+import { getSupabaseServer, getUser } from "../action";
+import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
+import { supabaseAdmin } from "@/utils/supabase/admin";
 
-import { useEffect, useState } from "react";
-import slackOperations, { UserConfig } from "../action";
-import { useRouter, useSearchParams } from "next/navigation";
+export default async function page({ searchParams }: { searchParams: any }) {
+  const user = await getUser();
 
-const Dashboard = () => {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
-  const [status, setStatus] = useState<string>("");
-  const [startHour, setStartHour] = useState<number>(9);
-  const [endHour, setEndHour] = useState<number>(17);
-  const [daysOfWeek, setDaysOfWeek] = useState<number[]>([1, 2, 3, 4, 5]);
+  if (!user) redirect("/signin");
 
-  useEffect(() => {
-    if (token) {
-      const config: UserConfig = {
-        token: token as string,
-        workHours: { startHour, endHour, daysOfWeek },
-      };
+  const supabase = supabaseAdmin();
 
-      slackOperations(config)
-        .then(() => {
-          setStatus("Status updated successfully!");
-        })
-        .catch((error) => {
-          console.error(error);
-          setStatus("Failed to update status.");
-        });
-    }
-  }, [token, startHour, endHour, daysOfWeek]);
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
-  const handleDayChange = (day: number) => {
-    setDaysOfWeek((prevDays) => {
-      if (prevDays.includes(day)) {
-        return prevDays.filter((d) => d !== day);
-      } else {
-        return [...prevDays, day];
-      }
-    });
-  };
+  if (error) {
+    console.error(error);
+    return <div className="h-screen">Error Couldnt find you in the system</div>;
+  }
 
   return (
-    <div className="w-full h-screen flex justify-center mt-10">
-      <h1>Dashboard</h1>
-      <p>{status}</p>
-      {!token && <a href="/api/slack/auth">Authenticate with Slack</a>}
-      {token && (
-        <div>
-          <h2>Set Work Hours</h2>
-          <label>
-            Start Hour:
-            <input
-              type="number"
-              value={startHour}
-              onChange={(e) => setStartHour(parseInt(e.target.value, 10))}
-              min="0"
-              max="23"
-            />
-          </label>
-          <label>
-            End Hour:
-            <input
-              type="number"
-              value={endHour}
-              onChange={(e) => setEndHour(parseInt(e.target.value, 10))}
-              min="0"
-              max="23"
-            />
-          </label>
-          <div>
-            <label>Days of Week:</label>
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-              (day, index) => (
-                <label key={index}>
-                  <input
-                    type="checkbox"
-                    checked={daysOfWeek.includes(index)}
-                    onChange={() => handleDayChange(index)}
-                  />
-                  {day}
-                </label>
-              )
-            )}
-          </div>
-        </div>
-      )}
+    <div className="h-screen">
+      <Dashboard user={data} />
     </div>
   );
-};
-
-export default Dashboard;
+}

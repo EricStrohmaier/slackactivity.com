@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { landingpageContent } from "@/constants/landingpage";
 import { UserNav } from "../app/UserNav";
 import { Container } from "@/components/landingpage/container";
+import { User } from "@/types/supabase";
 
 function CloseIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   return (
@@ -213,7 +214,7 @@ function Avatar({
   );
 }
 
-export function Header({ user }: { user: any }) {
+export function Header({ user }: { user: User | null }) {
   let isHomePage = usePathname() === "/";
   const isAbout = usePathname() === "/about";
 

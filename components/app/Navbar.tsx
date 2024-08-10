@@ -9,8 +9,9 @@ import logo from "@/public/logo.png";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { User } from "@/types/supabase";
 
-export function Navbar({ user }: { user: any }) {
+export function Navbar({ user }: { user: User | null }) {
   const pathname = usePathname();
   if (pathname.startsWith("/static")) return null;
 

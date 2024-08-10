@@ -1,3 +1,4 @@
+import { supabaseAdmin } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 
 const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
@@ -9,7 +10,7 @@ export async function getSession() {
 }
 
 export async function getAllUsers() {
-  const supabase = createClient();
+  const supabase = supabaseAdmin();
   const { data, error } = await supabase.from("users").select("*");
   return data;
 }

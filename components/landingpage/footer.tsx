@@ -29,7 +29,7 @@ export function Footer() {
   );
 
   return (
-    <footer className="mt-32 flex-none">
+    <footer className="flex-none">
       <ContainerOuter>
         <div className="border-t border-stone-100 pb-16 pt-10 dark:border-stone-700/40">
           <ContainerInner>

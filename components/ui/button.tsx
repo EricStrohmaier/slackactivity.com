@@ -20,7 +20,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-primary-100 hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        slim: "bg-primary text-primary-foreground hover:bg-primary/90",
+        slim: "bg-transparent text-primary-foreground border border-stone-300 text-text-foreground hover:bg-stone-100",
         action: "bg-action text-action-foreground shadow-sm hover:bg-action/90",
         landingpageCTA:
           "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 ",

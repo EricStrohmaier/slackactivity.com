@@ -5,7 +5,7 @@ import { type Provider } from "@supabase/supabase-js";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import GoogleIcon from "@/components/app/icons/google";
+import SlackIcon from "@/components/app/icons/slack";
 
 type OAuthProviders = {
   name: Provider;
@@ -16,9 +16,10 @@ type OAuthProviders = {
 export default function OauthSignIn({ signuptype }: { signuptype?: string }) {
   const oAuthProviders: OAuthProviders[] = [
     {
-      name: "google",
-      displayName: "Google",
-      icon: <GoogleIcon className="w-6 h-6" />,
+      // @ts-ignore
+      name: "slack_oidc",
+      displayName: "Slack",
+      icon: <SlackIcon className="w-6 h-6" />,
     },
     /* Add desired OAuth providers here */
   ];
