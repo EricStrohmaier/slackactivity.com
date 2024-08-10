@@ -37,10 +37,10 @@ export const landingpageContent = {
   },
   // hero section
   hero: {
-    preHeadline: "Optimize Your Slack Experience",
-    headline: "Set Your Working Slack Hours and never be offline again",
-    highlightedText: "Activity Scheduler",
-    suffix: "Made Easy",
+    preHeadline: "Slacktivity",
+    headline: "Set Your Slack Working Hours",
+    highlightedText: "Automatically",
+    suffix: "",
     subheadline:
       "Effortlessly manage your Slack status and working hours with Slacktivity. Stay productive and online with our intuitive scheduling tool.",
     socialCare: {
