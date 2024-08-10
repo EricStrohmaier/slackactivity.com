@@ -6,7 +6,6 @@ import Link from "next/link";
 import React, { useTransition } from "react";
 import { Button } from "../ui/button";
 import { Submitbutton } from "../app/SubmitButtons";
-import { insertWaitlistEmail } from "@/actions/insertWaitlistEmail";
 import { toast } from "sonner";
 
 export default function HeroCTA({
@@ -24,19 +23,6 @@ export default function HeroCTA({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
-
-    startTransition(async () => {
-      try {
-        const data = await insertWaitlistEmail(email);
-        if (data && data.error) {
-          toast.error(data.error);
-        } else {
-          toast.success("Email added to waitlist");
-        }
-      } catch (error: any) {
-        toast.error(error.message);
-      }
-    });
   };
   return (
     <div className="mt-10 flex items-center gap-y-4 gap-x-6 md:flex-row">

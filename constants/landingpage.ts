@@ -13,7 +13,7 @@ import logo from "@/public/logo.png";
 export const landingpageContent = {
   header: {
     company: {
-      name: "Schleude",
+      name: "slacktivity",
       logo: logo,
       logoHref: "/",
     },
@@ -37,28 +37,28 @@ export const landingpageContent = {
   },
   // hero section
   hero: {
-    preHeadline: "Maximize Your Slack Presence",
-    headline: "Schleude",
+    preHeadline: "Optimize Your Slack Experience",
+    headline: "Set Your Working Slack Hours and never be offline again",
     highlightedText: "Activity Scheduler",
-    suffix: "Simplified",
+    suffix: "Made Easy",
     subheadline:
-      "Set your working hours, stay online, and maintain your productivity effortlessly with our Slack integration.",
+      "Effortlessly manage your Slack status and working hours with Slacktivity. Stay productive and online with our intuitive scheduling tool.",
     socialCare: {
       active: true,
       image: productivityImg,
       fatPrefix: "1k+ ",
-      text: "users boosting their productivity",
+      text: "users enhancing their productivity",
     },
     cta: {
       actions: {
         email: {
-          active: true,
+          active: false,
           placeholder: "Enter your email for updates",
         },
         links: {
           howItWorks: {
-            active: false,
-            text: "Learn More",
+            active: true,
+            text: "Is Free",
             link: "#setup",
           },
         },
@@ -70,35 +70,35 @@ export const landingpageContent = {
     },
   },
 
-  // problem section 1st outline the problem
+  // problem section
   imageSection: {
     id: "image-section",
     features: [
       {
         title: "Easy Scheduling",
         description:
-          "Set your working hours and automate your Slack status effortlessly.",
+          "Effortlessly set your working hours and automate your Slack status.",
         image: "",
         background: "bg-stone-900",
       },
       {
-        title: "Stay Online",
+        title: "Always Online",
         description:
-          "Ensure you're always available during work hours with our seamless online status feature.",
+          "Ensure you're consistently available during work hours with our online status feature.",
         image: appScreenshot1,
         background: "",
       },
       {
         title: "Custom Notifications",
         description:
-          "Receive reminders and notifications to keep your productivity on track.",
+          "Stay on track with reminders and notifications tailored to your work schedule.",
         image: appScreenshot2,
         background: "",
       },
       {
         title: "Seamless Integration",
         description:
-          "Integrate smoothly with your Slack workspace without any hassle.",
+          "Integrate effortlessly with your Slack workspace without any hassle.",
         image: "",
         background: "bg-accent",
       },
@@ -108,34 +108,34 @@ export const landingpageContent = {
   // benefits of the product
   benefitsFeature: {
     id: "features",
-    headline: "Why Choose Schleude",
+    headline: "Why Choose Slacktivity",
     highlightedText: "Scheduler",
     suffix: "App",
     subheadline:
-      "Boost your productivity and manage your Slack presence like a pro.",
+      "Elevate your productivity and streamline your Slack management with ease.",
     features: [
       {
         title: "Automatic Status Updates",
         description:
-          "Your Slack status updates automatically based on your set schedule.",
+          "Your Slack status updates automatically based on your scheduled hours.",
         image: appScreenshot1,
       },
       {
         title: "Effortless Setup",
         description:
-          "Set up your working hours and Slack integration in just a few minutes.",
+          "Get started quickly by setting up your working hours and Slack integration in minutes.",
         image: appScreenshot2,
       },
       {
         title: "Customizable Notifications",
         description:
-          "Receive notifications tailored to your work schedule and preferences.",
+          "Receive notifications tailored to fit your work schedule and preferences.",
         image: appScreenshot1,
       },
       {
         title: "Enhanced Productivity",
         description:
-          "Stay focused and present during your working hours with minimal effort.",
+          "Maintain focus and productivity during work hours with minimal effort.",
         image: appScreenshot2,
       },
     ],
@@ -155,21 +155,21 @@ export const landingpageContent = {
         {
           step: "Set Your Working Hours",
           summary: "Define your availability.",
-          description: "Easily set the hours when you want to be online.",
+          description: "Easily specify the hours when you want to be online.",
           iconKey: "schedule",
         },
         {
           step: "Integrate with Slack",
           summary: "Connect your workspace.",
           description:
-            "Authorize Schleude to update your Slack status automatically.",
+            "Authorize Slacktivity to manage your Slack status automatically.",
           iconKey: "integrate",
         },
         {
-          step: "Stay Productive",
+          step: "Boost Your Productivity",
           summary: "Focus on your work.",
           description:
-            "Let Schleude manage your online presence so you can focus on what matters.",
+            "Let Slacktivity handle your online presence while you focus on what matters.",
           iconKey: "focus",
         },
       ],
@@ -179,21 +179,21 @@ export const landingpageContent = {
       steps: [
         {
           step: "Set Your Working Hours",
-          description: "Easily set the hours when you want to be online.",
+          description: "Easily specify the hours when you want to be online.",
           image: abstractBackgroundImage,
         },
         {
           step: "Integrate with Slack",
           summary: "Connect your workspace.",
           description:
-            "Authorize Schleude to update your Slack status automatically.",
+            "Authorize Slacktivity to manage your Slack status automatically.",
           image: abstractBackgroundImage,
         },
         {
-          step: "Stay Productive",
+          step: "Boost Your Productivity",
           summary: "Focus on your work.",
           description:
-            "Let Schleude manage your online presence so you can focus on what matters.",
+            "Let Slacktivity handle your online presence while you focus on what matters.",
           image: abstractBackgroundImage,
         },
       ],
@@ -221,15 +221,15 @@ export const landingpageContent = {
     active: false,
     id: "testimonials",
     headline: "What People Say",
-    highlightedText: "About Schleude",
+    highlightedText: "About Slacktivity",
     suffix: "",
     subheadline:
-      "Hear how our users are enhancing their productivity with Schleude.",
+      "Discover how our users are transforming their productivity with Slacktivity.",
     testimonials: [
       [
         {
           content:
-            "Schleude makes it so easy to manage my Slack status. I can focus on work without worrying about appearing offline.",
+            "Slacktivity makes managing my Slack status a breeze. I can focus on work without worrying about being offline.",
           author: {
             name: "Sheryl Berge",
             role: "Product Manager at Tech Corp",
@@ -238,7 +238,7 @@ export const landingpageContent = {
         },
         {
           content:
-            "I love how Schleude helps me stay on top of my work hours and Slack presence. It's a game-changer!",
+            "I love how Slacktivity helps me stay organized and visible. It’s a game-changer for my productivity!",
           author: {
             name: "Amy Hahn",
             role: "Team Lead at Velocity Industries",
@@ -249,7 +249,7 @@ export const landingpageContent = {
       [
         {
           content:
-            "The best productivity tool I've added to my workflow. Schleude ensures I'm always online during work hours.",
+            "Slacktivity is the best tool for maintaining an online presence during work hours. It’s indispensable!",
           author: {
             name: "Leland Kiehn",
             role: "Founder at Kiehn and Sons",
@@ -258,7 +258,7 @@ export const landingpageContent = {
         },
         {
           content:
-            "With Schleude, I no longer have to worry about missing important Slack messages during work hours.",
+            "With Slacktivity, I never miss important Slack messages. It’s a great addition to my workflow.",
           author: {
             name: "Erin Powlowski",
             role: "COO at Armstrong Inc",
@@ -269,7 +269,7 @@ export const landingpageContent = {
       [
         {
           content:
-            "Schleude has simplified how I manage my Slack presence. It's so intuitive and effective.",
+            "Slacktivity simplifies managing my Slack presence. It’s intuitive and highly effective.",
           author: {
             name: "Peter Renolds",
             role: "Founder of West Inc",
@@ -278,7 +278,7 @@ export const landingpageContent = {
         },
         {
           content:
-            "Schleude support is fantastic! Quick responses and really helpful in setting everything up.",
+            "Slacktivity support is excellent! They’re quick and helpful in getting everything set up.",
           author: {
             name: "Amy Hahn",
             role: "Director at Velocity Industries",
@@ -289,36 +289,15 @@ export const landingpageContent = {
     ],
   },
 
-  // partner companies section
-  partnerCompanies: {
-    active: false,
-    id: "partner-companies",
-    headline: "Trusted by leading",
-    highlightedText: "productivity enthusiasts",
-    suffix: "",
-    subheadline:
-      "Join the ranks of professionals who trust Schleude for their Slack management.",
-    companies: [
-      { name: "Tech Corp", logo: "/images/logos/tech-corp.svg" },
-      {
-        name: "Velocity Industries",
-        logo: "/images/logos/velocity-industries.svg",
-      },
-      { name: "Kiehn and Sons", logo: "/images/logos/kiehn-and-sons.svg" },
-      { name: "West Inc", logo: "/images/logos/west-inc.svg" },
-      { name: "Armstrong Inc", logo: "/images/logos/armstrong-inc.svg" },
-    ],
-  },
-
   // last Call to Action
   emailSignUp: {
-    id: "email-sign-up",
-    headline: "Stay Updated",
-    highlightedText: "with Schleude",
-    suffix: "",
+    id: "its-free",
+    headline: "Ready to start with",
+    highlightedText: "Slacktivity",
+    suffix: "?",
     subheadline:
-      "Enter your email to receive the latest updates and features for Schleude.",
-    placeholder: "Enter your email",
-    buttonText: "Subscribe",
+      "If you want to see more features, dont hasitate and reach out to us.",
+    placeholder: "Try it out its free",
+    buttonText: "Get Started",
   },
 };

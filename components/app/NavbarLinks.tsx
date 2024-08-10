@@ -15,11 +15,6 @@ export const navbarLinks = [
     name: "Templates",
     href: "/products/template",
   },
-  {
-    id: 2,
-    name: "Powerpoint",
-    href: "/powerpoint",
-  },
 ];
 
 export function NavbarLinks() {

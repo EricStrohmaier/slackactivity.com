@@ -1,7 +1,4 @@
-import EmailForm from "@/components/landingpage/EmailForm";
 import { landingpageContent } from "@/constants/landingpage";
-// import BackgroundSVG from "@/public/landingpage/Vector4.svg";
-import Image from "next/image";
 
 export default function EmailSignUp({ isMarketplace = false }) {
   const content = landingpageContent;
@@ -31,7 +28,6 @@ export default function EmailSignUp({ isMarketplace = false }) {
           <p className="mx-auto mt-2 max-w-xl text-center text-lg leading-8 text-gray-600">
             {content.emailSignUp.subheadline}
           </p>
-          <EmailForm />
         </div>
       </div>
     </div>

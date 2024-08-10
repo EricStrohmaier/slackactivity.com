@@ -123,10 +123,6 @@ export async function updateUserPresence(user: any) {
   const token = user.slack_auth_token;
   const workHours = user.working_hours;
 
-  console.log(`Processing user: ${user.id}`);
-  console.log(`Token: ${token ? "Present" : "Missing"}`);
-  console.log(`Work Hours: ${JSON.stringify(workHours)}`);
-
   if (!token || !workHours) {
     console.error(`Missing token or work hours for user ${user.id}`);
     return;
@@ -138,10 +134,6 @@ export async function updateUserPresence(user: any) {
   const currentDay = now.getDay();
   const currentHour = now.getHours();
 
-  console.log(`Current day: ${currentDay}, Current hour: ${currentHour}`);
-  console.log(
-    `Work days: ${workHours.daysOfWeek}, Start hour: ${workHours.startHour}, End hour: ${workHours.endHour}`
-  );
   let action: string;
 
   if (
@@ -149,14 +141,13 @@ export async function updateUserPresence(user: any) {
     currentHour >= workHours.startHour &&
     currentHour < workHours.endHour
   ) {
-    console.log(`Setting presence to auto for user ${user.id}`);
     await slack.users.setPresence({ presence: "auto" });
     action = "set_active";
   } else {
-    console.log(`Setting presence to away for user ${user.id}`);
     await slack.users.setPresence({ presence: "away" });
     action = "set_away";
   }
+
   const supabase = supabaseAdmin();
   await supabase.from("activity_logs").insert({
     user_id: user.id,

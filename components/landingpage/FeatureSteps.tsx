@@ -3,7 +3,13 @@
 import React from "react";
 import { Tab, TabGroup, TabList } from "@headlessui/react";
 import clsx from "clsx";
-import { FiGitBranch, FiPackage, FiPlay } from "react-icons/fi";
+import {
+  FiCalendar,
+  FiGitBranch,
+  FiPackage,
+  FiPlay,
+  FiSkipForward,
+} from "react-icons/fi";
 
 import { Container } from "@/components/landingpage/container";
 import { landingpageContent } from "@/constants/landingpage";
@@ -14,6 +20,9 @@ const iconMap: { [key: string]: IconType } = {
   clone: FiGitBranch,
   install: FiPackage,
   start: FiPlay,
+  schedule: FiCalendar,
+  integrate: FiGitBranch,
+  focus: FiSkipForward,
 };
 
 interface Feature {
