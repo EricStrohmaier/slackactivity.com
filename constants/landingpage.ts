@@ -58,13 +58,13 @@ export const landingpageContent = {
         links: {
           howItWorks: {
             active: true,
-            text: "Is Free",
+            text: "It's Free",
             link: "#setup",
           },
         },
       },
       button: {
-        text: "Get Started",
+        text: "Try it out",
         link: "/signup",
       },
     },
