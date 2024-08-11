@@ -38,7 +38,7 @@ export default async function SignIn({
       cookieStore.get("preferredSignInView")?.value || null;
     const signuptype = cookies().get("signuptype")?.value || "user";
     viewProp = getDefaultSignInView(preferredSignInView);
-    return redirect(`/signin/${signuptype}/${viewProp}`);
+    return redirect(`/signin/${viewProp}`);
   }
 
   const supabase = createClient();

@@ -9,6 +9,6 @@ export default function SignIn() {
   const defaultView = getDefaultSignInView(preferredSignInView);
 
   if (defaultView) {
-    return redirect(`/signin/user/${defaultView}`);
+    return redirect(`/signin/${defaultView}`);
   }
 }
