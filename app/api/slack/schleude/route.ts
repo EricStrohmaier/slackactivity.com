@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllUsers } from "@/lib/auth";
 import { updateUserPresence } from "@/app/action";
+import { supabaseAdmin } from "@/utils/supabase/admin";
 
 export async function GET(request: NextRequest) {
   // Get the secret token from the query parameters
@@ -17,7 +18,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const users = await getAllUsers();
+    const supabase = supabaseAdmin();
+    const { data: users, error } = await supabase.from("users").select("*");
+    console.log(users);
+
     if (!users || users.length === 0) {
       console.error("No users found");
       return new NextResponse(JSON.stringify({ message: "No users found" }), {
