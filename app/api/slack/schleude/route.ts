@@ -69,11 +69,16 @@ export async function GET(request: NextRequest) {
             action = "set_away";
           }
 
-          await supabase.from("activity_logs").insert({
-            user_id: user.id,
-            action: action,
-            details: { currentDay, currentHour, workHours },
-          });
+          const { data: activityLog, error: activityError } = await supabase
+            .from("activity_logs")
+            .insert({
+              user_id: user.id,
+              action: action,
+              details: { currentDay, currentHour, workHours },
+            });
+
+          console.log(activityLog, activityError);
+
           return { id: user.id, status: "success" };
         } catch (error) {
           console.error(`Error updating presence for user ${user.id}:`, error);
