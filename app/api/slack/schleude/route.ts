@@ -69,7 +69,6 @@ export async function GET(request: NextRequest) {
             action = "set_away";
           }
 
-          const supabase = supabaseAdmin();
           await supabase.from("activity_logs").insert({
             user_id: user.id,
             action: action,
