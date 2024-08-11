@@ -13,28 +13,35 @@ export default async function page({ searchParams }: { searchParams: any }) {
 
   if (!user) redirect("/signin");
 
-  const { data: updateUser, error: updateError } = await supabase
-    .from("users")
-    .update({
-      slack_auth_token: token,
-    })
-    .eq("id", user.id)
-    .select()
-    .single();
+  if (token) {
+    const { data: updateUser, error: updateError } = await supabase
+      .from("users")
+      .update({
+        slack_auth_token: token,
+      })
+      .eq("id", user.id);
 
-  if (updateError) {
-    throw new Error(updateError.message);
+    if (updateError) {
+      throw new Error(updateError.message);
+    }
   }
 
-  if (!updateUser) {
+  const { data: selectUser, error: selectError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id);
+
+  if (selectError) {
+    console.log(selectError);
+
     return <div className="h-screen">Error Couldnt find you in the system</div>;
   }
 
-  console.log(updateUser);
+  console.log("selectUser", selectUser);
 
   return (
     <div className="h-screen">
-      <Dashboard user={updateUser} />
+      <Dashboard user={selectUser as any} />
     </div>
   );
 }
