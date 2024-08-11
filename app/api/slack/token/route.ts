@@ -30,35 +30,6 @@ export async function GET(req: NextRequest) {
     throw new Error(data.error || "Slack OAuth failed");
   }
 
-  // Fetch user information
-  const userInfoResponse = await fetch(
-    `https://slack.com/api/users.info?user=${data.authed_user.id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${data.authed_user.access_token}`,
-      },
-    }
-  );
-
-  const userInfo = await userInfoResponse.json();
-
-  if (!userInfo.ok) {
-    throw new Error(userInfo.error || "Failed to fetch user info");
-  }
-
-  const supabase = supabaseAdmin();
-
-  const { data: user, error } = await supabase
-    .from("users")
-    .update({
-      slack_auth_token: data.authed_user.access_token,
-    })
-    .eq("slack_user_id", data.authed_user.id);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
   // Redirect to dashboard with access token
   redirect(`/dashboard?token=${data.authed_user.access_token}`);
 }
