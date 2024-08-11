@@ -24,7 +24,7 @@ export const getRowUser = async () => {
 
   if (error) {
     console.error(error);
-    throw error;
+    return null;
   }
   return data;
 };
