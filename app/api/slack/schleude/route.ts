@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAllUsers } from "@/lib/auth";
 import { updateUserPresence } from "@/app/action";
 import { supabaseAdmin } from "@/utils/supabase/admin";
+import { WebClient } from "@slack/web-api";
 
 export async function GET(request: NextRequest) {
   // Get the secret token from the query parameters
@@ -36,7 +37,44 @@ export async function GET(request: NextRequest) {
     const updateResults = await Promise.all(
       users.map(async (user) => {
         try {
-          await updateUserPresence(user);
+          const token = user.slack_auth_token;
+          const workHours = user.working_hours as {
+            daysOfWeek: number[];
+            startHour: number;
+            endHour: number;
+          } | null;
+
+          if (!token || !workHours) {
+            console.error(`Missing token or work hours for user ${user.id}`);
+            return;
+          }
+
+          const slack = new WebClient(token);
+
+          const now = new Date();
+          const currentDay = now.getDay();
+          const currentHour = now.getHours();
+
+          let action: string;
+
+          if (
+            workHours.daysOfWeek.includes(currentDay) &&
+            currentHour >= workHours.startHour &&
+            currentHour < workHours.endHour
+          ) {
+            await slack.users.setPresence({ presence: "auto" });
+            action = "set_active";
+          } else {
+            await slack.users.setPresence({ presence: "away" });
+            action = "set_away";
+          }
+
+          const supabase = supabaseAdmin();
+          await supabase.from("activity_logs").insert({
+            user_id: user.id,
+            action: action,
+            details: { currentDay, currentHour, workHours },
+          });
           return { id: user.id, status: "success" };
         } catch (error) {
           console.error(`Error updating presence for user ${user.id}:`, error);

@@ -296,7 +296,7 @@ export const landingpageContent = {
     highlightedText: "Slacktivity",
     suffix: "?",
     subheadline:
-      "If you want to see more features, dont hasitate and reach out to us.",
+      "If you want to see more features, dont hasitate and reach out to us. https://insigh.to/b/slacktivity",
     placeholder: "Try it out its free",
     buttonText: "Get Started",
   },
