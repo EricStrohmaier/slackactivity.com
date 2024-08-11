@@ -38,8 +38,8 @@ export const landingpageContent = {
   // hero section
   hero: {
     preHeadline: "Slacktivity",
-    headline: "Set Your Slack Working Hours",
-    highlightedText: "Automatically",
+    headline: "Slack Working Hours",
+    highlightedText: "Set Automatically",
     suffix: "",
     subheadline:
       "Effortlessly manage your Slack status and working hours with Slacktivity. Stay productive and online with our intuitive scheduling tool.",
@@ -59,13 +59,13 @@ export const landingpageContent = {
           howItWorks: {
             active: true,
             text: "It's Free",
-            link: "#setup",
+            link: "#features",
           },
         },
       },
       button: {
         text: "Try it out",
-        link: "/signup",
+        link: "/signin",
       },
     },
   },
