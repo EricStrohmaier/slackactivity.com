@@ -202,7 +202,7 @@ export const landingpageContent = {
 
   // middle cta
   middleCTA: {
-    active: false,
+    active: true,
     id: "get-started-today",
     headline: "Ready to Get Started?",
     subheadline:
