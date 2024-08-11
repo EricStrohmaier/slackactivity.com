@@ -23,6 +23,7 @@ const Dashboard = ({ user }: { user: User }) => {
   const [startHour, setStartHour] = useState(9);
   const [endHour, setEndHour] = useState(17);
   const [daysOfWeek, setDaysOfWeek] = useState([1, 2, 3, 4, 5]);
+  const [initialSaveDone, setInitialSaveDone] = useState(false);
 
   const [activityReport, setActivityReport] = useState<{
     totalUpdates: number;
@@ -59,12 +60,19 @@ const Dashboard = ({ user }: { user: User }) => {
       );
       setEndHour((user.working_hours as { endHour?: number }).endHour || 17);
       setDaysOfWeek(
-        (user.working_hours as { daysOfWeek?: [] }).daysOfWeek || [
+        (user.working_hours as { daysOfWeek?: number[] }).daysOfWeek || [
           1, 2, 3, 4, 5,
         ]
       );
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!initialSaveDone && user.id) {
+      handleSave();
+      setInitialSaveDone(true);
+    }
+  }, [user.id, initialSaveDone]);
 
   const handleDayChange = (day: number) => {
     setDaysOfWeek((prevDays) =>
@@ -117,9 +125,10 @@ const Dashboard = ({ user }: { user: User }) => {
                       id="startHour"
                       type="number"
                       value={startHour}
-                      onChange={(e) =>
-                        setStartHour(parseInt(e.target.value, 10))
-                      }
+                      onChange={(e) => {
+                        setStartHour(parseInt(e.target.value, 10));
+                        handleSave();
+                      }}
                       min="0"
                       max="23"
                     />
@@ -130,7 +139,10 @@ const Dashboard = ({ user }: { user: User }) => {
                       id="endHour"
                       type="number"
                       value={endHour}
-                      onChange={(e) => setEndHour(parseInt(e.target.value, 10))}
+                      onChange={(e) => {
+                        setEndHour(parseInt(e.target.value, 10));
+                        handleSave();
+                      }}
                       min="0"
                       max="23"
                     />
@@ -144,20 +156,16 @@ const Dashboard = ({ user }: { user: User }) => {
                         <Checkbox
                           id={`day-${index}`}
                           checked={daysOfWeek.includes(index)}
-                          onCheckedChange={() => handleDayChange(index)}
+                          onCheckedChange={() => {
+                            handleDayChange(index);
+                            handleSave();
+                          }}
                         />
                         <Label htmlFor={`day-${index}`}>{day}</Label>
                       </div>
                     ))}
                   </div>
                 </div>
-                <Button
-                  onClick={handleSave}
-                  className="w-full"
-                  variant="default"
-                >
-                  Save Working Hours
-                </Button>
               </div>
             </>
           )}
