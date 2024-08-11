@@ -28,11 +28,11 @@ export default async function page({ searchParams }: { searchParams: any }) {
   const { data: selectUser, error: selectError } = await supabase
     .from("users")
     .select("*")
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .single();
 
   if (selectError) {
     console.log(selectError);
-
     return <div className="h-screen">Error Couldnt find you in the system</div>;
   }
 
