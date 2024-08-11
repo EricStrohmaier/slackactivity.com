@@ -1,12 +1,11 @@
 import Dashboard from "@/components/app/dashboard/dashboard";
 import React from "react";
-import { getSupabaseServer, getUser } from "../action";
+import { getUser } from "../action";
 import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 
 export default async function page({ searchParams }: { searchParams: any }) {
-  const token = searchParams.get("token");
+  const token = searchParams.token;
   const supabase = supabaseAdmin();
 
   const user = await getUser();
