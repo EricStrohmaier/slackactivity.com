@@ -16,6 +16,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Clock, AlertCircle } from "lucide-react";
 import { generateActivityReport, updateWorkingHours } from "@/app/action";
 import { User } from "@/types/supabase";
+import Link from "next/link";
 
 const Dashboard = ({ user }: { user: User }) => {
   const [status, setStatus] = useState("");
@@ -101,10 +102,10 @@ const Dashboard = ({ user }: { user: User }) => {
         <CardContent>
           {!user.slack_auth_token ? (
             <Button asChild className="w-full" variant="slim">
-              <a href="/api/slack/auth">
+              <Link href="/api/slack/auth">
                 <Clock className="h-4 w-4 mr-2" />
                 Connect Slack
-              </a>
+              </Link>
             </Button>
           ) : (
             <>
