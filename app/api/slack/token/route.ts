@@ -1,6 +1,6 @@
-import { createClient } from "@/utils/supabase/server";
+import { supabaseAdmin } from "@/utils/supabase/admin";
 import { redirect } from "next/navigation";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     throw new Error(userInfo.error || "Failed to fetch user info");
   }
 
-  const supabase = createClient();
+  const supabase = supabaseAdmin();
 
   const { data: user, error } = await supabase
     .from("users")
