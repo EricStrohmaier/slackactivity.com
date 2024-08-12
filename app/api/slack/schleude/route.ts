@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllUsers } from "@/lib/auth";
-import { updateUserPresence } from "@/app/action";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 import { WebClient } from "@slack/web-api";
+import { createClient } from "@/utils/supabase/server";
 
 export async function GET(request: NextRequest) {
   // Get the secret token from the query parameters
@@ -77,7 +76,13 @@ export async function GET(request: NextRequest) {
               details: { currentDay, currentHour, workHours },
             });
 
-          console.log(activityLog, activityError);
+          if (activityError) {
+            console.error(
+              `Error inserting activity log for user ${user.id}:`,
+              activityError
+            );
+            return { id: user.id, status: "error", message: activityError };
+          }
 
           return { id: user.id, status: "success" };
         } catch (error) {
