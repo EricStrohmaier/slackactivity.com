@@ -12,10 +12,10 @@ module.exports = {
         const res = await fetch(
           "https://slacktivity.app/api/slack/schleude?secret=secret_token_007_007"
         );
-        console.log("Calling slacktivity", res.status);
+        console.log("Calling slacktivity", res);
       } catch (error) {
         console.error("Error in cron job:", error);
       }
-    });
+    }); //sdf
   },
 };

@@ -4,33 +4,27 @@ import { WebClient } from "@slack/web-api";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET(request: NextRequest) {
-  // Get the secret token from the query parameters
   const secretToken = request.nextUrl.searchParams.get("secret");
 
-  // Check if the secret token matches the environment variable
   if (secretToken !== process.env.SLACK_SCHEDULE_SECRET) {
     return new NextResponse(JSON.stringify({ message: "Unauthorized" }), {
       status: 401,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
   }
 
   try {
     const supabase = supabaseAdmin();
     const { data: users, error } = await supabase.from("users").select("*");
-    console.log(users);
 
     if (!users || users.length === 0) {
       console.error("No users found");
       return new NextResponse(JSON.stringify({ message: "No users found" }), {
         status: 404,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
     }
+
     console.log(`Updating Slack presence for ${users.length} users`);
 
     const updateResults = await Promise.all(
@@ -41,6 +35,7 @@ export async function GET(request: NextRequest) {
             daysOfWeek: number[];
             startHour: number;
             endHour: number;
+            timezone: string;
           } | null;
 
           if (!token || !workHours) {
@@ -50,9 +45,28 @@ export async function GET(request: NextRequest) {
 
           const slack = new WebClient(token);
 
-          const now = new Date();
-          const currentDay = now.getDay();
-          const currentHour = now.getHours();
+          // Use the user's timezone to get the current time
+          const now = new Date().toLocaleString("en-US", {
+            timeZone: workHours.timezone,
+          });
+          const currentDate = new Date(now);
+          const currentDay = currentDate.getDay();
+          const currentHour = currentDate.getHours();
+
+          const userTimeZone = new Intl.DateTimeFormat("en-US", {
+            timeZone: workHours.timezone,
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+
+          const now2 = new Date();
+          const userLocalTime = userTimeZone.format(now2);
+          console.log(`User's local time: ${userLocalTime}`);
 
           let action: string;
 
@@ -99,9 +113,7 @@ export async function GET(request: NextRequest) {
       }),
       {
         status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     );
   } catch (error) {
@@ -113,9 +125,7 @@ export async function GET(request: NextRequest) {
       }),
       {
         status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     );
   }

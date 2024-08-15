@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import {
   Card,
@@ -17,13 +18,22 @@ import { Clock, AlertCircle } from "lucide-react";
 import { generateActivityReport, updateWorkingHours } from "@/app/action";
 import { User } from "@/types/supabase";
 import Link from "next/link";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Dashboard = ({ user }: { user: User }) => {
   const [status, setStatus] = useState("");
-  const [startHour, setStartHour] = useState(9);
-  const [endHour, setEndHour] = useState(17);
-  const [daysOfWeek, setDaysOfWeek] = useState([1, 2, 3, 4, 5]);
+  const [startHour, setStartHour] = useState<number>();
+  const [endHour, setEndHour] = useState<number>();
+  const [daysOfWeek, setDaysOfWeek] = useState<number[]>();
+  const [timezone, setTimezone] = useState<string>();
   const [initialSaveDone, setInitialSaveDone] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
 
   const [activityReport, setActivityReport] = useState<{
     totalUpdates: number;
@@ -37,14 +47,13 @@ const Dashboard = ({ user }: { user: User }) => {
     async function fetchActivityReport() {
       const endDate = new Date();
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 7); // Last 7 days
+      startDate.setDate(startDate.getDate() - 7);
 
       const response = await generateActivityReport(
         user.id,
         startDate,
         endDate
       );
-
       setActivityReport(response);
     }
 
@@ -64,6 +73,9 @@ const Dashboard = ({ user }: { user: User }) => {
           1, 2, 3, 4, 5,
         ]
       );
+      setTimezone(
+        (user.working_hours as { timezone?: string }).timezone || "UTC"
+      );
     }
   }, [user]);
 
@@ -76,10 +88,11 @@ const Dashboard = ({ user }: { user: User }) => {
 
   const handleDayChange = (day: number) => {
     setDaysOfWeek((prevDays) =>
-      prevDays.includes(day)
+      prevDays?.includes(day)
         ? prevDays.filter((d) => d !== day)
-        : [...prevDays, day].sort((a, b) => a - b)
+        : [...prevDays!, day].sort((a, b) => a - b)
     );
+    handleSave();
   };
 
   const handleSave = async () => {
@@ -87,13 +100,18 @@ const Dashboard = ({ user }: { user: User }) => {
       startHour,
       endHour,
       daysOfWeek,
+      timezone,
     };
 
     try {
-      await updateWorkingHours(workingHours, user.id);
-      setStatus("Working hours updated successfully");
+      await updateWorkingHours(workingHours as any, user.id);
+      const now = new Date();
+      setLastUpdateTime(now);
+      setStatus(
+        `Working hours updated successfully at ${now.toLocaleTimeString()}`
+      );
     } catch (error) {
-      setStatus("Failed to update working hours");
+      setStatus(`Failed to update working hours: ${(error as Error).message}`);
       console.error(error);
     }
   };
@@ -149,13 +167,34 @@ const Dashboard = ({ user }: { user: User }) => {
                   </div>
                 </div>
                 <div>
+                  <Label htmlFor="timezone">Timezone</Label>
+                  <Select
+                    value={timezone}
+                    onValueChange={(value) => {
+                      setTimezone(value);
+                      handleSave();
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select timezone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Intl.supportedValuesOf("timeZone").map((tz) => (
+                        <SelectItem key={tz} value={tz}>
+                          {tz}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
                   <Label>Work Days</Label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {days.map((day, index) => (
                       <div key={day} className="flex items-center space-x-2">
                         <Checkbox
                           id={`day-${index}`}
-                          checked={daysOfWeek.includes(index)}
+                          checked={daysOfWeek?.includes(index)}
                           onCheckedChange={() => {
                             handleDayChange(index);
                             handleSave();

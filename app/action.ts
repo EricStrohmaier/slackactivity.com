@@ -100,6 +100,7 @@ export async function updateWorkingHours(
     startHour: number;
     endHour: number;
     daysOfWeek: number[];
+    timezone: string;
   },
   userId: string
 ) {
