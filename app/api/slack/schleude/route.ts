@@ -45,41 +45,39 @@ export async function GET(request: NextRequest) {
 
           const slack = new WebClient(token);
 
-          // Use the user's timezone to get the current time
-          const now = new Date().toLocaleString("en-US", {
-            timeZone: workHours.timezone,
-          });
-          const currentDate = new Date(now);
-          const currentDay = currentDate.getDay();
-          const currentHour = currentDate.getHours();
+          // Get the current time in the user's timezone
+          const now = new Date();
+          const userLocalTime = new Date(
+            now.toLocaleString("en-US", { timeZone: workHours.timezone })
+          );
 
-          const userTimeZone = new Intl.DateTimeFormat("en-US", {
-            timeZone: workHours.timezone,
-            hour: "numeric",
-            minute: "numeric",
-            second: "numeric",
-            weekday: "short",
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          });
+          const currentDay = userLocalTime.getDay();
+          const currentHour = userLocalTime.getHours();
+          const currentMinute = userLocalTime.getMinutes();
 
-          const now2 = new Date();
-          const userLocalTime = userTimeZone.format(now2);
-          console.log(`User's local time: ${userLocalTime}`);
+          console.log(
+            `User ${user.id} local time: ${userLocalTime.toISOString()}`
+          );
+          console.log(
+            `Current day: ${currentDay}, Current hour: ${currentHour}, Current minute: ${currentMinute}`
+          );
 
           let action: string;
 
           if (
             workHours.daysOfWeek.includes(currentDay) &&
-            currentHour >= workHours.startHour &&
-            currentHour < workHours.endHour
+            (currentHour > workHours.startHour ||
+              (currentHour === workHours.startHour && currentMinute >= 0)) &&
+            (currentHour < workHours.endHour ||
+              (currentHour === workHours.endHour && currentMinute === 0))
           ) {
             await slack.users.setPresence({ presence: "auto" });
             action = "set_active";
+            console.log(`Setting user ${user.id} to active`);
           } else {
             await slack.users.setPresence({ presence: "away" });
             action = "set_away";
+            console.log(`Setting user ${user.id} to away`);
           }
 
           const { data: activityLog, error: activityError } = await supabase
@@ -87,7 +85,7 @@ export async function GET(request: NextRequest) {
             .insert({
               user_id: user.id,
               action: action,
-              details: { currentDay, currentHour, workHours },
+              details: { currentDay, currentHour, currentMinute, workHours },
             });
 
           if (activityError) {
