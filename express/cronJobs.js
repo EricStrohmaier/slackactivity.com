@@ -10,7 +10,7 @@ module.exports = {
       try {
         console.log("Running a cron job every 5 minutes");
         const res = await fetch(
-          "https://slacktivity.app/api/slack/schleude?secret=secret_token_007_007"
+          "http://localhost:3001/api/slack/schleude?secret=secret_token_007_007"
         );
         console.log("Calling slacktivity", res.status);
       } catch (error) {
