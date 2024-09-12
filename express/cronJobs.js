@@ -16,6 +16,6 @@ module.exports = {
       } catch (error) {
         console.error("Error in cron job:", error);
       }
-    }); //sdf
+    });
   },
 };
