@@ -225,7 +225,7 @@ export function Header({ user }: { user: User | null }) {
 
   useEffect(() => {
     if (isSignIn) {
-      return; // Early return if isSignIn is true
+      return;
     }
   }, [isSignIn]);
 

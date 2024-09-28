@@ -9,6 +9,7 @@ import backgroundImageMiddleCTA from "@/public/landingpage/bluebackgroundtree.jp
 import abstractBackgroundImage from "@/public/landingpage/abstract-background.png";
 import productivityImg from "@/public/landingpage/socialcare.png";
 import logo from "@/public/logo.png";
+import { siteConfig } from "@/config/site";
 
 export const landingpageContent = {
   header: {
@@ -202,18 +203,16 @@ export const landingpageContent = {
 
   // middle cta
   middleCTA: {
-    active: true,
-    id: "get-started-today",
-    headline: "Ready to Get Started?",
+    id: "live-examples",
+    headline: "Surf Shops on Our Platform",
+    highlightedText: "",
+    suffix: "",
     subheadline:
-      "Join our community and start optimizing your Slack activity today.",
+      "See how leading surf shops use our marketplace to expand reach and boost business. Discover the impact on visibility and operations.",
     button: {
-      className: "bg-accent",
-      text: "Sign Up",
-      href: "/signup",
+      text: "Get Started",
+      href: "/signin",
     },
-    textColor: "text-white",
-    backgroundImage: backgroundImageMiddleCTA,
   },
 
   // Testimonials
