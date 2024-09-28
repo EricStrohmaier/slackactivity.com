@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import EmailCode from "@/components/auth-form/EmailCode";
 import { IoIosArrowBack } from "react-icons/io";
-import SignUp from "@/components/auth-form/Signup";
+import SignUp from "@/components/auth-form/signup";
 
 export default async function SignIn({
   params,
