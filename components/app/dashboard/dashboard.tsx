@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 interface DashboardClientProps {
   user: User;
@@ -46,10 +47,12 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
   );
   const [status, setStatus] = useState("");
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const handleInputChange = useCallback(
     (field: keyof WorkingHours, value: any) => {
       setWorkingHours((prev) => ({ ...prev, [field]: value }));
+      setHasUnsavedChanges(true);
     },
     []
   );
@@ -61,6 +64,7 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
         ? prev.daysOfWeek.filter((d) => d !== day)
         : [...prev.daysOfWeek, day].sort((a, b) => a - b),
     }));
+    setHasUnsavedChanges(true);
   }, []);
 
   const handleSave = useCallback(async () => {
@@ -69,6 +73,7 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
       toast.success("Working hours updated", {
         description: "Your working hours have been successfully saved.",
       });
+      setHasUnsavedChanges(false);
     } catch (error) {
       toast.error("Error", {
         description: `Failed to update working hours: ${
@@ -79,13 +84,49 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
     }
   }, [workingHours, user.id]);
 
+  // Reset hasUnsavedChanges when initialWorkingHours changes
+  useEffect(() => {
+    setWorkingHours({
+      ...initialWorkingHours,
+      daysOfWeek: initialWorkingHours.daysOfWeek || [],
+    });
+    setHasUnsavedChanges(false);
+  }, [initialWorkingHours]);
+
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  // Function to determine user's current status
+  const getUserStatus = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentDay = now.getDay();
+
+    if (
+      workingHours.daysOfWeek.includes(currentDay) &&
+      currentHour >= workingHours.startHour &&
+      currentHour < workingHours.endHour
+    ) {
+      return "Active";
+    } else {
+      return "Away";
+    }
+  };
+
+  const userStatus = getUserStatus();
 
   return (
     <div className="mx-auto h-full mt-32 max-w-3xl">
       <Card className="w-full mb-4">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Slack Dashboard</CardTitle>
+          <div className="flex justify-between items-center">
+            {" "}
+            <CardTitle className="text-2xl font-bold">
+              Slack Dashboard
+            </CardTitle>
+            <Badge variant={userStatus === "Active" ? "default" : "secondary"}>
+              {userStatus}
+            </Badge>
+          </div>
           <CardDescription>
             Manage your Slack settings and view activity
           </CardDescription>
@@ -196,7 +237,12 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
 
       {user.slack_auth_token && (
         <div className="md:flex md:justify-center md:space-x-2 w-full">
-          <Button onClick={handleSave} className="mb-2 md:mb-0 w-full">
+          <Button
+            onClick={handleSave}
+            className="mb-2 md:mb-0 w-full"
+            disabled={!hasUnsavedChanges}
+            variant={hasUnsavedChanges ? "default" : "secondary"}
+          >
             Save Working Hours
           </Button>
           <Button asChild variant="slim" className="w-full">

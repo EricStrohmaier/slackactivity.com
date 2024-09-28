@@ -58,6 +58,8 @@ export default async function DashboardPage({
   );
 
   console.log("workingHours", workingHours);
+
+  // todo refator with workspace table  and allow multiple workspaces
   return (
     <div className="h-screen">
       <DashboardClient

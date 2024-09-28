@@ -27,13 +27,15 @@ function NavLink({
 
 export function Footer() {
   const isSignIn = usePathname().includes("/signin");
-  if (isSignIn) {
-    return null;
-  }
+
   // Filter the active links
   const activeLinks = landingpageContent.header.NavAndFooterLinks.filter(
     (link) => link.active
   );
+
+  if (isSignIn) {
+    return null;
+  }
 
   return (
     <footer className="flex-none">
