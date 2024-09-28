@@ -6,6 +6,8 @@ import { type Provider } from "@supabase/supabase-js";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SlackIcon from "@/components/app/icons/slack";
+import GoogleIcon from "../app/icons/google";
+import { ContinueWithEmailCode } from "./EmailCode";
 
 type OAuthProviders = {
   name: Provider;
@@ -13,15 +15,25 @@ type OAuthProviders = {
   icon: JSX.Element;
 };
 
-export default function OauthSignIn({ signuptype }: { signuptype?: string }) {
+export default function OauthSignIn({
+  viewProp,
+  signuptype,
+}: {
+  viewProp: string;
+  signuptype?: string;
+}) {
   const oAuthProviders: OAuthProviders[] = [
     {
       // @ts-ignore
       name: "slack_oidc",
-      displayName: "Slack",
+      displayName: "Continue with Slack",
       icon: <SlackIcon className="w-6 h-6" />,
     },
-    /* Add desired OAuth providers here */
+    {
+      name: "google",
+      displayName: "Continue with Google",
+      icon: <GoogleIcon className="w-6 h-6" />,
+    },
   ];
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -51,6 +63,7 @@ export default function OauthSignIn({ signuptype }: { signuptype?: string }) {
           </Button>
         </form>
       ))}
+      {viewProp === "signup" && <ContinueWithEmailCode />}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 // Boolean toggles to determine which auth types are allowed
-const allowOauth = false;
+const allowOauth = true;
 const allowEmail = true;
 const allowPassword = true;
 
@@ -19,7 +19,7 @@ export const getViewTypes = () => {
   // Define the valid view types
   let viewTypes: string[] = [];
   if (allowEmail) {
-    viewTypes = [...viewTypes, "email_signin"];
+    viewTypes = [...viewTypes, "email_signin", "email_code"];
   }
   if (allowPassword) {
     viewTypes = [

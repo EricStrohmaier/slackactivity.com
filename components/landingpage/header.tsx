@@ -217,7 +217,10 @@ function Avatar({
 export function Header({ user }: { user: User | null }) {
   let isHomePage = usePathname() === "/";
   const isAbout = usePathname() === "/about";
-
+  const isSignIn = usePathname().includes("/signin");
+  if (isSignIn) {
+    return null;
+  }
   let headerRef = useRef<React.ElementRef<"div">>(null);
   let avatarRef = useRef<React.ElementRef<"div">>(null);
   let isInitial = useRef(true);

@@ -24,12 +24,14 @@ const buttonVariants = cva(
         action: "bg-action text-action-foreground shadow-sm hover:bg-action/90",
         landingpageCTA:
           "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 ",
+        login: "bg-black text-white hover:bg-[#2e2e2e] ",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-4 md:px-8 text-md md:text-xl py-4 md:py-8",
         icon: "h-9 w-9",
+        login: "h-10 rounded-md px-3 text-md",
       },
     },
     defaultVariants: {

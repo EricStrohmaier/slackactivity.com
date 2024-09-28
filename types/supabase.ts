@@ -24,3 +24,17 @@ export type TypedSupabaseClient = SupabaseClient<Database>;
 // Ads
 
 export type User = Database["public"]["Tables"]["users"]["Row"];
+export interface WorkingHours {
+  startHour: number;
+  endHour: number;
+  daysOfWeek: number[];
+  timezone: string;
+}
+
+export interface ActivityReport {
+  totalUpdates: number;
+  activeUpdates: number;
+  awayUpdates: number;
+  activePercentage: number;
+  awayPercentage: number;
+}

@@ -116,6 +116,7 @@ const config: Config = {
         },
         lightBlue: "#DFECFF",
         lightGreen: "#E9F7F1",
+        brandedLinkColor: "#5753C6",
       },
       borderRadius: {
         lg: "var(--radius)",

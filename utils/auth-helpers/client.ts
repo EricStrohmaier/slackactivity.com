@@ -32,6 +32,29 @@ export async function handleRequest(
   }
 }
 
+export async function handleEmailRequest(
+  email: string,
+  requestFunc: (formData: FormData, hostname: string) => Promise<string>,
+  router: AppRouterInstance | null = null
+): Promise<boolean | void> {
+  // Create FormData and append the email
+  const formData = new FormData();
+  formData.append("email", email);
+
+  // Get hostname
+  const hostname = window.location.hostname;
+
+  // Send the request
+  const redirectUrl: string = await requestFunc(formData, hostname);
+
+  // Handle redirection based on client or server
+  if (router) {
+    return router.push(redirectUrl);
+  } else {
+    return await redirectToPath(redirectUrl);
+  }
+}
+
 export async function signInWithOAuth(
   e: React.FormEvent<HTMLFormElement>,
   signuptype?: string
@@ -51,4 +74,9 @@ export async function signInWithOAuth(
       redirectTo: redirectURL,
     },
   });
+}
+
+export function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }

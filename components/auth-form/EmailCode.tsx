@@ -1,31 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { requestPasswordUpdate } from "@/utils/auth-helpers/server";
+import { signInWithEmailCode } from "@/utils/auth-helpers/server";
 import { handleRequest } from "@/utils/auth-helpers/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { MailIcon } from "lucide-react";
 
-// Define prop type with allowEmail boolean
-interface ForgotPasswordProps {
-  allowEmail: boolean;
+// Define prop type with allowPassword boolean
+interface EmailCodeProps {
+  allowPassword: boolean;
   redirectMethod: string;
   disableButton?: boolean;
 }
 
-export default function ForgotPassword({
-  allowEmail,
+export default function EmailCode({
+  allowPassword,
   redirectMethod,
   disableButton,
-}: ForgotPasswordProps) {
+}: EmailCodeProps) {
   const router = useRouter();
+
   const routerMethod = redirectMethod === "client" ? router : null;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setIsSubmitting(true); // Disable the button while the request is being handled
-    await handleRequest(e, requestPasswordUpdate, routerMethod);
+    await handleRequest(e, signInWithEmailCode, routerMethod);
     setIsSubmitting(false);
   };
 
@@ -41,7 +43,7 @@ export default function ForgotPassword({
             <label htmlFor="email">Email</label>
             <input
               id="email"
-              placeholder="name@example.com"
+              placeholder="Your email address"
               type="email"
               name="email"
               autoCapitalize="none"
@@ -51,16 +53,26 @@ export default function ForgotPassword({
             />
           </div>
           <Button
+            size="login"
             variant="login"
             type="submit"
-            className="mt-1 font-semibold"
+            className="mt-1"
             loading={isSubmitting}
             disabled={disableButton}
           >
-            Continue
+            Send email code
           </Button>
         </div>
       </form>
     </div>
+  );
+}
+
+export function ContinueWithEmailCode() {
+  return (
+    <Button variant="slim" className="w-full">
+      <MailIcon className="w-5 h-5 mr-2" />
+      <Link href="/signin/email_code">Continue with email code</Link>
+    </Button>
   );
 }

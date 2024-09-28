@@ -1,10 +1,16 @@
-import Dashboard from "@/components/app/dashboard/dashboard";
 import React from "react";
-import { getUser } from "../action";
 import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 
-export default async function page({ searchParams }: { searchParams: any }) {
+import { generateActivityReport, getUser } from "@/app/action";
+import DashboardClient from "@/components/app/dashboard/dashboard";
+import { getUserWorkingHours } from "@/lib/get/getUserWorkingHours";
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: { token?: string };
+}) {
   const token = searchParams.token;
   const supabase = supabaseAdmin();
 
@@ -13,7 +19,7 @@ export default async function page({ searchParams }: { searchParams: any }) {
   if (!user) redirect("/signin");
 
   if (token) {
-    const { data: updateUser, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from("users")
       .update({
         slack_auth_token: token,
@@ -25,22 +31,40 @@ export default async function page({ searchParams }: { searchParams: any }) {
     }
   }
 
-  const { data: selectUser, error: selectError } = await supabase
+  const { data: currentUser, error: selectError } = await supabase
     .from("users")
     .select("*")
     .eq("id", user.id)
     .single();
 
   if (selectError) {
-    console.log(selectError);
-    return <div className="h-screen">Error Couldnt find you in the system</div>;
+    console.error(selectError);
+    return (
+      <div className="h-screen">
+        Error: Couldn&apos;t find you in the system
+      </div>
+    );
   }
 
-  console.log("selectUser", selectUser);
+  // Fetch working hours and activity report
+  const workingHours = await getUserWorkingHours(user.id);
+  const endDate = new Date();
+  const startDate = new Date(endDate);
+  startDate.setDate(startDate.getDate() - 7);
+  const activityReport = await generateActivityReport(
+    user.id,
+    startDate,
+    endDate
+  );
 
+  console.log("workingHours", workingHours);
   return (
     <div className="h-screen">
-      <Dashboard user={selectUser as any} />
+      <DashboardClient
+        user={currentUser}
+        initialWorkingHours={workingHours}
+        initialActivityReport={activityReport}
+      />
     </div>
   );
 }
