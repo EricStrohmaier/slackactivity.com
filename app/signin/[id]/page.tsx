@@ -12,16 +12,13 @@ import Logo from "@/components/app/icons/logo";
 import EmailSignIn from "@/components/auth-form/EmailSignIn";
 import ForgotPassword from "@/components/auth-form/ForgotPassword";
 import OauthSignIn from "@/components/auth-form/OauthSignIn";
-import PasswordSignIn from "@/components/auth-form/PasswordSignIn";
-import SignUp from "@/components/auth-form/Signup";
 import UpdatePassword from "@/components/auth-form/UpdatePassword";
 import Separator from "@/components/auth-form/Seperator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import EmailCode, {
-  ContinueWithEmailCode,
-} from "@/components/auth-form/EmailCode";
+import EmailCode from "@/components/auth-form/EmailCode";
 import { IoIosArrowBack } from "react-icons/io";
+import SignUp from "@/components/auth-form/Signup";
 
 export default async function SignIn({
   params,
