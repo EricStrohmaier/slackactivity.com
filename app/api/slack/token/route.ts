@@ -98,6 +98,7 @@ export async function GET(req: NextRequest) {
             },
             unit_amount: 2000, // Price in cents (€20)
           },
+          price: "price_1Q46jJK0DN5oBxDU7qYbpkns", // Assuming this is the price ID you want to add
           quantity: 1,
         },
       ],
