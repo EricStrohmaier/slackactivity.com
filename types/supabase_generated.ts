@@ -49,7 +49,7 @@ export type Database = {
           full_name: string | null
           id: string
           slack_auth_token: string | null
-          slack_user_id: string | null
+          stripe_customer_id: string | null
           working_hours: Json | null
         }
         Insert: {
@@ -59,7 +59,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           slack_auth_token?: string | null
-          slack_user_id?: string | null
+          stripe_customer_id?: string | null
           working_hours?: Json | null
         }
         Update: {
@@ -69,10 +69,57 @@ export type Database = {
           full_name?: string | null
           id?: string
           slack_auth_token?: string | null
-          slack_user_id?: string | null
+          stripe_customer_id?: string | null
           working_hours?: Json | null
         }
         Relationships: []
+      }
+      workspace: {
+        Row: {
+          created_at: string
+          enterprise: Json | null
+          id: string
+          is_active: boolean | null
+          slack_auth_token: string | null
+          stripe_payment_id: string | null
+          team_id: string | null
+          team_name: string | null
+          user_id: string | null
+          working_hours: Json | null
+        }
+        Insert: {
+          created_at?: string
+          enterprise?: Json | null
+          id?: string
+          is_active?: boolean | null
+          slack_auth_token?: string | null
+          stripe_payment_id?: string | null
+          team_id?: string | null
+          team_name?: string | null
+          user_id?: string | null
+          working_hours?: Json | null
+        }
+        Update: {
+          created_at?: string
+          enterprise?: Json | null
+          id?: string
+          is_active?: boolean | null
+          slack_auth_token?: string | null
+          stripe_payment_id?: string | null
+          team_id?: string | null
+          team_name?: string | null
+          user_id?: string | null
+          working_hours?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

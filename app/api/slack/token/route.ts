@@ -1,6 +1,7 @@
-import { supabaseAdmin } from "@/utils/supabase/admin";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
+import { supabaseAdmin } from "@/utils/supabase/admin";
+import { getUser } from "@/app/action";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -24,12 +25,41 @@ export async function GET(req: NextRequest) {
   });
 
   const data = await tokenResponse.json();
-  console.log(data);
+  console.log("Slack OAuth data tokenResponse:", data);
 
   if (!data.ok) {
     throw new Error(data.error || "Slack OAuth failed");
   }
 
-  // Redirect to dashboard with access token
-  redirect(`/dashboard?token=${data.authed_user.access_token}`);
+  // Get the current user
+  const user = await getUser();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Save the workspace info
+  const supabase = supabaseAdmin();
+  const { error: upsertError } = await supabase.from("workspace").upsert({
+    user_id: user.id,
+    slack_auth_token: data.authed_user.access_token,
+    team_name: data.team.name,
+    team_id: data.team.id,
+    is_active: true,
+    enterprise: data.team.enterprise,
+    working_hours: {
+      startHour: 9,
+      endHour: 17,
+      daysOfWeek: [1, 2, 3, 4, 5],
+      timezone: "UTC",
+    },
+  });
+
+  if (upsertError) {
+    console.error("Error saving workspace:", upsertError);
+    throw new Error("Failed to save workspace information");
+  }
+
+  // Redirect to dashboard
+  redirect(`/dashboard`);
 }

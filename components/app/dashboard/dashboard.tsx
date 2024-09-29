@@ -13,8 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Clock, Plus } from "lucide-react";
-import { updateWorkingHours } from "@/app/action";
-import { User, WorkingHours, ActivityReport } from "@/types/supabase";
+import { updateWorkspace } from "@/app/action";
+import { User, ActivityReport, Workspace } from "@/types/supabase";
 import Link from "next/link";
 import {
   Select,
@@ -26,85 +26,157 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 
 interface DashboardClientProps {
   user: User;
-  initialWorkingHours: WorkingHours;
+  initialWorkspaces: Workspace[];
   initialActivityReport: ActivityReport;
 }
 
 const DashboardClient: React.FC<DashboardClientProps> = ({
   user,
-  initialWorkingHours,
+  initialWorkspaces,
   initialActivityReport,
 }) => {
-  const [workingHours, setWorkingHours] = useState<WorkingHours>({
-    ...initialWorkingHours,
-    daysOfWeek: initialWorkingHours.daysOfWeek || [],
-  });
+  const [workspaces, setWorkspaces] = useState<Workspace[]>(initialWorkspaces);
   const [activityReport, setActivityReport] = useState<ActivityReport>(
     initialActivityReport
   );
-  const [status, setStatus] = useState("");
-  const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
+  const [activeWorkspace, setActiveWorkspace] = useState<Workspace | null>(
+    workspaces[0] || null
+  );
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+  const handleWorkspaceChange = (workspaceId: string) => {
+    const workspace = workspaces.find((w) => w.id === workspaceId);
+    setActiveWorkspace(workspace || null);
+  };
+
   const handleInputChange = useCallback(
-    (field: keyof WorkingHours, value: any) => {
-      setWorkingHours((prev) => ({ ...prev, [field]: value }));
+    (field: keyof Workspace["working_hours"], value: any) => {
+      if (!activeWorkspace) return;
+      setWorkspaces((prev) =>
+        prev.map((w) =>
+          w.id === activeWorkspace.id
+            ? {
+                ...w,
+                working_hours: { ...(w.working_hours as any), [field]: value },
+              }
+            : w
+        )
+      );
+      setActiveWorkspace((prev) =>
+        prev
+          ? {
+              ...prev,
+              working_hours: { ...(prev.working_hours as any), [field]: value },
+            }
+          : null
+      );
       setHasUnsavedChanges(true);
     },
-    []
+    [activeWorkspace]
   );
 
-  const handleDayChange = useCallback((day: number) => {
-    setWorkingHours((prev) => ({
-      ...prev,
-      daysOfWeek: prev.daysOfWeek.includes(day)
-        ? prev.daysOfWeek.filter((d) => d !== day)
-        : [...prev.daysOfWeek, day].sort((a, b) => a - b),
-    }));
-    setHasUnsavedChanges(true);
-  }, []);
+  const handleDayChange = useCallback(
+    (day: number) => {
+      if (!activeWorkspace) return;
+      setWorkspaces((prev) =>
+        prev.map((w) => {
+          if (w.id === activeWorkspace.id) {
+            const newDays = w.working_hours.daysOfWeek.includes(day)
+              ? w.working_hours.daysOfWeek.filter((d) => d !== day)
+              : [...w.working_hours.daysOfWeek, day].sort((a, b) => a - b);
+            return {
+              ...w,
+              working_hours: {
+                ...(w.working_hours as any),
+                daysOfWeek: newDays,
+              },
+            };
+          }
+          return w;
+        })
+      );
+      setActiveWorkspace((prev) => {
+        if (!prev) return null;
+        const newDays = prev.working_hours.daysOfWeek.includes(day)
+          ? prev.working_hours.daysOfWeek.filter((d) => d !== day)
+          : [...prev.working_hours.daysOfWeek, day].sort((a, b) => a - b);
+        return {
+          ...prev,
+          working_hours: {
+            ...(prev.working_hours as any),
+            daysOfWeek: newDays,
+          },
+        };
+      });
+      setHasUnsavedChanges(true);
+    },
+    [activeWorkspace]
+  );
 
   const handleSave = useCallback(async () => {
+    if (!activeWorkspace) return;
     try {
-      await updateWorkingHours(workingHours, user.id);
-      toast.success("Working hours updated", {
-        description: "Your working hours have been successfully saved.",
+      await updateWorkspace(activeWorkspace);
+      toast.success("Workspace settings updated", {
+        description: "Your workspace settings have been successfully saved.",
       });
       setHasUnsavedChanges(false);
     } catch (error) {
       toast.error("Error", {
-        description: `Failed to update working hours: ${
+        description: `Failed to update workspace settings: ${
           (error as Error).message
         }`,
       });
       console.error(error);
     }
-  }, [workingHours, user.id]);
+  }, [activeWorkspace]);
 
-  // Reset hasUnsavedChanges when initialWorkingHours changes
-  useEffect(() => {
-    setWorkingHours({
-      ...initialWorkingHours,
-      daysOfWeek: initialWorkingHours.daysOfWeek || [],
-    });
-    setHasUnsavedChanges(false);
-  }, [initialWorkingHours]);
+  const handleToggleWorkspace = useCallback(
+    async (workspace: Workspace) => {
+      const updatedWorkspace = {
+        ...workspace,
+        is_active: !workspace.is_active,
+      };
+      try {
+        await updateWorkspace(updatedWorkspace);
+        setWorkspaces((prev) =>
+          prev.map((w) => (w.id === workspace.id ? updatedWorkspace : w))
+        );
+        if (activeWorkspace && activeWorkspace.id === workspace.id) {
+          setActiveWorkspace(updatedWorkspace);
+        }
+        toast.success("Workspace status updated", {
+          description: `Workspace ${
+            updatedWorkspace.is_active ? "activated" : "deactivated"
+          } successfully.`,
+        });
+        setHasUnsavedChanges(true);
+      } catch (error) {
+        toast.error("Error", {
+          description: `Failed to update workspace status: ${
+            (error as Error).message
+          }`,
+        });
+      }
+    },
+    [activeWorkspace]
+  );
 
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  // Function to determine user's current status
-  const getUserStatus = () => {
+  // Function to determine current activity status
+  const getCurrentActivityStatus = (workspace: Workspace) => {
     const now = new Date();
-    const currentHour = now.getHours();
     const currentDay = now.getDay();
+    const currentHour = now.getHours();
+    const { startHour, endHour, daysOfWeek } = workspace.working_hours;
 
     if (
-      workingHours.daysOfWeek.includes(currentDay) &&
-      currentHour >= workingHours.startHour &&
-      currentHour < workingHours.endHour
+      daysOfWeek.includes(currentDay) &&
+      currentHour >= startHour &&
+      currentHour < endHour
     ) {
       return "Active";
     } else {
@@ -112,110 +184,167 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
     }
   };
 
-  const userStatus = getUserStatus();
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
     <div className="mx-auto h-full mt-32 max-w-3xl">
       <Card className="w-full mb-4">
         <CardHeader>
           <div className="flex justify-between items-center">
-            {" "}
             <CardTitle className="text-2xl font-bold">
               Slack Dashboard
             </CardTitle>
-            <Badge variant={userStatus === "Active" ? "default" : "secondary"}>
-              {userStatus}
-            </Badge>
+            {activeWorkspace && (
+              <div className="flex items-center space-x-2">
+                <Badge
+                  variant={activeWorkspace.is_active ? "default" : "secondary"}
+                >
+                  {activeWorkspace.is_active ? "Enabled" : "Disabled"}
+                </Badge>
+                <Badge
+                  variant={
+                    getCurrentActivityStatus(activeWorkspace) === "Active"
+                      ? "success"
+                      : "warning"
+                  }
+                >
+                  {getCurrentActivityStatus(activeWorkspace)}
+                </Badge>
+              </div>
+            )}
           </div>
           <CardDescription>
-            Manage your Slack settings and view activity
+            Manage your Slack workspaces and settings
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="settings">
+          <Tabs defaultValue="workspaces">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsTrigger value="workspaces">Workspaces</TabsTrigger>
               <TabsTrigger value="activity">Activity Report</TabsTrigger>
             </TabsList>
-            <TabsContent value="settings">
-              {!user.slack_auth_token ? (
+            <TabsContent value="workspaces">
+              {workspaces.length === 0 ? (
                 <Button asChild className="w-full" variant="slim">
                   <Link href="/api/slack/auth">
                     <Clock className="h-4 w-4 mr-2" />
-                    Connect Slack
+                    Connect Slack Workspace
                   </Link>
                 </Button>
               ) : (
                 <div className="space-y-4 mt-4">
-                  <div className="flex space-x-4">
-                    <div className="flex-1">
-                      <Label htmlFor="startHour">Start Hour</Label>
-                      <Input
-                        id="startHour"
-                        type="number"
-                        value={workingHours.startHour}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "startHour",
-                            parseInt(e.target.value, 10)
-                          )
-                        }
-                        min="0"
-                        max="23"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <Label htmlFor="endHour">End Hour</Label>
-                      <Input
-                        id="endHour"
-                        type="number"
-                        value={workingHours.endHour}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "endHour",
-                            parseInt(e.target.value, 10)
-                          )
-                        }
-                        min="0"
-                        max="23"
-                      />
-                    </div>
-                  </div>
                   <div>
-                    <Label htmlFor="timezone">Timezone</Label>
+                    <Label htmlFor="workspace">Select Workspace</Label>
                     <Select
-                      value={workingHours.timezone}
-                      onValueChange={(value) =>
-                        handleInputChange("timezone", value)
-                      }
+                      value={activeWorkspace?.id}
+                      onValueChange={handleWorkspaceChange}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select timezone" />
+                        <SelectValue placeholder="Select workspace" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Intl.supportedValuesOf("timeZone").map((tz) => (
-                          <SelectItem key={tz} value={tz}>
-                            {tz}
+                        {workspaces.map((workspace) => (
+                          <SelectItem key={workspace.id} value={workspace.id}>
+                            {workspace.team_name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label>Work Days</Label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {days.map((day, index) => (
-                        <div key={day} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`day-${index}`}
-                            checked={workingHours.daysOfWeek?.includes(index)}
-                            onCheckedChange={() => handleDayChange(index)}
+
+                  {activeWorkspace && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="active-toggle">Workspace Active</Label>
+                        <Switch
+                          id="active-toggle"
+                          checked={activeWorkspace?.is_active || false}
+                          onCheckedChange={() =>
+                            activeWorkspace &&
+                            handleToggleWorkspace(activeWorkspace)
+                          }
+                        />
+                      </div>
+                      <div className="flex space-x-4">
+                        <div className="flex-1">
+                          <Label htmlFor="startHour">Start Hour</Label>
+                          <Input
+                            id="startHour"
+                            type="number"
+                            value={
+                              activeWorkspace?.working_hours.startHour || ""
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                "startHour",
+                                parseInt(e.target.value, 10)
+                              )
+                            }
+                            min="0"
+                            max="23"
                           />
-                          <Label htmlFor={`day-${index}`}>{day}</Label>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                        <div className="flex-1">
+                          <Label htmlFor="endHour">End Hour</Label>
+                          <Input
+                            id="endHour"
+                            type="number"
+                            value={activeWorkspace?.working_hours.endHour || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "endHour",
+                                parseInt(e.target.value, 10)
+                              )
+                            }
+                            min="0"
+                            max="23"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="timezone">Timezone</Label>
+                        <Select
+                          value={activeWorkspace?.working_hours.timezone || ""}
+                          onValueChange={(value) =>
+                            handleInputChange("timezone", value)
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select timezone" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Intl.supportedValuesOf("timeZone").map((tz) => (
+                              <SelectItem key={tz} value={tz}>
+                                {tz}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Work Days</Label>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {days.map((day, index) => (
+                            <div
+                              key={day}
+                              className="flex items-center space-x-2"
+                            >
+                              <Checkbox
+                                id={`day-${index}`}
+                                checked={
+                                  activeWorkspace?.working_hours.daysOfWeek.includes(
+                                    index
+                                  ) || false
+                                }
+                                onCheckedChange={() => handleDayChange(index)}
+                              />
+                              <Label htmlFor={`day-${index}`}>{day}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </TabsContent>
@@ -235,24 +364,23 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
         </CardContent>
       </Card>
 
-      {user.slack_auth_token && (
-        <div className="md:flex md:justify-center md:space-x-2 w-full">
-          <Button
-            onClick={handleSave}
-            className="mb-2 md:mb-0 w-full"
-            disabled={!hasUnsavedChanges}
-            variant={hasUnsavedChanges ? "default" : "secondary"}
-          >
-            Save Working Hours
-          </Button>
-          <Button asChild variant="slim" className="w-full">
-            <Link href="/api/slack/auth">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Another Slack Workspace
-            </Link>
-          </Button>
-        </div>
+      {activeWorkspace && (
+        <Button
+          onClick={handleSave}
+          className="w-full mb-4"
+          disabled={!hasUnsavedChanges}
+          variant={hasUnsavedChanges ? "default" : "secondary"}
+        >
+          Save Workspace Settings
+        </Button>
       )}
+
+      <Button asChild variant="outline" className="w-full">
+        <Link href="/api/slack/auth">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Another Slack Workspace
+        </Link>
+      </Button>
     </div>
   );
 };

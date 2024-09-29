@@ -24,6 +24,13 @@ export type TypedSupabaseClient = SupabaseClient<Database>;
 // Ads
 
 export type User = Database["public"]["Tables"]["users"]["Row"];
+
+export type dbWorkspace = Database["public"]["Tables"]["workspace"]["Row"];
+
+export type Workspace = dbWorkspace & {
+  working_hours: WorkingHours;
+};
+
 export interface WorkingHours {
   startHour: number;
   endHour: number;

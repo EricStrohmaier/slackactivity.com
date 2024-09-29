@@ -4,32 +4,18 @@ import { supabaseAdmin } from "@/utils/supabase/admin";
 
 import { generateActivityReport, getUser } from "@/app/action";
 import DashboardClient from "@/components/app/dashboard/dashboard";
-import { getUserWorkingHours } from "@/lib/get/getUserWorkingHours";
+import { getUserWorkSpaces } from "@/lib/get/getUserWorkSpaces";
 
 export default async function DashboardPage({
   searchParams,
 }: {
   searchParams: { token?: string };
 }) {
-  const token = searchParams.token;
   const supabase = supabaseAdmin();
 
   const user = await getUser();
 
   if (!user) redirect("/signin");
-
-  if (token) {
-    const { error: updateError } = await supabase
-      .from("users")
-      .update({
-        slack_auth_token: token,
-      })
-      .eq("id", user.id);
-
-    if (updateError) {
-      throw new Error(updateError.message);
-    }
-  }
 
   const { data: currentUser, error: selectError } = await supabase
     .from("users")
@@ -47,7 +33,7 @@ export default async function DashboardPage({
   }
 
   // Fetch working hours and activity report
-  const workingHours = await getUserWorkingHours(user.id);
+  const workspaces = await getUserWorkSpaces(user.id);
   const endDate = new Date();
   const startDate = new Date(endDate);
   startDate.setDate(startDate.getDate() - 7);
@@ -57,14 +43,13 @@ export default async function DashboardPage({
     endDate
   );
 
-  console.log("workingHours", workingHours);
+  console.log("workingHours", workspaces);
 
-  // todo refator with workspace table  and allow multiple workspaces
   return (
     <div className="h-screen">
       <DashboardClient
         user={currentUser}
-        initialWorkingHours={workingHours}
+        initialWorkspaces={workspaces}
         initialActivityReport={activityReport}
       />
     </div>

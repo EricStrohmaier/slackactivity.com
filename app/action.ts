@@ -3,6 +3,7 @@ import moment from "moment";
 import { WebClient } from "@slack/web-api";
 import { createClient } from "@/utils/supabase/server";
 import { supabaseAdmin } from "@/utils/supabase/admin";
+import { Workspace } from "@/types/supabase";
 
 export const getUser = async () => {
   const supabase = createClient();
@@ -95,22 +96,15 @@ const slackOperations = async (config: UserConfig): Promise<void> => {
 
 export default slackOperations;
 
-export async function updateWorkingHours(
-  workingHours: {
-    startHour: number;
-    endHour: number;
-    daysOfWeek: number[];
-    timezone: string;
-  },
-  userId: string
-) {
+export async function updateWorkspace(workspace: Workspace) {
   const supabase = supabaseAdmin();
   const { data, error } = await supabase
-    .from("users")
+    .from("workspace")
     .update({
-      working_hours: workingHours,
+      working_hours: workspace.working_hours,
+      is_active: workspace.is_active,
     })
-    .eq("id", userId);
+    .eq("id", workspace.id);
 
   if (error) {
     console.error(error);
