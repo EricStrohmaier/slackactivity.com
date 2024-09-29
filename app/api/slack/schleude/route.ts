@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 import { WebClient } from "@slack/web-api";
+import { formatInTimeZone } from "date-fns-tz"; // For timezone handling
+import { Workspace } from "@/types/supabase";
 
 export async function GET(request: NextRequest) {
   const secretToken = request.nextUrl.searchParams.get("secret");
@@ -36,19 +38,44 @@ export async function GET(request: NextRequest) {
   const updateResults = await Promise.all(
     workspaces.map(async (workspace) => {
       try {
-        const token = workspace.slack_auth_token;
-        const workHours = workspace.working_hours as {
-          daysOfWeek: number[];
-          startHour: number;
-          endHour: number;
-          timezone: string;
-        } | null;
+        const {
+          slack_auth_token: token,
+          working_hours: workHours,
+          stripe_is_paid: isPaid,
+        } = workspace as Workspace;
 
+        // Log activity for unpaid workspaces
+        if (!isPaid) {
+          console.log(`Skipping workspace ${workspace.id}: not paid`);
+          const { error: activityError } = await supabase
+            .from("activity_logs")
+            .insert({
+              workspace_id: workspace.id,
+              action: "not_paid",
+              details: { message: "Workspace is not paid" },
+            });
+
+          if (activityError) {
+            console.error(
+              `Error inserting activity log for workspace ${workspace.id}:`,
+              activityError
+            );
+            return {
+              id: workspace.id,
+              status: "error",
+              message: activityError,
+            };
+          }
+
+          return { id: workspace.id, status: "not_paid" };
+        }
+
+        // Skip if token or work hours are missing
         if (!token || !workHours) {
           console.error(
             `Missing token or work hours for workspace ${workspace.id}`
           );
-          return;
+          return { id: workspace.id, status: "missing_data" };
         }
 
         const slack = new WebClient(token);
@@ -56,7 +83,7 @@ export async function GET(request: NextRequest) {
         // Get the current time in the workspace's timezone
         const now = new Date();
         const workspaceLocalTime = new Date(
-          now.toLocaleString("en-US", { timeZone: workHours.timezone })
+          formatInTimeZone(now, workHours.timezone, "yyyy-MM-dd'T'HH:mm:ssXXX")
         );
 
         const currentDay = workspaceLocalTime.getDay();
@@ -70,30 +97,6 @@ export async function GET(request: NextRequest) {
         );
         console.log(
           `Current day: ${currentDay}, Current hour: ${currentHour}, Current minute: ${currentMinute}`
-        );
-
-        // Add this right before the if condition
-        console.log(
-          `Workspace ${workspace.id} settings:`,
-          JSON.stringify(workHours, null, 2)
-        );
-        console.log(
-          `Current day: ${currentDay}, Current time: ${currentHour}:${currentMinute}`
-        );
-        console.log(
-          `Is work day: ${workHours.daysOfWeek.includes(currentDay)}`
-        );
-        console.log(
-          `Is after start time: ${
-            currentHour > workHours.startHour ||
-            (currentHour === workHours.startHour && currentMinute >= 0)
-          }`
-        );
-        console.log(
-          `Is before end time: ${
-            currentHour < workHours.endHour ||
-            (currentHour === workHours.endHour && currentMinute === 0)
-          }`
         );
 
         let action: string;
@@ -118,7 +121,7 @@ export async function GET(request: NextRequest) {
           .from("activity_logs")
           .insert({
             workspace_id: workspace.id,
-            action: action,
+            action,
             details: { currentDay, currentHour, currentMinute, workHours },
           });
 
@@ -127,11 +130,7 @@ export async function GET(request: NextRequest) {
             `Error inserting activity log for workspace ${workspace.id}:`,
             activityError
           );
-          return {
-            id: workspace.id,
-            status: "error",
-            message: activityError,
-          };
+          return { id: workspace.id, status: "error", message: activityError };
         }
 
         return { id: workspace.id, status: "success" };

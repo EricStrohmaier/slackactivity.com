@@ -8,7 +8,7 @@ export async function getUserWorkSpaces(userId: string): Promise<Workspace[]> {
 
   const { data, error } = await supabase
     .from("workspace")
-    .select("id, slack_auth_token, team_name, is_active, working_hours")
+    .select("*")
     .eq("user_id", userId);
 
   if (error) {

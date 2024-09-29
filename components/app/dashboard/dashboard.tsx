@@ -171,8 +171,15 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
     [activeWorkspace]
   );
 
-  // Function to determine current activity status
+  // Updated getCurrentActivityStatus function
   const getCurrentActivityStatus = (workspace: Workspace) => {
+    if (!workspace.stripe_is_paid) {
+      return "Unpaid";
+    }
+    if (!workspace.is_active) {
+      return "Inactive";
+    }
+
     const now = new Date();
     const currentDay = now.getDay();
     const currentHour = now.getHours();
@@ -202,6 +209,13 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
             {activeWorkspace && (
               <div className="flex items-center space-x-2">
                 <Badge
+                  variant={
+                    activeWorkspace.stripe_is_paid ? "default" : "destructive"
+                  }
+                >
+                  {activeWorkspace.stripe_is_paid ? "Paid" : "Unpaid"}
+                </Badge>
+                <Badge
                   variant={activeWorkspace.is_active ? "default" : "secondary"}
                 >
                   {activeWorkspace.is_active ? "Enabled" : "Disabled"}
@@ -210,7 +224,9 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
                   variant={
                     getCurrentActivityStatus(activeWorkspace) === "Active"
                       ? "success"
-                      : "warning"
+                      : getCurrentActivityStatus(activeWorkspace) === "Away"
+                      ? "warning"
+                      : "secondary"
                   }
                 >
                   {getCurrentActivityStatus(activeWorkspace)}

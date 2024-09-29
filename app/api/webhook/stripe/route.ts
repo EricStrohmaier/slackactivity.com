@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
           .from("workspace")
           .update({
             stripe_payment_id: stripeObject.id,
-            stripe_paid: true,
+            stripe_is_paid: true,
           })
           .eq("id", workspaceId!);
 

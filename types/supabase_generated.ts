@@ -16,6 +16,7 @@ export type Database = {
           id: number
           timestamp: string | null
           user_id: string | null
+          workspace_id: string | null
         }
         Insert: {
           action?: string | null
@@ -23,6 +24,7 @@ export type Database = {
           id?: number
           timestamp?: string | null
           user_id?: string | null
+          workspace_id?: string | null
         }
         Update: {
           action?: string | null
@@ -30,6 +32,7 @@ export type Database = {
           id?: number
           timestamp?: string | null
           user_id?: string | null
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -37,6 +40,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_logs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspace"
             referencedColumns: ["id"]
           },
         ]
@@ -81,6 +91,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           slack_auth_token: string | null
+          stripe_is_paid: boolean | null
           stripe_payment_id: string | null
           team_id: string | null
           team_name: string | null
@@ -93,6 +104,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           slack_auth_token?: string | null
+          stripe_is_paid?: boolean | null
           stripe_payment_id?: string | null
           team_id?: string | null
           team_name?: string | null
@@ -105,6 +117,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           slack_auth_token?: string | null
+          stripe_is_paid?: boolean | null
           stripe_payment_id?: string | null
           team_id?: string | null
           team_name?: string | null
