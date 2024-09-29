@@ -1,14 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
 import { headers } from "next/headers";
 import Stripe from "stripe";
-import { findCheckoutSession } from "@/lib/stripe";
-import { createClient } from "@/utils/supabase/server";
+import { stripe } from "@/lib/stripe";
+import { supabaseAdmin } from "@/utils/supabase/admin";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-04-10",
-  typescript: true,
-});
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+const webhookSecret = process.env.STRIPE_SECRET_WEBHOOK_KEY;
 
 // This is where we receive Stripe webhook events
 // It used to update the user data, send emails, etc...
@@ -23,7 +19,7 @@ export async function POST(req: NextRequest) {
   let event;
 
   // Create a private supabase client using the secret service_role API key
-  const supabase = createClient();
+  const supabase = supabaseAdmin();
 
   // verify Stripe event is legit
   try {
@@ -47,17 +43,15 @@ export async function POST(req: NextRequest) {
         // ✅ Grant access to the product
         const stripeObject: Stripe.Checkout.Session = event.data
           .object as Stripe.Checkout.Session;
-
-        const session = await findCheckoutSession(stripeObject.id);
-
-        console.log("session", session);
         // get metadata
         const metadata = stripeObject.metadata;
         const userId = metadata?.user_id;
         const workspaceId = metadata?.workspace_id;
 
+        console.log("stripeObject", stripeObject);
+
         // Update the profile where id equals the userId (in table called 'profiles') and update the customer_id, price_id, and has_access (provisioning)
-        await supabase
+        const { error: workspaceUpdateError } = await supabase
           .from("workspace")
           .update({
             stripe_payment_id: stripeObject.id,
@@ -65,12 +59,20 @@ export async function POST(req: NextRequest) {
           })
           .eq("id", workspaceId!);
 
-        await supabase
+        if (workspaceUpdateError) {
+          console.error("Error updating workspace:", workspaceUpdateError);
+        }
+
+        const { error: userUpdateError } = await supabase
           .from("users")
           .update({
             stripe_customer_id: stripeObject.customer as string,
           })
           .eq("id", userId!);
+
+        if (userUpdateError) {
+          console.error("Error updating user:", userUpdateError);
+        }
 
         // Extra: send email with user link, product page, etc...
         // try {
@@ -98,7 +100,8 @@ export async function POST(req: NextRequest) {
         break;
 
       default:
-      // Unhandled event type
+        // Unhandled event type
+        console.log("Unhandled event type", eventType);
     }
   } catch (e: any) {
     console.error("stripe error: ", e.message);
