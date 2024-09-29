@@ -5,7 +5,7 @@ import { getUser } from "@/app/action";
 import { getErrorRedirect, getStatusRedirect } from "@/utils/helpers";
 import { stripe } from "@/lib/stripe";
 import { siteConfig } from "@/config/site";
-
+import { v4 as uuidv4 } from "uuid";
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   let redirectPath;
@@ -60,7 +60,9 @@ export async function GET(req: NextRequest) {
 
   // Save the workspace info
   const supabase = supabaseAdmin();
+  const workspaceId = uuidv4();
   const { error: upsertError } = await supabase.from("workspace").upsert({
+    id: workspaceId,
     user_id: user?.id,
     slack_auth_token: data.authed_user.access_token,
     team_name: data.team.name,
@@ -98,9 +100,14 @@ export async function GET(req: NextRequest) {
             },
             unit_amount: 2000, // Price in cents (€20)
           },
+
           quantity: 1,
         },
       ],
+      metadata: {
+        user_id: user.id,
+        workspace_id: workspaceId,
+      },
       mode: "payment",
       success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/`,
