@@ -85,13 +85,11 @@ const PlanCard = ({
         </div>
       )}
 
-      {plan.isFeatured && (
-        <div
-          className={`absolute -inset-[1px] rounded-xl border-2 border-primary shadow-lg z-20`}
-        ></div>
-      )}
-
-      <div className="relative flex flex-col h-full gap-5 lg:gap-8 z-10 p-8 rounded-xl w-full bg-stone-100">
+      <div
+        className={`relative flex flex-col h-full gap-5 lg:gap-8 z-10 p-8 rounded-xl w-full bg-stone-100 shadow-md ${
+          plan.isFeatured ? "border-2 border-primary" : ""
+        }`}
+      >
         <div className="flex justify-between items-center gap-4">
           <div>
             <p className="text-lg lg:text-xl font-bold">{plan.name}</p>
@@ -141,7 +139,7 @@ const PlanCard = ({
           </ul>
         )}
         {/* make button centered */}
-        <div className="flex justify-center z-50 ">
+        <div className="flex justify-center ">
           <Button
             loading={isLoading}
             className="cursor-pointer hover:bg-primary hover:text-white"
