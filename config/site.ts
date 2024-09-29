@@ -2,9 +2,9 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   supportEmail: "mailto:office@local-boards.com",
-  name: "Local Boards",
-  domain: "local-boards.com",
-  url: "https://local-boards.com",
+  name: "Slackactivity",
+  domain: "slackactivity.com",
+  url: "https://slackactivity.com",
   defaultLocationText: "Coming soon to a beach near you",
   description: {
     marketplace:

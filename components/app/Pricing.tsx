@@ -11,7 +11,8 @@ import { Button } from "../ui/button";
 
 const Pricing = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  // TODO
+  // check if user has auth and then redirect to dashboard
   const handlePayment = async (priceId: string) => {
     setIsLoading(true);
 

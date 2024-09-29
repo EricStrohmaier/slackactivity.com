@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 import { getUser } from "@/app/action";
 import { getErrorRedirect, getStatusRedirect } from "@/utils/helpers";
+import { stripe } from "@/lib/stripe";
+import { siteConfig } from "@/config/site";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -82,7 +84,38 @@ export async function GET(req: NextRequest) {
     );
     return redirect(redirectPath); // Ensure redirection
   } else {
-    redirectPath = getStatusRedirect(`/dashboard`, "Success!", "");
-    return redirect(redirectPath); // Ensure redirection
+    // Create a Stripe Checkout Session
+    try {
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "eur",
+              product_data: {
+                name: siteConfig.name,
+                description: `Payment for workspace ${data.team.name}`,
+              },
+              unit_amount: 2000, // Price in cents (€20)
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/`,
+      });
+
+      // Redirect to the Stripe checkout page
+      return redirect(session.url || "/");
+    } catch (error) {
+      console.error("Stripe checkout error:", error);
+      redirectPath = getErrorRedirect(
+        `/`,
+        "Payment could not be initiated.",
+        "Stripe checkout session failed"
+      );
+      return redirect(redirectPath);
+    }
   }
 }
