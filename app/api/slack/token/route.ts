@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
     );
     return redirect(redirectPath); // Ensure redirection
   } else {
-    redirectPath = getStatusRedirect(`/dashboard`, "Success!", "", true);
+    redirectPath = getStatusRedirect(`/dashboard`, "Success!", "");
     return redirect(redirectPath); // Ensure redirection
   }
 }

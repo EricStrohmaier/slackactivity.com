@@ -47,6 +47,11 @@ export const siteConfig = {
     // When someone replies to supportEmail sent by the app, forward it to the email below (otherwise it's lost). If you set supportEmail to empty, this will be ignored.
     forwardRepliesTo: "support@local-boards.com",
   },
+  pricing: {
+    title: "Pricing",
+    heading: "Unlock Your Productivity!",
+    buttonText: "Get Now 🚀",
+  },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
     plans: [
@@ -61,6 +66,7 @@ export const siteConfig = {
         description: "Your Ultimate Pitch Partner",
         price: 20,
         priceAnchor: null,
+        currency: "EUR",
         features: [
           { name: "Everything in Pro +" },
           { name: "30 Uploads per Month" },

@@ -16,12 +16,13 @@ export async function GET(request: NextRequest) {
     const supabase = supabaseAdmin();
     const { data: workspaces, error } = await supabase
       .from("workspace")
-      .select("*");
+      .select("*")
+      .eq("is_active", true);
 
     if (!workspaces || workspaces.length === 0) {
-      console.error("No workspaces found");
+      console.error("No active workspaces found");
       return new NextResponse(
-        JSON.stringify({ message: "No workspaces found" }),
+        JSON.stringify({ message: "No active workspaces found" }),
         {
           status: 404,
           headers: { "Content-Type": "application/json" },
@@ -29,7 +30,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`Updating Slack presence for ${workspaces.length} workspaces`);
+    console.log(
+      `Updating Slack presence for ${workspaces.length} active workspaces`
+    );
 
     const updateResults = await Promise.all(
       workspaces.map(async (workspace) => {
