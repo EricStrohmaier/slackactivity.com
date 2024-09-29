@@ -16,7 +16,7 @@ export default async function page({
     <div className="text-text">
       <Hero />
       <FeatureSteps />
-      <Pricing />
+      {/* <Pricing /> */}
       {/* <BenefitsFeature /> */}
       <Testimonials />
       <EmailSignUp />

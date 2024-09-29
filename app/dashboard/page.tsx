@@ -9,7 +9,7 @@ import { getUserWorkSpaces } from "@/lib/get/getUserWorkSpaces";
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: { token?: string };
+  searchParams: { token?: string; session_id?: string };
 }) {
   const supabase = supabaseAdmin();
 

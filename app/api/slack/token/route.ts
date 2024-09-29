@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
         workspace_id: workspaceId,
       },
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/`,
     });
 
