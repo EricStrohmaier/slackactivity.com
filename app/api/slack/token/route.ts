@@ -2,12 +2,19 @@ import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 import { getUser } from "@/app/action";
+import { getErrorRedirect, getStatusRedirect } from "@/utils/helpers";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
+  let redirectPath;
 
   if (!code) {
-    return new Response(JSON.stringify("Code not provided"), { status: 400 });
+    redirectPath = getErrorRedirect(
+      `/`,
+      "Hmm... Something went wrong.",
+      "Code not provided"
+    );
+    return redirect(redirectPath); // Ensure redirection
   }
 
   // Exchange code for access token
@@ -17,7 +24,7 @@ export async function GET(req: NextRequest) {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: new URLSearchParams({
-      code,
+      code: code || "",
       client_id: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
       client_secret: process.env.SLACK_CLIENT_SECRET!,
       redirect_uri: process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI!,
@@ -28,20 +35,31 @@ export async function GET(req: NextRequest) {
   console.log("Slack OAuth data tokenResponse:", data);
 
   if (!data.ok) {
-    throw new Error(data.error || "Slack OAuth failed");
+    redirectPath = getErrorRedirect(
+      `/`,
+      "You could not be signed in.",
+      data.error
+    );
+    return redirect(redirectPath); // Ensure redirection
   }
 
   // Get the current user
   const user = await getUser();
 
   if (!user) {
-    throw new Error("User not found");
+    console.error("User not found");
+    redirectPath = getErrorRedirect(
+      `/signin`,
+      "You are not authenticated.",
+      ""
+    );
+    return redirect(redirectPath); // Ensure redirection
   }
 
   // Save the workspace info
   const supabase = supabaseAdmin();
   const { error: upsertError } = await supabase.from("workspace").upsert({
-    user_id: user.id,
+    user_id: user?.id,
     slack_auth_token: data.authed_user.access_token,
     team_name: data.team.name,
     team_id: data.team.id,
@@ -57,9 +75,14 @@ export async function GET(req: NextRequest) {
 
   if (upsertError) {
     console.error("Error saving workspace:", upsertError);
-    throw new Error("Failed to save workspace information");
+    redirectPath = getErrorRedirect(
+      `/`,
+      "Something went wrong.",
+      "Workspace could not be saved"
+    );
+    return redirect(redirectPath); // Ensure redirection
+  } else {
+    redirectPath = getStatusRedirect(`/dashboard`, "Success!", "", true);
+    return redirect(redirectPath); // Ensure redirection
   }
-
-  // Redirect to dashboard
-  redirect(`/dashboard`);
 }

@@ -8,12 +8,12 @@ export async function getUserWorkSpaces(userId: string): Promise<Workspace[]> {
 
   const { data, error } = await supabase
     .from("workspace")
-    .select("id, name, is_active, working_hours")
+    .select("id, team_name, is_active, working_hours")
     .eq("user_id", userId);
 
   if (error) {
     console.error("Error fetching working hours:", error);
-    throw new Error("Failed to fetch working hours");
+    throw new Error("Error fetching working hours");
   }
 
   return data as unknown as Workspace[];
