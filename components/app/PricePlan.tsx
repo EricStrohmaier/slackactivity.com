@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 // PlanCard component
 export const PricePlan = ({
   plan,
-
+  onAction,
   isLoading,
 }: {
   plan: any;
@@ -76,11 +76,11 @@ export const PricePlan = ({
             ))}
           </ul>
         )}
-        {/* make button centered */}
-        <div className="flex justify-center ">
+        <div className="flex justify-center">
           <Button
+            onClick={onAction}
             loading={isLoading}
-            className="cursor-pointer hover:bg-primary hover:text-white"
+            className="cursor-pointer hover:bg-primary hover:text-white w-full sm:w-auto"
           >
             {siteConfig.pricing.buttonText}
           </Button>

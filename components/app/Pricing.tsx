@@ -6,15 +6,16 @@ import { PricePlan } from "./PricePlan";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 
-const Pricing = () => {
+const Pricing = ({ user }: { user: User | null }) => {
   const router = useRouter();
-  // const handleAction = () => {
-  //   if (!true) {
-  //     router.push(siteConfig.auth.slackAuth);
-  //   } else {
-  //     router.push(siteConfig.auth.slackAuth);
-  //   }
-  // };
+
+  const handleAction = () => {
+    if (!user) {
+      router.push(siteConfig.auth.loginUrl);
+    } else {
+      router.push(siteConfig.auth.slackAuth);
+    }
+  };
 
   return (
     <section className="overflow-hidden" id={siteConfig.pricing.title}>
@@ -30,7 +31,12 @@ const Pricing = () => {
 
         <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
           {siteConfig.stripe.plans.map((plan) => (
-            <PricePlan key={plan.priceId} plan={plan} isLoading={false} />
+            <PricePlan
+              onAction={handleAction}
+              key={plan.priceId}
+              plan={plan}
+              isLoading={false}
+            />
           ))}
         </div>
       </div>

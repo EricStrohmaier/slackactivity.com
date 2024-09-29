@@ -4,6 +4,7 @@ import { FeatureSteps } from "@/components/landingpage/FeatureSteps";
 import { Hero } from "@/components/landingpage/Hero";
 import { Testimonials } from "@/components/landingpage/Testimonials";
 import Pricing from "@/components/app/Pricing";
+import { getUser } from "./action";
 
 export default async function page({
   params,
@@ -12,11 +13,12 @@ export default async function page({
   params: { id: string };
   searchParams: { show: boolean };
 }) {
+  const user = await getUser();
   return (
     <div className="text-text">
       <Hero />
       <FeatureSteps />
-      {/* <Pricing /> */}
+      <Pricing user={user} />
       {/* <BenefitsFeature /> */}
       <Testimonials />
       <EmailSignUp />
