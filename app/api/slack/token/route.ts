@@ -90,15 +90,14 @@ export async function GET(req: NextRequest) {
       payment_method_types: ["card"],
       line_items: [
         {
-          // price_data: {
-          //   currency: "eur",
-          //   product_data: {
-          //     name: siteConfig.name,
-          //     description: `Payment for workspace ${data.team.name}`,
-          //   },
-          //   unit_amount: 2000, // Price in cents (€20)
-          // },
-          price: "price_1Q46jJK0DN5oBxDU7qYbpkns", // Assuming this is the price ID you want to add
+          price_data: {
+            currency: "eur",
+            product_data: {
+              name: siteConfig.name,
+              description: `Payment for workspace ${data.team.name}`,
+            },
+            unit_amount: 2000, // Price in cents (€20)
+          },
           quantity: 1,
         },
       ],
