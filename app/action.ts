@@ -114,12 +114,12 @@ export async function updateWorkspace(workspace: Workspace) {
   return data;
 }
 
-export async function updateUserPresence(user: any) {
-  const token = user.slack_auth_token;
-  const workHours = user.working_hours;
+export async function updateUserPresence(workspace: Workspace) {
+  const token = workspace.slack_auth_token;
+  const workHours = workspace.working_hours;
 
   if (!token || !workHours) {
-    console.error(`Missing token or work hours for user ${user.id}`);
+    console.error(`Missing token or work hours for workspace ${workspace.id}`);
     return;
   }
 
@@ -145,7 +145,7 @@ export async function updateUserPresence(user: any) {
 
   const supabase = supabaseAdmin();
   await supabase.from("activity_logs").insert({
-    user_id: user.id,
+    user_id: workspace.id,
     action: action,
     details: { currentDay, currentHour, workHours },
   });

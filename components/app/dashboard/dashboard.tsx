@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Clock, Plus } from "lucide-react";
-import { updateWorkspace } from "@/app/action";
+import { updateWorkspace, updateUserPresence } from "@/app/action";
 import { User, ActivityReport, Workspace } from "@/types/supabase";
 import Link from "next/link";
 import {
@@ -121,13 +121,18 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
     if (!activeWorkspace) return;
     try {
       await updateWorkspace(activeWorkspace);
+
+      // add
+      await updateUserPresence(activeWorkspace);
+
       toast.success("Workspace settings updated", {
-        description: "Your workspace settings have been successfully saved.",
+        description:
+          "Your workspace settings have been successfully saved and presence updated.",
       });
       setHasUnsavedChanges(false);
     } catch (error) {
       toast.error("Error", {
-        description: `Failed to update workspace settings: ${
+        description: `Failed to update workspace settings or presence: ${
           (error as Error).message
         }`,
       });
