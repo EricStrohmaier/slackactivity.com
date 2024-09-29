@@ -77,10 +77,8 @@ export async function GET(request: NextRequest) {
 
           if (
             workHours.daysOfWeek.includes(currentDay) &&
-            (currentHour > workHours.startHour ||
-              (currentHour === workHours.startHour && currentMinute >= 0)) &&
-            (currentHour < workHours.endHour ||
-              (currentHour === workHours.endHour && currentMinute === 0))
+            currentHour >= workHours.startHour &&
+            currentHour < workHours.endHour
           ) {
             await slack.users.setPresence({ presence: "auto" });
             action = "set_active";
