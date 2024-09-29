@@ -73,12 +73,38 @@ export async function GET(request: NextRequest) {
             `Current day: ${currentDay}, Current hour: ${currentHour}, Current minute: ${currentMinute}`
           );
 
+          // Add this right before the if condition
+          console.log(
+            `Workspace ${workspace.id} settings:`,
+            JSON.stringify(workHours, null, 2)
+          );
+          console.log(
+            `Current day: ${currentDay}, Current time: ${currentHour}:${currentMinute}`
+          );
+          console.log(
+            `Is work day: ${workHours.daysOfWeek.includes(currentDay)}`
+          );
+          console.log(
+            `Is after start time: ${
+              currentHour > workHours.startHour ||
+              (currentHour === workHours.startHour && currentMinute >= 0)
+            }`
+          );
+          console.log(
+            `Is before end time: ${
+              currentHour < workHours.endHour ||
+              (currentHour === workHours.endHour && currentMinute === 0)
+            }`
+          );
+
           let action: string;
 
           if (
             workHours.daysOfWeek.includes(currentDay) &&
-            currentHour >= workHours.startHour &&
-            currentHour < workHours.endHour
+            (currentHour > workHours.startHour ||
+              (currentHour === workHours.startHour && currentMinute >= 0)) &&
+            (currentHour < workHours.endHour ||
+              (currentHour === workHours.endHour && currentMinute === 0))
           ) {
             await slack.users.setPresence({ presence: "auto" });
             action = "set_active";
