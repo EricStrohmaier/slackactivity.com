@@ -1,8 +1,7 @@
 import { NextRequest } from "next/server";
-
 import { WebClient } from "@slack/web-api";
 import { Workspace } from "@/types/supabase";
-import { supabaseAdmin } from "@/utils/supabase/admin";
+import { createClient } from "@supabase/supabase-js";
 
 export async function GET(request: NextRequest) {
   const secretToken = request.nextUrl.searchParams.get("secret");
@@ -14,8 +13,10 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const supabase = supabaseAdmin();
-
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
   // Ensure no caching for up-to-date data
   const { data: workspaces, error } = await supabase
     .from("workspace")
