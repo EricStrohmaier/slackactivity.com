@@ -3,7 +3,7 @@ import { supabaseAdmin } from "@/utils/supabase/admin";
 import { WebClient } from "@slack/web-api";
 import { Workspace } from "@/types/supabase";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   const secretToken = request.nextUrl.searchParams.get("secret");
 
   if (secretToken !== process.env.SLACK_SCHEDULE_SECRET) {
