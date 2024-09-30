@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   console.log(
     `Updating Slack presence for ${workspaces.length} active workspaces`
   );
-
+  console.log("workspaces", workspaces);
   const updateResults = await Promise.all(
     workspaces.map(async (workspace) => {
       try {
@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
           working_hours: workHours,
           stripe_is_paid: isPaid,
         } = workspace as Workspace;
+        console.log("workspace as Workspace", workspace);
 
         // Log activity for unpaid workspaces
         if (!isPaid) {
