@@ -2,12 +2,15 @@
 
 import { Database } from "@/types/supabase_generated";
 import { createClient } from "@supabase/supabase-js";
+import { unstable_noStore as noStore } from "next/cache";
 
 const supabase_url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const service_role_key = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 // as it has admin privileges and overwrites RLS policies!
-export const supabaseAdmin = () =>
-  createClient<Database>(supabase_url, service_role_key);
+export const supabaseAdmin = () => {
+  noStore();
+  return createClient<Database>(supabase_url, service_role_key);
+};
 
 const supabase = createClient(supabase_url, service_role_key, {
   auth: {

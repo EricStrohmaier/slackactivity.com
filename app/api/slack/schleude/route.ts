@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { WebClient } from "@slack/web-api";
 import { Workspace } from "@/types/supabase";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/utils/supabase/admin";
 
 export async function GET(request: NextRequest) {
   const secretToken = request.nextUrl.searchParams.get("secret");
@@ -13,10 +13,8 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const supabase = supabaseAdmin();
+
   // Ensure no caching for up-to-date data
   const { data: workspaces, error } = await supabase
     .from("workspace")
@@ -29,11 +27,7 @@ export async function GET(request: NextRequest) {
       JSON.stringify({ message: "Error fetching workspaces" }),
       {
         status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-store, max-age=0",
-          Pragma: "no-cache",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
@@ -43,11 +37,7 @@ export async function GET(request: NextRequest) {
       JSON.stringify({ message: "No active workspaces found" }),
       {
         status: 404,
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-store, max-age=0",
-          Pragma: "no-cache",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
@@ -168,11 +158,7 @@ export async function GET(request: NextRequest) {
     }),
     {
       status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store, max-age=0",
-        Pragma: "no-cache",
-      },
+      headers: { "Content-Type": "application/json" },
     }
   );
 }
