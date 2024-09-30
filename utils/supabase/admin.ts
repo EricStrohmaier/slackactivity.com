@@ -12,6 +12,17 @@ export const supabaseAdmin = () => {
   return createClient<Database>(supabase_url, service_role_key);
 };
 
+// maybe this?
+// export const supabaseAdmin = () => {
+//   return createClient<Database>(supabase_url, service_role_key,{
+//     global: {
+//       fetch: (url: any, options = {}) => {
+//         return fetch(url, { ...options, cache: 'no-store' });
+//       }
+//     }
+//   });
+// };
+
 const supabase = createClient(supabase_url, service_role_key, {
   auth: {
     autoRefreshToken: false,
