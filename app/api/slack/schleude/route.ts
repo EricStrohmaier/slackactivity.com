@@ -19,7 +19,16 @@ export async function GET(request: NextRequest) {
     .from("workspace")
     .select("*")
     .eq("is_active", true);
-
+  if (error) {
+    console.error("Error fetching active workspaces:", error);
+    return new Response(
+      JSON.stringify({ message: "Error fetching workspaces" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
   if (!workspaces || workspaces.length === 0) {
     console.error("No active workspaces found");
     return new Response(
