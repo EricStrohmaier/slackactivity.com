@@ -1,14 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 import { WebClient } from "@slack/web-api";
-import { formatInTimeZone } from "date-fns-tz"; // For timezone handling
 import { Workspace } from "@/types/supabase";
 
 export async function GET(request: NextRequest) {
   const secretToken = request.nextUrl.searchParams.get("secret");
 
   if (secretToken !== process.env.SLACK_SCHEDULE_SECRET) {
-    return new NextResponse(JSON.stringify({ message: "Unauthorized" }), {
+    return new Response(JSON.stringify({ message: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
     });
@@ -23,7 +22,7 @@ export async function GET(request: NextRequest) {
 
   if (!workspaces || workspaces.length === 0) {
     console.error("No active workspaces found");
-    return new NextResponse(
+    return new Response(
       JSON.stringify({ message: "No active workspaces found" }),
       {
         status: 404,
@@ -84,7 +83,9 @@ export async function GET(request: NextRequest) {
       // Get the current time in the workspace's timezone
       const now = new Date();
       const workspaceLocalTime = new Date(
-        formatInTimeZone(now, workHours.timezone, "yyyy-MM-dd'T'HH:mm:ssXXX")
+        now.toLocaleString("en-US", {
+          timeZone: workHours.timezone as any,
+        })
       );
 
       const currentDay = workspaceLocalTime.getDay();
@@ -138,7 +139,7 @@ export async function GET(request: NextRequest) {
     })
   );
 
-  return new NextResponse(
+  return new Response(
     JSON.stringify({
       message: "Slack presence update complete",
       results: updateResults,
