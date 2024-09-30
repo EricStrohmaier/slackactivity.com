@@ -29,7 +29,11 @@ export async function GET(request: NextRequest) {
       JSON.stringify({ message: "Error fetching workspaces" }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store, max-age=0",
+          Pragma: "no-cache",
+        },
       }
     );
   }
@@ -39,7 +43,11 @@ export async function GET(request: NextRequest) {
       JSON.stringify({ message: "No active workspaces found" }),
       {
         status: 404,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store, max-age=0",
+          Pragma: "no-cache",
+        },
       }
     );
   }
@@ -160,7 +168,11 @@ export async function GET(request: NextRequest) {
     }),
     {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store, max-age=0",
+        Pragma: "no-cache",
+      },
     }
   );
 }
