@@ -26,8 +26,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`h-full ${inter.className}`}>
         <Provider>
-          <div className="flex flex-col w-full h-full ">
-            <div className="absolute inset-0 bg-gradient-to-b from-lightGreen to-stone-50 opacity-70 -z-10"></div>
+          <div className="flex flex-col w-full h-full bg-background">
             <Header user={user as any} />
             <main className="flex-auto">{children}</main>
           </div>
