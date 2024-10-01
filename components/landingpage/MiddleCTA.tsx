@@ -14,7 +14,7 @@ export function MiddleCTA() {
       <Gradient className="relative">
         <div className="absolute inset-2 rounded-3xl bg-white/80" />
         <Container>
-          <div className="relative pb-16 pt-20 text-center sm:py-24">
+          <div className="relative pb-16 pt-20 text-center sm:py-24 max-w-3xl mx-auto">
             <hgroup>
               <h2 className="text-3xl sm:text-4xl font-bold text-text-900 mb-4">
                 {content.middleCTA.headline}

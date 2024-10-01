@@ -52,29 +52,7 @@ export const siteConfig = {
     heading: "Unlock Your Productivity!",
     buttonText: "Get Now 🚀",
   },
-  stripe: {
-    // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
-    plans: [
-      {
-        priceId:
-          process.env.NODE_ENV === "development"
-            ? "price_1Q46jJK0DN5oBxDU7qYbpkns"
-            : "price_1Q46jJK0DN5oBxDU7qYbpkns",
-        // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
-        isFeatured: true,
-        name: "All-In",
-        description: "Your Ultimate Pitch Partner",
-        price: 20,
-        priceAnchor: null,
-        currency: "EUR",
-        features: [
-          { name: "Everything in Pro +" },
-          { name: "30 Uploads per Month" },
-          { name: "30-Min Consultation" },
-        ],
-      },
-    ],
-  },
+
   auth: {
     // REQUIRED — the path to log in users. It's use to protect private routes (like /dashboard). It's used in apiClient (/libs/api.js) upon 401 errors from our API
     loginUrl: "/signin",

@@ -1,5 +1,5 @@
-import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
+import { landingpageContent } from "@/constants/landingpage";
 
 // PlanCard component
 export const PricePlan = ({
@@ -16,7 +16,7 @@ export const PricePlan = ({
       {plan.isFeatured && (
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
           <span
-            className={`text-xs text-white font-semibold border-0 bg-primary px-2 py-1 rounded-full `}
+            className={`text-xs text-white font-semibold border-0 bg-secondary px-2 py-1 rounded-full `}
           >
             POPULAR
           </span>
@@ -25,7 +25,7 @@ export const PricePlan = ({
 
       <div
         className={`relative flex flex-col h-full gap-5 lg:gap-8 z-10 p-8 rounded-xl w-full bg-stone-100 shadow-md ${
-          plan.isFeatured ? "border-2 border-primary" : ""
+          plan.isFeatured ? "border-2 border-secondary" : ""
         }`}
       >
         <div className="flex justify-between items-center gap-4">
@@ -34,24 +34,32 @@ export const PricePlan = ({
             {plan.description && <p className=" mt-2">{plan.description}</p>}
           </div>
         </div>
-        <div className="flex gap-2">
-          {/* to very pretty so far */}
+        <div className="flex items-end gap-2">
           {plan.priceAnchor && (
-            <div className="flex flex-col justify-end mb-[4px] text-lg ">
+            <div className="mb-1 text-lg">
               <p className="relative">
                 <span className="absolute bg-black/80 h-[1.5px] inset-x-0 top-[53%]"></span>
                 <span className="text-black/80">${plan.priceAnchor}</span>
               </p>
             </div>
           )}
-          <p className={`text-5xl tracking-tight font-extrabold`}>
-            {plan.currency === "EUR" ? "€" : "$"}
-            {plan.price}
-          </p>
-          <div className="flex flex-col justify-end mb-[4px]">
-            <p className="text-xs text-stone-500 uppercase font-semibold">
+          <div className="flex items-baseline">
+            <span className="text-4xl font-extrabold">
+              {plan.currency === "EUR" ? "€" : "$"}
+            </span>
+            <span className="text-5xl font-extrabold tracking-tight">
+              {plan.price}
+            </span>
+          </div>
+          <div className="flex flex-col items-start mb-1">
+            <span className="text-xs text-stone-500 uppercase font-semibold">
               {plan.currency}
-            </p>
+            </span>
+            {plan.pricePer && (
+              <span className="text-sm text-stone-500">
+                per {plan.pricePer}
+              </span>
+            )}
           </div>
         </div>
         {plan.features && (
@@ -80,9 +88,9 @@ export const PricePlan = ({
           <Button
             onClick={onAction}
             loading={isLoading}
-            className="cursor-pointer hover:bg-primary hover:text-white w-full sm:w-auto"
+            className="cursor-pointer hover:bg-primary-800 hover:text-white w-full sm:w-auto"
           >
-            {siteConfig.pricing.buttonText}
+            {landingpageContent.stripe.buttonText}
           </Button>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { Hero } from "@/components/landingpage/Hero";
 import { Testimonials } from "@/components/landingpage/Testimonials";
 import Pricing from "@/components/app/Pricing";
 import { getUser } from "./action";
+import { MiddleCTA } from "@/components/landingpage/MiddleCTA";
 
 export default async function page({
   params,
@@ -19,9 +20,8 @@ export default async function page({
       <Hero />
       <FeatureSteps />
       <Pricing user={user} />
-      {/* <BenefitsFeature /> */}
       <Testimonials />
-      <EmailSignUp />
+      <MiddleCTA />
     </div>
   );
 }

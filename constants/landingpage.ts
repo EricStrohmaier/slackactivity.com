@@ -1,11 +1,5 @@
-import appScreenshot1 from "@/public/landingpage/app_screenshot1.jpg";
-import appScreenshot2 from "@/public/landingpage/app_screenshot2.jpg";
 import avatarImage1 from "@/public/landingpage/avatars/avatar-1.png";
-import avatarImage2 from "@/public/landingpage/avatars/avatar-2.png";
-import avatarImage3 from "@/public/landingpage/avatars/avatar-3.png";
-import avatarImage4 from "@/public/landingpage/avatars/avatar-4.png";
 import avatarImage5 from "@/public/landingpage/avatars/avatar-5.png";
-import backgroundImageMiddleCTA from "@/public/landingpage/bluebackgroundtree.jpg";
 import abstractBackgroundImage from "@/public/landingpage/abstract-background.png";
 import productivityImg from "@/public/landingpage/socialcare.png";
 import logo from "@/public/logo.png";
@@ -39,16 +33,17 @@ export const landingpageContent = {
   // hero section
   hero: {
     preHeadline: "Slacktivity",
-    headline: "Slack Working Hours",
-    highlightedText: "Set Automatically",
+    headline: "Automate Your Slack Schedule",
+    highlightedText: "",
     suffix: "",
     subheadline:
-      "Effortlessly manage your Slack status and working hours with Slacktivity. Stay productive and online with our intuitive scheduling tool.",
+      // need smaller text here
+      "Easily manage your Slack status with Slacktivity. Automatically set yourself as 'away' or 'active' according to your defined working hours, helping you stay productive without the distractions.",
     socialCare: {
-      active: true,
+      active: false,
       image: productivityImg,
       fatPrefix: "1k+ ",
-      text: "users enhancing their productivity",
+      text: "users boosting their productivity",
     },
     cta: {
       actions: {
@@ -59,7 +54,7 @@ export const landingpageContent = {
         links: {
           howItWorks: {
             active: true,
-            text: "It's Free",
+            text: "Learn More",
             link: "#features",
           },
         },
@@ -71,106 +66,37 @@ export const landingpageContent = {
     },
   },
 
-  // problem section
-  imageSection: {
-    id: "image-section",
-    features: [
-      {
-        title: "Easy Scheduling",
-        description:
-          "Effortlessly set your working hours and automate your Slack status.",
-        image: "",
-        background: "bg-stone-900",
-      },
-      {
-        title: "Always Online",
-        description:
-          "Ensure you're consistently available during work hours with our online status feature.",
-        image: appScreenshot1,
-        background: "",
-      },
-      {
-        title: "Custom Notifications",
-        description:
-          "Stay on track with reminders and notifications tailored to your work schedule.",
-        image: appScreenshot2,
-        background: "",
-      },
-      {
-        title: "Seamless Integration",
-        description:
-          "Integrate effortlessly with your Slack workspace without any hassle.",
-        image: "",
-        background: "bg-accent",
-      },
-    ],
-  },
-
-  // benefits of the product
-  benefitsFeature: {
-    id: "features",
-    headline: "Why Choose Slacktivity",
-    highlightedText: "Scheduler",
-    suffix: "App",
-    subheadline:
-      "Elevate your productivity and streamline your Slack management with ease.",
-    features: [
-      {
-        title: "Automatic Status Updates",
-        description:
-          "Your Slack status updates automatically based on your scheduled hours.",
-        image: appScreenshot1,
-      },
-      {
-        title: "Effortless Setup",
-        description:
-          "Get started quickly by setting up your working hours and Slack integration in minutes.",
-        image: appScreenshot2,
-      },
-      {
-        title: "Customizable Notifications",
-        description:
-          "Receive notifications tailored to fit your work schedule and preferences.",
-        image: appScreenshot1,
-      },
-      {
-        title: "Enhanced Productivity",
-        description:
-          "Maintain focus and productivity during work hours with minimal effort.",
-        image: appScreenshot2,
-      },
-    ],
-  },
-
   // features/steps section
   featureSteps: {
     id: "setup",
-    headline: "Get Started",
-    highlightedText: "in 3 Simple Steps",
-    suffix: "",
+    headline: "",
+    highlightedText: "Slacktivity",
+    suffix: "in 3 Simple Steps",
     subheadline:
-      "Follow these steps to set up your working hours and optimize your Slack presence.",
+      "Get set up in minutes and let Slacktivity take care of your Slack status for you.",
     iconView: {
       active: true,
+      // account generation and payment before
       steps: [
-        {
-          step: "Set Your Working Hours",
-          summary: "Define your availability.",
-          description: "Easily specify the hours when you want to be online.",
-          iconKey: "schedule",
-        },
         {
           step: "Integrate with Slack",
           summary: "Connect your workspace.",
           description:
-            "Authorize Slacktivity to manage your Slack status automatically.",
+            "Link your Slack account to automate your status updates seamlessly.",
           iconKey: "integrate",
         },
         {
-          step: "Boost Your Productivity",
-          summary: "Focus on your work.",
+          step: "Set Your Working Hours",
+          summary: "Define your schedule.",
           description:
-            "Let Slacktivity handle your online presence while you focus on what matters.",
+            "Choose the times you're available, and we'll handle the rest.",
+          iconKey: "schedule",
+        },
+        {
+          step: "Boost Your Productivity",
+          summary: "Focus on your tasks.",
+          description:
+            "Let Slacktivity manage your online presence, so you can stay focused on work.",
           iconKey: "focus",
         },
       ],
@@ -200,15 +126,38 @@ export const landingpageContent = {
       ],
     },
   },
-
+  stripe: {
+    id: "pricing",
+    title: "Pricing",
+    heading: "Unlock Your Productivity!",
+    subheadline: "",
+    buttonText: "Get Now 🚀",
+    plans: [
+      {
+        isFeatured: true,
+        name: "Workspace Pro",
+        description: "The Complete Workspace Management Solution",
+        price: 20,
+        pricePer: "workspace",
+        priceAnchor: "",
+        currency: "EUR",
+        features: [
+          { name: "Automated Slack status updates" },
+          { name: "Support for multiple workspaces" },
+          { name: "Customized working hours per workspace" },
+          { name: "Comprehensive activity logging" },
+        ],
+      },
+    ],
+  },
   // middle cta
   middleCTA: {
     id: "live-examples",
-    headline: "Surf Shops on Our Platform",
+    headline: "Try Slacktivity Now",
     highlightedText: "",
     suffix: "",
     subheadline:
-      "See how leading surf shops use our marketplace to expand reach and boost business. Discover the impact on visibility and operations.",
+      "Experience how Slacktivity helps professionals streamline their work by automating Slack status management. Start now for free!",
     button: {
       text: "Get Started",
       href: "/signin",
@@ -217,13 +166,12 @@ export const landingpageContent = {
 
   // Testimonials
   testimonials: {
-    active: false,
+    active: true,
     id: "testimonials",
-    headline: "What People Say",
+    headline: "What Our Users Say",
     highlightedText: "About Slacktivity",
     suffix: "",
-    subheadline:
-      "Discover how our users are transforming their productivity with Slacktivity.",
+    subheadline: "See how Slacktivity is improving productivity for our users.",
     testimonials: [
       [
         {
@@ -233,15 +181,6 @@ export const landingpageContent = {
             name: "Sheryl Berge",
             role: "Product Manager at Tech Corp",
             image: avatarImage1,
-          },
-        },
-        {
-          content:
-            "I love how Slacktivity helps me stay organized and visible. It’s a game-changer for my productivity!",
-          author: {
-            name: "Amy Hahn",
-            role: "Team Lead at Velocity Industries",
-            image: avatarImage4,
           },
         },
       ],
@@ -255,33 +194,15 @@ export const landingpageContent = {
             image: avatarImage5,
           },
         },
-        {
-          content:
-            "With Slacktivity, I never miss important Slack messages. It’s a great addition to my workflow.",
-          author: {
-            name: "Erin Powlowski",
-            role: "COO at Armstrong Inc",
-            image: avatarImage2,
-          },
-        },
       ],
       [
         {
           content:
-            "Slacktivity simplifies managing my Slack presence. It’s intuitive and highly effective.",
+            "Slacktivity is the best tool for maintaining an online presence during work hours. It’s indispensable!",
           author: {
-            name: "Peter Renolds",
-            role: "Founder of West Inc",
-            image: avatarImage3,
-          },
-        },
-        {
-          content:
-            "Slacktivity support is excellent! They’re quick and helpful in getting everything set up.",
-          author: {
-            name: "Amy Hahn",
-            role: "Director at Velocity Industries",
-            image: avatarImage4,
+            name: "Leland Kiehn",
+            role: "Founder at Kiehn and Sons",
+            image: avatarImage5,
           },
         },
       ],
@@ -291,12 +212,12 @@ export const landingpageContent = {
   // last Call to Action
   emailSignUp: {
     id: "its-free",
-    headline: "Ready to start with",
+    headline: "Ready to Get Started with",
     highlightedText: "Slacktivity",
     suffix: "?",
     subheadline:
-      "If you want to see more features, dont hasitate and reach out to us. https://insigh.to/b/slacktivity",
-    placeholder: "Try it out its free",
+      "Want to learn more? Reach out to us at office@slackactivity.com.",
+    placeholder: "Enter your email for updates",
     buttonText: "Get Started",
   },
 };

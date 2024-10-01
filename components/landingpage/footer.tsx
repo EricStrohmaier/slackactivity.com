@@ -26,14 +26,14 @@ function NavLink({
 }
 
 export function Footer() {
-  const isSignIn = usePathname().includes("/signin");
+  const pathname = usePathname();
 
   // Filter the active links
   const activeLinks = landingpageContent.header.NavAndFooterLinks.filter(
     (link) => link.active
   );
 
-  if (isSignIn) {
+  if (pathname.includes("/signin")) {
     return null;
   }
 
