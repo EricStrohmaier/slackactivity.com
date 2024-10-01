@@ -32,7 +32,12 @@ const Pricing = ({ user }: { user: User | null }) => {
 
         <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
           {landingpageContent.stripe.plans.map((plan) => (
-            <PricePlan onAction={handleAction} plan={plan} isLoading={false} />
+            <PricePlan
+              onAction={handleAction}
+              plan={plan}
+              isLoading={false}
+              key={plan.name}
+            />
           ))}
         </div>
       </div>
