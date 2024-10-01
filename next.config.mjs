@@ -18,6 +18,10 @@ const nextConfig = {
         hostname: "vhxkjwczllimkfbbowmf.supabase.co",
         protocol: "https",
       },
+      {
+        hostname: "api.slack.com",
+        protocol: "https",
+      },
     ],
   },
 };

@@ -112,9 +112,7 @@ function FeaturesMobile({
   content: typeof landingpageContent;
   isIconView: boolean;
 }) {
-  const features = isIconView
-    ? content.featureSteps.iconView.steps
-    : content.featureSteps.imageView.steps;
+  const features = content.featureSteps.iconView.steps;
 
   return (
     <div className="-mx-4 mt-20 flex flex-col gap-y-10 overflow-hidden px-4 sm:-mx-6 sm:px-6 lg:hidden">
@@ -145,9 +143,7 @@ function FeaturesDesktop({
   content: typeof landingpageContent;
   isIconView: boolean;
 }) {
-  const features = isIconView
-    ? content.featureSteps.iconView.steps
-    : content.featureSteps.imageView.steps;
+  const features = content.featureSteps.iconView.steps;
 
   if (isIconView) {
     return (
@@ -193,9 +189,8 @@ function FeaturesDesktop({
 export function FeatureSteps() {
   const content = landingpageContent;
   const isIconView = content.featureSteps.iconView.active;
-  const isImageView = content.featureSteps.imageView.active;
 
-  if (!isIconView && !isImageView) {
+  if (!isIconView) {
     return null;
   }
 

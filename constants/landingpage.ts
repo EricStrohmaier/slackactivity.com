@@ -8,7 +8,7 @@ import { siteConfig } from "@/config/site";
 export const landingpageContent = {
   header: {
     company: {
-      name: "slacktivity",
+      name: "Slacktivity",
       logo: logo,
       logoHref: "/",
     },
@@ -37,101 +37,77 @@ export const landingpageContent = {
     highlightedText: "",
     suffix: "",
     subheadline:
-      // need smaller text here
-      "Easily manage your Slack status with Slacktivity. Automatically set yourself as 'away' or 'active' according to your defined working hours, helping you stay productive without the distractions.",
+      "Boost productivity and maintain work-life balance with Slacktivity. Automatically manage your Slack status based on your schedule, reducing distractions and improving focus.",
     socialCare: {
-      active: false,
+      active: true,
       image: productivityImg,
-      fatPrefix: "1k+ ",
-      text: "users boosting their productivity",
+      fatPrefix: "5k+ ",
+      text: "professionals optimizing their workflow",
     },
     cta: {
       actions: {
         email: {
           active: false,
-          placeholder: "Enter your email for updates",
+          placeholder: "Enter your email to get started",
         },
         links: {
           howItWorks: {
             active: true,
-            text: "Learn More",
-            link: "#features",
+            text: "How It Works",
+            link: "#setup",
           },
         },
       },
       button: {
-        text: "Try it out",
+        text: "Get Started",
         link: "/signin",
       },
     },
   },
 
-  // features/steps section
+  // feature steps section
   featureSteps: {
     id: "setup",
     headline: "",
     highlightedText: "Slacktivity",
     suffix: "in 3 Simple Steps",
     subheadline:
-      "Get set up in minutes and let Slacktivity take care of your Slack status for you.",
+      "Get set up in minutes and let Slacktivity optimize your Slack presence automatically.",
     iconView: {
       active: true,
-      // account generation and payment before
       steps: [
         {
-          step: "Integrate with Slack",
-          summary: "Connect your workspace.",
+          step: "Connect Your Workspace",
+          summary: "Seamless integration.",
           description:
-            "Link your Slack account to automate your status updates seamlessly.",
+            "Securely link your Slack account for automatic status updates.",
           iconKey: "integrate",
         },
         {
-          step: "Set Your Working Hours",
-          summary: "Define your schedule.",
+          step: "Define Your Schedule",
+          summary: "Customize your availability.",
           description:
-            "Choose the times you're available, and we'll handle the rest.",
+            "Set your working hours and breaks. We'll handle the rest.",
           iconKey: "schedule",
         },
         {
-          step: "Boost Your Productivity",
-          summary: "Focus on your tasks.",
+          step: "Maximize Your Focus",
+          summary: "Boost productivity.",
           description:
-            "Let Slacktivity manage your online presence, so you can stay focused on work.",
+            "Let Slacktivity manage your online presence while you tackle important tasks.",
           iconKey: "focus",
         },
       ],
     },
-    imageView: {
-      active: false,
-      steps: [
-        {
-          step: "Set Your Working Hours",
-          description: "Easily specify the hours when you want to be online.",
-          image: abstractBackgroundImage,
-        },
-        {
-          step: "Integrate with Slack",
-          summary: "Connect your workspace.",
-          description:
-            "Authorize Slacktivity to manage your Slack status automatically.",
-          image: abstractBackgroundImage,
-        },
-        {
-          step: "Boost Your Productivity",
-          summary: "Focus on your work.",
-          description:
-            "Let Slacktivity handle your online presence while you focus on what matters.",
-          image: abstractBackgroundImage,
-        },
-      ],
-    },
   },
+
+  // pricing section
   stripe: {
     id: "pricing",
     title: "Pricing",
-    heading: "Unlock Your Productivity!",
-    subheadline: "",
-    buttonText: "Get Now 🚀",
+    heading: "Unlock Your Productivity Potential",
+    subheadline: "Optimize your workflow with our powerful solution",
+    buttonText: "Get Started 🚀",
     plans: [
       {
         isFeatured: true,
@@ -150,35 +126,37 @@ export const landingpageContent = {
       },
     ],
   },
-  // middle cta
+
+  // middle call to action
   middleCTA: {
     id: "live-examples",
-    headline: "Try Slacktivity Now",
+    headline: "Maximize Your Productivity Today",
     highlightedText: "",
     suffix: "",
     subheadline:
-      "Experience how Slacktivity helps professionals streamline their work by automating Slack status management. Start now for free!",
+      "Join thousands of professionals who've optimized their workflow with Slacktivity. Start boosting your productivity now!",
     button: {
       text: "Get Started",
       href: "/signin",
     },
   },
 
-  // Testimonials
+  // testimonials
   testimonials: {
     active: true,
     id: "testimonials",
     headline: "What Our Users Say",
     highlightedText: "About Slacktivity",
     suffix: "",
-    subheadline: "See how Slacktivity is improving productivity for our users.",
+    subheadline:
+      "See how Slacktivity is transforming work for professionals across industries.",
     testimonials: [
       [
         {
           content:
-            "Slacktivity makes managing my Slack status a breeze. I can focus on work without worrying about being offline.",
+            "Slacktivity has revolutionized my workday. I've reclaimed 2 hours of focused work time each week!",
           author: {
-            name: "Sheryl Berge",
+            name: "Sarah Chen",
             role: "Product Manager at Tech Corp",
             image: avatarImage1,
           },
@@ -187,10 +165,10 @@ export const landingpageContent = {
       [
         {
           content:
-            "Slacktivity is the best tool for maintaining an online presence during work hours. It’s indispensable!",
+            "As a remote team lead, Slacktivity helps me respect my team's boundaries while staying connected. It's a game-changer for our productivity.",
           author: {
-            name: "Leland Kiehn",
-            role: "Founder at Kiehn and Sons",
+            name: "Miguel Rodriguez",
+            role: "Engineering Lead at Global Solutions",
             image: avatarImage5,
           },
         },
@@ -198,10 +176,10 @@ export const landingpageContent = {
       [
         {
           content:
-            "Slacktivity is the best tool for maintaining an online presence during work hours. It’s indispensable!",
+            "Slacktivity is essential for maintaining work-life balance in our always-on culture. It's improved our team's communication and reduced burnout.",
           author: {
-            name: "Leland Kiehn",
-            role: "Founder at Kiehn and Sons",
+            name: "Aisha Patel",
+            role: "HR Director at Innovate Inc",
             image: avatarImage5,
           },
         },
@@ -209,15 +187,15 @@ export const landingpageContent = {
     ],
   },
 
-  // last Call to Action
+  // last call to action
   emailSignUp: {
     id: "its-free",
-    headline: "Ready to Get Started with",
+    headline: "Ready to Boost Your Productivity with",
     highlightedText: "Slacktivity",
     suffix: "?",
     subheadline:
-      "Want to learn more? Reach out to us at office@slackactivity.com.",
-    placeholder: "Enter your email for updates",
+      "Start optimizing your workflow today or reach out to us at office@slacktivity.com for more information.",
+    placeholder: "Enter your work email",
     buttonText: "Get Started",
   },
 };
