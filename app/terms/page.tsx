@@ -15,7 +15,7 @@ const termsOfService = `
 
 *Last Updated: September 29, 2024*
 
-Welcome to Slacktivity. By accessing or using our website (https://slacktivity.app), you agree to the following Terms & Services. Please read them carefully.
+Welcome to Slacktivity. By accessing or using our website (https://slackactivity.com), you agree to the following Terms & Services. Please read them carefully.
 
 ### 1. Services  
 Slacktivity offers a platform to automate and manage Slack status updates based on user-defined schedules. Our service involves integration with Slack workspaces to enhance productivity by optimizing status management.
@@ -24,7 +24,7 @@ Slacktivity offers a platform to automate and manage Slack status updates based 
 Slacktivity charges a fee of €20 per workspace for the services provided. Payment is required upon setup of each workspace, and it covers automated status management and related features. By completing the payment, you agree to these terms.
 
 ### 3. User Data  
-We collect personal information such as your name, email address, and payment details to manage your account and process payments. For more information, please refer to our [Privacy Policy](https://slacktivity.app/privacy-policy).
+We collect personal information such as your name, email address, and payment details to manage your account and process payments. For more information, please refer to our [Privacy Policy](https://slackactivity.com/privacy-policy).
 
 ### 4. Non-Personal Data  
 We may collect non-personal data such as cookies to improve your experience on our site. These cookies are used to provide better service and can be managed through your browser settings.
@@ -39,7 +39,7 @@ These Terms & Services are governed by the laws of Austria.
 We may update these Terms from time to time. Users will be notified of any changes via email. Continued use of the site after updates constitutes acceptance of the revised terms.
 
 ### 8. Contact Information  
-If you have any questions or concerns regarding these Terms, please contact us at: office@slacktivity.app.
+If you have any questions or concerns regarding these Terms, please contact us at: office@slackactivity.com.
 
 ---
 
