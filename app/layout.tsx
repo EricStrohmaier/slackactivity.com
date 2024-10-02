@@ -5,16 +5,37 @@ import "@/styles/globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { Provider } from "@/components/Provider";
 import { Header } from "@/components/landingpage/header";
-import { Footer } from "@/components/landingpage/footer";
+import { SiteFooter } from "@/components/app/Footer";
 import { getRowUser } from "./action";
+import { siteConfig } from "@/config/site";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Free Slack Scheduler App",
-  description: "Set your Slack status for free. So to never be offline again.",
+  metadataBase: new URL(`${process.env.NEXT_PUBLIC_SITE_URL}`),
+  title: {
+    default: "Slackactivity",
+    template: "%s - Slackactivity",
+  },
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  authors: [
+    {
+      name: "Slackactivity Team",
+      url: process.env.NEXT_PUBLIC_SITE_URL,
+    },
+  ],
+  openGraph: {
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+  },
 };
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -30,7 +51,7 @@ export default async function RootLayout({
             <Header user={user as any} />
             <main className="flex-auto">{children}</main>
           </div>
-          <Footer />
+          <SiteFooter />
           <Toaster richColors theme="light" closeButton />
         </Provider>
       </body>

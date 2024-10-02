@@ -198,4 +198,10 @@ export const landingpageContent = {
     placeholder: "Enter your work email",
     buttonText: "Get Started",
   },
+  footer: [
+    { name: "Home", href: "/" },
+    { name: "Contact", href: "mailto:office@slackactivity.com" },
+    { name: "Terms of Service", href: "/terms" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+  ],
 };

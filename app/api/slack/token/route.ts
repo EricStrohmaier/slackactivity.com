@@ -109,8 +109,8 @@ export async function GET(req: NextRequest) {
         workspace_id: workspaceId,
       },
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/`,
     });
 
     // Redirect to the Stripe checkout page
