@@ -8,6 +8,7 @@ import { Header } from "@/components/landingpage/header";
 import { SiteFooter } from "@/components/app/Footer";
 import { getRowUser } from "./action";
 import { siteConfig } from "@/config/site";
+import PlausibleProvider from "next-plausible";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -45,6 +46,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      {siteConfig.domain && (
+        <head>
+          <PlausibleProvider domain={siteConfig.domain} />
+        </head>
+      )}
       <body className={`h-full ${inter.className}`}>
         <Provider>
           <div className="flex flex-col w-full h-full bg-background">
