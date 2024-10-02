@@ -21,7 +21,7 @@ export const getSEOTags = ({
     // up to 50 characters (what does your app do for the user?) > your main should be here
     title: title || siteConfig.name,
     // up to 160 characters (how does your app help the user?)
-    description: description || siteConfig.description.marketplace,
+    description: description || siteConfig.description,
     // some keywords separated by commas. by default it will be your app name
     keywords: keywords || [siteConfig.name],
     applicationName: siteConfig.name,
@@ -34,7 +34,7 @@ export const getSEOTags = ({
 
     openGraph: {
       title: openGraph?.title || siteConfig.name,
-      description: openGraph?.description || siteConfig.description.marketplace,
+      description: openGraph?.description || siteConfig.description,
       url: openGraph?.url || `https://${siteConfig.domain}/`,
       siteName: openGraph?.title || siteConfig.name,
       // If you add an opengraph-image.(jpg|jpeg|png|gif) image to the /app folder, you don't need the code below
@@ -51,7 +51,7 @@ export const getSEOTags = ({
 
     twitter: {
       title: openGraph?.title || siteConfig.name,
-      description: openGraph?.description || siteConfig.description.marketplace,
+      description: openGraph?.description || siteConfig.description,
       // If you add an twitter-image.(jpg|jpeg|png|gif) image to the /app folder, you don't need the code below
       // images: [openGraph?.image || defaults.og.image],
       card: "summary_large_image",
@@ -84,7 +84,7 @@ export const renderSchemaTags = () => {
           "@context": "http://schema.org",
           "@type": "SoftwareApplication",
           name: siteConfig.name,
-          description: siteConfig.description.marketplace,
+          description: siteConfig.description,
           image: `https://${siteConfig.domain}/og-image.jpg`,
           url: `https://${siteConfig.domain}/`,
           author: {
