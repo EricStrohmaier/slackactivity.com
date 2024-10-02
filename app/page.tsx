@@ -6,6 +6,7 @@ import { Testimonials } from "@/components/landingpage/Testimonials";
 import Pricing from "@/components/app/Pricing";
 import { getUser } from "./action";
 import { MiddleCTA } from "@/components/landingpage/MiddleCTA";
+import { FancyContent } from "@/components/landingpage/FancyContent";
 
 export default async function page({
   params,
@@ -18,6 +19,7 @@ export default async function page({
   return (
     <div className="text-text">
       <Hero />
+      <FancyContent />
       <FeatureSteps />
       <Pricing user={user} />
       <Testimonials />

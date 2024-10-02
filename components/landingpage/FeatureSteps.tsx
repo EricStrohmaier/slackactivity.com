@@ -202,6 +202,9 @@ export function FeatureSteps() {
     >
       <Container>
         <div className="mx-auto max-w-3xl md:text-center">
+          <h2 className="text-md font-medium mb-2 text-center">
+            {content.featureSteps.title}
+          </h2>
           <div className="relative flex flex-wrap justify-center items-center font-semibold text-3xl tracking-tight text-text-900 md:text-5xl">
             <span className="whitespace-nowrap">
               {content.featureSteps.headline}

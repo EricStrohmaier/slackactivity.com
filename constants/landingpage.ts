@@ -33,16 +33,16 @@ export const landingpageContent = {
   // hero section
   hero: {
     preHeadline: "Slacktivity",
-    headline: "Automate Your Slack Schedule",
+    headline: "Stay Active on Slack, Anytime. Anywhere.",
     highlightedText: "",
     suffix: "",
     subheadline:
-      "Boost productivity and maintain work-life balance with Slacktivity. Automatically manage your Slack status based on your schedule, reducing distractions and improving focus.",
+      "Keep your Slack status green and stay connected, even when you’re away from your desk.",
     socialCare: {
       active: true,
       image: productivityImg,
       fatPrefix: "5k+ ",
-      text: "professionals optimizing their workflow",
+      text: "staying active on Slack",
     },
     cta: {
       actions: {
@@ -64,37 +64,47 @@ export const landingpageContent = {
       },
     },
   },
+  fancyContent: {
+    id: "appear-active",
+    headline: "Appear Active on Slack",
+    highlightedText: "",
+    suffix: "",
+    description: `
+    Slack sets you to 'away' after 30 minutes of no activity, making you seem unavailable. Our App fixes that—keeping your status active and online every 5 minutes, even when you're not at your desk. Stay visible, stay engaged, and never worry about going offline again! Now, you can stay online and available all day. Take charge of your status and eliminate the hassle of appearing inactive!
+    `,
+  },
 
-  // feature steps section
+  // feature st eps section
   featureSteps: {
     id: "setup",
+    title: "Appear Active on Slack",
     headline: "",
     highlightedText: "Slacktivity",
     suffix: "in 3 Simple Steps",
     subheadline:
-      "Get set up in minutes and let Slacktivity optimize your Slack presence automatically.",
+      "Set up in minutes and let Slacktivity manage your online status, so you stay active even when you're away.",
     iconView: {
       active: true,
       steps: [
         {
           step: "Connect Your Workspace",
-          summary: "Seamless integration.",
+          summary: "Quick and secure.",
           description:
-            "Securely link your Slack account for automatic status updates.",
+            "Easily link your Slack workspace for automatic status management, keeping you online with no extra effort.",
           iconKey: "integrate",
         },
         {
-          step: "Define Your Schedule",
-          summary: "Customize your availability.",
+          step: "Set Your Availability",
+          summary: "Tailored to your schedule.",
           description:
-            "Set your working hours and breaks. We'll handle the rest.",
+            "Define your working hours. Slacktivity will ensure your status reflects when you're available, all without manual updates.",
           iconKey: "schedule",
         },
         {
-          step: "Maximize Your Focus",
-          summary: "Boost productivity.",
+          step: "Focus on What Matters",
+          summary: "Productivity maximized.",
           description:
-            "Let Slacktivity manage your online presence while you tackle important tasks.",
+            "Stay focused on your tasks, while Slacktivity keeps you online and engaged in Slack. Let us handle the presence, so you can handle the work.",
           iconKey: "focus",
         },
       ],
@@ -143,7 +153,7 @@ export const landingpageContent = {
 
   // testimonials
   testimonials: {
-    active: true,
+    active: false,
     id: "testimonials",
     headline: "What Our Users Say",
     highlightedText: "About Slacktivity",
@@ -154,7 +164,7 @@ export const landingpageContent = {
       [
         {
           content:
-            "Slacktivity has revolutionized my workday. I've reclaimed 2 hours of focused work time each week!",
+            "Both my slack channels appear online during my working hours without any problem.",
           author: {
             name: "Sarah Chen",
             role: "Product Manager at Tech Corp",
