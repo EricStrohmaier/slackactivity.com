@@ -24,7 +24,9 @@ export function UserNav({ user }: iAppProps) {
         <Button className="relative h-12 w-12 rounded-full">
           <Avatar className="h-12 w-12">
             <AvatarImage src={user.avatar_url as string} alt="User Image" />
-            <AvatarFallback>{user.full_name?.charAt(0)}</AvatarFallback>
+            <AvatarFallback>
+              <div className="h-full w-full bg-[linear-gradient(115deg,var(--tw-gradient-stops))] sm:bg-[linear-gradient(145deg,var(--tw-gradient-stops))] from-[#9ad4ae] 25% to-[#7fc8c9] 90% transition-all duration-500" />
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

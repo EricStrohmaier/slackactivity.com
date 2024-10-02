@@ -7,6 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -200,7 +201,7 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
 
   return (
     <div className="mx-auto h-full mt-32 max-w-3xl">
-      <Card className="w-full mb-4">
+      <Card className="w-full mb-2">
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle className="text-2xl font-bold">
@@ -208,29 +209,27 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
             </CardTitle>
             {activeWorkspace && (
               <div className="flex items-center space-x-2">
+                {!activeWorkspace.stripe_is_paid && (
+                  <Badge variant="destructive">Unpaid</Badge>
+                )}
                 <Badge
-                  variant={
-                    activeWorkspace.stripe_is_paid ? "default" : "destructive"
-                  }
-                >
-                  {activeWorkspace.stripe_is_paid ? "Paid" : "Unpaid"}
-                </Badge>
-                <Badge
-                  variant={activeWorkspace.is_active ? "default" : "secondary"}
+                  variant={activeWorkspace.is_active ? "default" : "default"}
                 >
                   {activeWorkspace.is_active ? "Enabled" : "Disabled"}
                 </Badge>
-                <Badge
-                  variant={
-                    getCurrentActivityStatus(activeWorkspace) === "Active"
-                      ? "success"
-                      : getCurrentActivityStatus(activeWorkspace) === "Away"
-                      ? "warning"
-                      : "secondary"
-                  }
-                >
-                  {getCurrentActivityStatus(activeWorkspace)}
-                </Badge>
+                {activeWorkspace.stripe_is_paid && (
+                  <Badge
+                    variant={
+                      getCurrentActivityStatus(activeWorkspace) === "Active"
+                        ? "success"
+                        : getCurrentActivityStatus(activeWorkspace) === "Away"
+                        ? "warning"
+                        : "secondary"
+                    }
+                  >
+                    {getCurrentActivityStatus(activeWorkspace)}
+                  </Badge>
+                )}
               </div>
             )}
           </div>
@@ -239,7 +238,39 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="workspaces">
+          <div className="mb-4">
+            <div className="flex items-center justify-center space-x-4">
+              <div className="w-[70%]">
+                <Label htmlFor="workspace">Select Workspace</Label>
+                <Select
+                  value={activeWorkspace?.id}
+                  onValueChange={handleWorkspaceChange}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select workspace" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {workspaces.map((workspace) => (
+                      <SelectItem key={workspace.id} value={workspace.id}>
+                        {workspace.team_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="w-[30%] flex items-center justify-center space-x-2">
+                <Label htmlFor="active-toggle">Workspace Active</Label>
+                <Switch
+                  id="active-toggle"
+                  checked={activeWorkspace?.is_active || false}
+                  onCheckedChange={() =>
+                    activeWorkspace && handleToggleWorkspace(activeWorkspace)
+                  }
+                />
+              </div>
+            </div>
+          </div>
+          <Tabs className="mt-8" defaultValue="workspaces">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="workspaces">Workspaces</TabsTrigger>
               <TabsTrigger value="activity">Activity Report</TabsTrigger>
@@ -253,41 +284,11 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
                   </Link>
                 </Button>
               ) : (
-                <div className="space-y-4 mt-4">
-                  <div>
-                    <Label htmlFor="workspace">Select Workspace</Label>
-                    <Select
-                      value={activeWorkspace?.id}
-                      onValueChange={handleWorkspaceChange}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select workspace" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {workspaces.map((workspace) => (
-                          <SelectItem key={workspace.id} value={workspace.id}>
-                            {workspace.team_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
+                <div className="space-y-4 mt-8">
                   {activeWorkspace && (
                     <>
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="active-toggle">Workspace Active</Label>
-                        <Switch
-                          id="active-toggle"
-                          checked={activeWorkspace?.is_active || false}
-                          onCheckedChange={() =>
-                            activeWorkspace &&
-                            handleToggleWorkspace(activeWorkspace)
-                          }
-                        />
-                      </div>
-                      <div className="flex space-x-4">
-                        <div className="flex-1">
+                      <div className="flex space-x-4 w-full">
+                        <div className="w-full">
                           <Label htmlFor="startHour">Start Hour</Label>
                           <Input
                             id="startHour"
@@ -305,7 +306,7 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
                             max="23"
                           />
                         </div>
-                        <div className="flex-1">
+                        <div className="w-full">
                           <Label htmlFor="endHour">End Hour</Label>
                           <Input
                             id="endHour"
@@ -322,46 +323,50 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
                           />
                         </div>
                       </div>
-                      <div>
-                        <Label htmlFor="timezone">Timezone</Label>
-                        <Select
-                          value={activeWorkspace?.working_hours.timezone || ""}
-                          onValueChange={(value) =>
-                            handleInputChange("timezone", value)
-                          }
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select timezone" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Intl.supportedValuesOf("timeZone").map((tz) => (
-                              <SelectItem key={tz} value={tz}>
-                                {tz}
-                              </SelectItem>
+                      <div className="flex space-x-4 w-full py-4">
+                        <div className="w-[60%]">
+                          <Label>Work Days</Label>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {days.map((day, index) => (
+                              <div
+                                key={day}
+                                className="flex items-center space-x-2"
+                              >
+                                <Checkbox
+                                  id={`day-${index}`}
+                                  checked={
+                                    activeWorkspace?.working_hours.daysOfWeek.includes(
+                                      index
+                                    ) || false
+                                  }
+                                  onCheckedChange={() => handleDayChange(index)}
+                                />
+                                <Label htmlFor={`day-${index}`}>{day}</Label>
+                              </div>
                             ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label>Work Days</Label>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {days.map((day, index) => (
-                            <div
-                              key={day}
-                              className="flex items-center space-x-2"
-                            >
-                              <Checkbox
-                                id={`day-${index}`}
-                                checked={
-                                  activeWorkspace?.working_hours.daysOfWeek.includes(
-                                    index
-                                  ) || false
-                                }
-                                onCheckedChange={() => handleDayChange(index)}
-                              />
-                              <Label htmlFor={`day-${index}`}>{day}</Label>
-                            </div>
-                          ))}
+                          </div>
+                        </div>
+                        <div className="w-[40%]">
+                          <Label htmlFor="timezone">Timezone</Label>
+                          <Select
+                            value={
+                              activeWorkspace?.working_hours.timezone || ""
+                            }
+                            onValueChange={(value) =>
+                              handleInputChange("timezone", value)
+                            }
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select timezone" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Intl.supportedValuesOf("timeZone").map((tz) => (
+                                <SelectItem key={tz} value={tz}>
+                                  {tz}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                     </>
@@ -383,25 +388,27 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
             </TabsContent>
           </Tabs>
         </CardContent>
+        <CardFooter>
+          <div className="flex flex-col md:flex-row w-full md:space-x-4">
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/api/slack/auth">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Another Slack Workspace
+              </Link>
+            </Button>
+            {activeWorkspace && (
+              <Button
+                onClick={handleSave}
+                className="w-full mb-4 md:mb-0"
+                disabled={!hasUnsavedChanges}
+                variant={hasUnsavedChanges ? "default" : "secondary"}
+              >
+                Save Workspace Settings
+              </Button>
+            )}
+          </div>
+        </CardFooter>
       </Card>
-
-      {activeWorkspace && (
-        <Button
-          onClick={handleSave}
-          className="w-full mb-4"
-          disabled={!hasUnsavedChanges}
-          variant={hasUnsavedChanges ? "default" : "secondary"}
-        >
-          Save Workspace Settings
-        </Button>
-      )}
-
-      <Button asChild variant="outline" className="w-full">
-        <Link href="/api/slack/auth">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Another Slack Workspace
-        </Link>
-      </Button>
     </div>
   );
 };
