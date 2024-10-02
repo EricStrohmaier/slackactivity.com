@@ -389,7 +389,7 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
           </Tabs>
         </CardContent>
         <CardFooter>
-          <div className="flex flex-col md:flex-row w-full md:space-x-4">
+          <div className="flex flex-col md:flex-row w-full md:space-x-4 space-y-4 md:space-y-0">
             <Button asChild variant="outline" className="w-full">
               <Link href="/api/slack/auth">
                 <Plus className="h-4 w-4 mr-2" />
@@ -409,6 +409,12 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
           </div>
         </CardFooter>
       </Card>
+      <div>
+        <p className="text-xs text-text-700 px-4">
+          Adding a workspace with Oauth will only keep you online while you are
+          at your computer. It will only prevent you from going to away.{" "}
+        </p>
+      </div>
     </div>
   );
 };
