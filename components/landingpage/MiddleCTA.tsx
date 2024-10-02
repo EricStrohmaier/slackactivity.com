@@ -28,7 +28,7 @@ export function MiddleCTA() {
               </p>
               <Link
                 href={content.middleCTA.button.href || "/"}
-                className="inline-block bg-accent-400 text-white font-semibold py-3 px-8 rounded-full hover:bg-accent-500 transition duration-300 ease-in-out transform hover:scale-105"
+                className="inline-block bg-primary text-white font-semibold py-3 px-8 rounded-full hover:bg-primary-900 transition duration-300 ease-in-out transform hover:scale-105"
               >
                 {content.middleCTA.button.text}
               </Link>

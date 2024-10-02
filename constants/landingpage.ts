@@ -77,7 +77,7 @@ export const landingpageContent = {
   // feature st eps section
   featureSteps: {
     id: "setup",
-    title: "Appear Active on Slack",
+    title: "",
     headline: "",
     highlightedText: "Slacktivity",
     suffix: "in 3 Simple Steps",
@@ -140,7 +140,7 @@ export const landingpageContent = {
   // middle call to action
   middleCTA: {
     id: "live-examples",
-    headline: "Maximize Your Productivity Today",
+    headline: "Ready to Stay Active on Slack?",
     highlightedText: "",
     suffix: "",
     subheadline:
