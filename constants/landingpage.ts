@@ -32,7 +32,7 @@ export const landingpageContent = {
   },
   // hero section
   hero: {
-    preHeadline: "Slacktivity",
+    preHeadline: "Slackactivity",
     headline: "Stay Active on Slack, Anytime. Anywhere.",
     highlightedText: "",
     suffix: "",
@@ -70,7 +70,7 @@ export const landingpageContent = {
     highlightedText: "",
     suffix: "",
     description: `
-    Slack sets you to 'away' after 30 minutes of no activity, making you seem unavailable. Our App fixes that—keeping your status active and online every 5 minutes, even when you're not at your desk. Stay visible, stay engaged, and never worry about going offline again! Now, you can stay online and available all day. Take charge of your status and eliminate the hassle of appearing inactive!
+    Slack sets you to 'away' after 30 minutes of no activity, making you seem unavailable. Our App fixes that — keeping your status active and online every 5 minutes, even when you're not at your desk. Stay visible, stay engaged, and never worry about going offline again! Now, you can stay online and available all day. Take charge of your status and eliminate the hassle of appearing inactive!
     `,
   },
 
