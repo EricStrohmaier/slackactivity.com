@@ -390,12 +390,14 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
         </CardContent>
         <CardFooter>
           <div className="flex flex-col md:flex-row w-full md:space-x-4 space-y-4 md:space-y-0">
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/api/slack/auth">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Another Slack Workspace
-              </Link>
-            </Button>
+            {workspaces.length > 1 && (
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/api/slack/auth">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Another Slack Workspace
+                </Link>
+              </Button>
+            )}
             {activeWorkspace && (
               <Button
                 onClick={handleSave}
