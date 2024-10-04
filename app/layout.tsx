@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.jpg`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/icon.png`,
         width: 1200,
         height: 630,
         alt: siteConfig.name,

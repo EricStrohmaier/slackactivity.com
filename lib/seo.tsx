@@ -35,7 +35,7 @@ export const getSEOTags = ({
     openGraph: {
       title: openGraph?.title || siteConfig.name,
       description: openGraph?.description || siteConfig.description,
-      url: openGraph?.url || `https://${siteConfig.domain}/`,
+      url: openGraph?.url || `https://${siteConfig.domain}/icon.png`,
       siteName: openGraph?.title || siteConfig.name,
       // If you add an opengraph-image.(jpg|jpeg|png|gif) image to the /app folder, you don't need the code below
       // images: [
@@ -85,14 +85,14 @@ export const renderSchemaTags = () => {
           "@type": "SoftwareApplication",
           name: siteConfig.name,
           description: siteConfig.description,
-          image: `https://${siteConfig.domain}/og-image.jpg`,
+          image: `https://${siteConfig.domain}/icon.png`,
           url: `https://${siteConfig.domain}/`,
           author: {
             "@type": "Person",
             name: "Eric Strohmaier",
           },
-          datePublished: "2024-09-11",
-          applicationCategory: "EducationalApplication",
+          datePublished: "2024-01-10",
+          applicationCategory: "BrowserApplication",
           aggregateRating: {
             "@type": "AggregateRating",
             ratingValue: "4.8",
@@ -101,7 +101,7 @@ export const renderSchemaTags = () => {
           offers: [
             {
               "@type": "Offer",
-              price: "5.00",
+              price: "20.00",
               priceCurrency: "EUR",
             },
           ],
