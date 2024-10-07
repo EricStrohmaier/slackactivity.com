@@ -22,14 +22,14 @@ export const metadata: Metadata = {
   keywords: siteConfig.keywords,
   authors: [
     {
-      name: "Slackactivity Team",
+      name: "Slackactivity",
       url: process.env.NEXT_PUBLIC_SITE_URL,
     },
   ],
   openGraph: {
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL}/icon.png`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/icon.jpeg`,
         width: 1200,
         height: 630,
         alt: siteConfig.name,

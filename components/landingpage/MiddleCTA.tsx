@@ -5,6 +5,7 @@ import { landingpageContent } from "@/constants/landingpage";
 import Link from "next/link";
 import { Container } from "./container";
 import { Gradient } from "@/components/landingpage/gradient";
+import { Button } from "../ui/button";
 
 export function MiddleCTA() {
   const content = landingpageContent;
@@ -27,10 +28,12 @@ export function MiddleCTA() {
                 {content.middleCTA.subheadline}
               </p>
               <Link
+                className="w-full"
                 href={content.middleCTA.button.href || "/"}
-                className="inline-block bg-primary text-white font-semibold py-3 px-8 rounded-full hover:bg-primary-900 transition duration-300 ease-in-out transform hover:scale-105"
               >
-                {content.middleCTA.button.text}
+                <Button size={"lg"} variant={"landingpageCTA"}>
+                  {content.middleCTA.button.text}
+                </Button>
               </Link>
             </hgroup>
           </div>
