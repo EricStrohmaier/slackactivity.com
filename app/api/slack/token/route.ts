@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
               name: siteConfig.name,
               description: `Payment for workspace ${data.team.name}`,
             },
-            unit_amount: 1000, // Price in cents (€10)
+            unit_amount: 2000, // Price in cents (€10)
           },
 
           quantity: 1,
