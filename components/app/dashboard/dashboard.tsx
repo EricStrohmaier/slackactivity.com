@@ -123,8 +123,9 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
     try {
       await updateWorkspace(activeWorkspace);
 
-      // add
+      // Update user presence
       await updateUserPresence(activeWorkspace);
+      console.log("User presence updated successfully");
 
       toast.success("Workspace settings updated", {
         description:
@@ -132,12 +133,12 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
       });
       setHasUnsavedChanges(false);
     } catch (error) {
+      console.error("Error in handleSave:", error);
       toast.error("Error", {
         description: `Failed to update workspace settings or presence: ${
           (error as Error).message
         }`,
       });
-      console.error(error);
     }
   }, [activeWorkspace]);
 

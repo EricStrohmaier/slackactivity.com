@@ -1,4 +1,5 @@
 "use server";
+
 import moment from "moment";
 import { WebClient } from "@slack/web-api";
 import { createClient } from "@/utils/supabase/server";
@@ -57,45 +58,6 @@ const isWithinWorkHours = (
   return withinHours && withinDays;
 };
 
-const slackOperations = async (config: UserConfig): Promise<void> => {
-  const { token, workHours } = config;
-  const web = new WebClient(token);
-
-  //   const profileInfo = await web.users.profile.get();
-
-  if (
-    isWithinWorkHours(
-      workHours.startHour,
-      workHours.endHour,
-      workHours.daysOfWeek
-    )
-  ) {
-    await web.users.setPresence({ presence: "auto" });
-    // await web.users.profile.set({
-    //   profile: {
-    //     ...profileInfo.profile,
-    //     status_text: "Working",
-    //     status_emoji: ":working:",
-    //     status_expiration: durationTimestamp,
-    //   },
-    // });
-  } else {
-    await web.users.setPresence({ presence: "away" });
-    // await web.users.profile.set({
-    //   profile: {
-    //     ...profileInfo.profile,
-    //     status_text: "AFK",
-    //     status_emoji: ":afk:",
-    //     status_expiration: durationTimestamp,
-    //   },
-    // });
-  }
-
-  console.log("Updated your status.", new Date().getTime());
-};
-
-export default slackOperations;
-
 export async function updateWorkspace(workspace: Workspace) {
   const supabase = supabaseAdmin();
   const { data, error } = await supabase
@@ -122,6 +84,7 @@ export async function updateUserPresence(workspace: Workspace) {
     console.error(`Missing token or work hours for workspace ${workspace.id}`);
     return;
   }
+  console.log("Updating user presence for workspace", workspace);
 
   const slack = new WebClient(token);
 
@@ -131,24 +94,32 @@ export async function updateUserPresence(workspace: Workspace) {
 
   let action: string;
 
-  if (
-    workHours.daysOfWeek.includes(currentDay) &&
-    currentHour >= workHours.startHour &&
-    currentHour < workHours.endHour
-  ) {
-    await slack.users.setPresence({ presence: "auto" });
-    action = "set_active";
-  } else {
-    await slack.users.setPresence({ presence: "away" });
-    action = "set_away";
-  }
+  try {
+    if (
+      workHours.daysOfWeek.includes(currentDay) &&
+      currentHour >= workHours.startHour &&
+      currentHour < workHours.endHour
+    ) {
+      await slack.users.setPresence({ presence: "auto" });
+      action = "set_active";
+      console.log("User set to active");
+    } else {
+      await slack.users.setPresence({ presence: "away" });
+      action = "set_away";
+      console.log("User set to away");
+    }
 
-  const supabase = supabaseAdmin();
-  await supabase.from("activity_logs").insert({
-    user_id: workspace.id,
-    action: action,
-    details: { currentDay, currentHour, workHours },
-  });
+    const supabase = supabaseAdmin();
+    await supabase.from("activity_logs").insert({
+      user_id: workspace.id,
+      action: action,
+      details: { currentDay, currentHour, workHours },
+    });
+    console.log("Activity log inserted");
+  } catch (error) {
+    console.error("Error updating user presence:", error);
+    throw error;
+  }
 }
 
 export async function generateActivityReport(
