@@ -88,32 +88,49 @@ export async function updateUserPresence(workspace: Workspace) {
 
   const slack = new WebClient(token);
 
+  // Get the current time in the workspace's timezone
   const now = new Date();
-  const currentDay = now.getDay();
-  const currentHour = now.getHours();
+  const workspaceLocalTime = new Date(
+    now.toLocaleString("en-US", {
+      timeZone: workHours.timezone as any,
+    })
+  );
+
+  const currentDay = workspaceLocalTime.getDay();
+  const currentHour = workspaceLocalTime.getHours();
+  const currentMinute = workspaceLocalTime.getMinutes();
+
+  console.log(
+    `Workspace ${workspace.id} local time: ${workspaceLocalTime.toISOString()}`
+  );
+  console.log(
+    `Current day: ${currentDay}, Current hour: ${currentHour}, Current minute: ${currentMinute}`
+  );
 
   let action: string;
 
   try {
     if (
       workHours.daysOfWeek.includes(currentDay) &&
-      currentHour >= workHours.startHour &&
-      currentHour < workHours.endHour
+      (currentHour > workHours.startHour ||
+        (currentHour === workHours.startHour && currentMinute >= 0)) &&
+      (currentHour < workHours.endHour ||
+        (currentHour === workHours.endHour && currentMinute === 0))
     ) {
       await slack.users.setPresence({ presence: "auto" });
       action = "set_active";
-      console.log("User set to active");
+      console.log(`Setting workspace ${workspace.id} to active`);
     } else {
       await slack.users.setPresence({ presence: "away" });
       action = "set_away";
-      console.log("User set to away");
+      console.log(`Setting workspace ${workspace.id} to away`);
     }
 
     const supabase = supabaseAdmin();
     await supabase.from("activity_logs").insert({
-      user_id: workspace.id,
+      workspace_id: workspace.id,
       action: action,
-      details: { currentDay, currentHour, workHours },
+      details: { currentDay, currentHour, currentMinute, workHours },
     });
     console.log("Activity log inserted");
   } catch (error) {
