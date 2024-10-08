@@ -123,13 +123,18 @@ const DashboardClient: React.FC<DashboardClientProps> = ({
     try {
       await updateWorkspace(activeWorkspace);
 
-      // Update user presence
-      await updateUserPresence(activeWorkspace);
-      console.log("User presence updated successfully");
+      // Update user presence only if the workspace is paid
+      if (activeWorkspace.stripe_is_paid) {
+        await updateUserPresence(activeWorkspace);
+        console.log("User presence updated successfully");
+      } else {
+        console.log("Skipping presence update: workspace not paid");
+      }
 
       toast.success("Workspace settings updated", {
         description:
-          "Your workspace settings have been successfully saved and presence updated.",
+          "Your workspace settings have been successfully saved" +
+          (activeWorkspace.stripe_is_paid ? " and presence updated." : "."),
       });
       setHasUnsavedChanges(false);
     } catch (error) {

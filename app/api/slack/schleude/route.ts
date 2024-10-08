@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
   console.log(
     `Updating Slack presence for ${workspaces.length} active workspaces`
   );
-  console.log("workspaces", workspaces);
+
   const updateResults = await Promise.all(
     workspaces.map(async (workspace) => {
       const {

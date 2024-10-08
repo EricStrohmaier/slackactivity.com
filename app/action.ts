@@ -79,12 +79,17 @@ export async function updateWorkspace(workspace: Workspace) {
 export async function updateUserPresence(workspace: Workspace) {
   const token = workspace.slack_auth_token;
   const workHours = workspace.working_hours;
+  const isPaid = workspace.stripe_is_paid;
 
   if (!token || !workHours) {
     console.error(`Missing token or work hours for workspace ${workspace.id}`);
     return;
   }
-  console.log("Updating user presence for workspace", workspace);
+
+  if (!isPaid) {
+    console.log(`Skipping workspace ${workspace.id}: not paid`);
+    return;
+  }
 
   const slack = new WebClient(token);
 
@@ -100,13 +105,6 @@ export async function updateUserPresence(workspace: Workspace) {
   const currentHour = workspaceLocalTime.getHours();
   const currentMinute = workspaceLocalTime.getMinutes();
 
-  console.log(
-    `Workspace ${workspace.id} local time: ${workspaceLocalTime.toISOString()}`
-  );
-  console.log(
-    `Current day: ${currentDay}, Current hour: ${currentHour}, Current minute: ${currentMinute}`
-  );
-
   let action: string;
 
   try {
@@ -119,11 +117,9 @@ export async function updateUserPresence(workspace: Workspace) {
     ) {
       await slack.users.setPresence({ presence: "auto" });
       action = "set_active";
-      console.log(`Setting workspace ${workspace.id} to active`);
     } else {
       await slack.users.setPresence({ presence: "away" });
       action = "set_away";
-      console.log(`Setting workspace ${workspace.id} to away`);
     }
 
     const supabase = supabaseAdmin();
@@ -132,7 +128,6 @@ export async function updateUserPresence(workspace: Workspace) {
       action: action,
       details: { currentDay, currentHour, currentMinute, workHours },
     });
-    console.log("Activity log inserted");
   } catch (error) {
     console.error("Error updating user presence:", error);
     throw error;
