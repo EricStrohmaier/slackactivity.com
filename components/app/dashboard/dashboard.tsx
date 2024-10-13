@@ -61,7 +61,13 @@ const DashboardSelector: React.FC<DashboardSelectorProps> = ({
     <Card className="w-full max-w-3xl mx-auto py-2 mt-10">
       <CardContent>
         <Tabs className="pt-2" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 gap-2 ">
+          <TabsList
+            className={`grid w-full max-w-md mx-auto ${
+              slackWorkspaces.length > 0 && msTeamsWorkspaces.length > 0
+                ? "grid-cols-3"
+                : "grid-cols-2"
+            } gap-2`}
+          >
             {slackWorkspaces.length > 0 && (
               <TabsTrigger value="slack">Slack</TabsTrigger>
             )}
