@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
 
         // Call the set-presence API route instead of the MS Graph API directly
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/ms/set-presence`,
+          `${process.env.NEXT_PUBLIC_SITE_URL}/api/ms/set-presence`,
           {
             method: "POST",
             headers: {
