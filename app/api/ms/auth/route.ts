@@ -1,6 +1,5 @@
-// app/api/ms/auth/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
+import { v4 as uuidv4 } from "uuid";
 
 export async function GET(req: NextRequest) {
   const clientId = process.env.AZURE_CLIENT_ID;
@@ -8,16 +7,21 @@ export async function GET(req: NextRequest) {
     process.env.NEXT_PUBLIC_MS_TEAMS_REDIRECT_URI!
   );
 
-  // Use officially documented scopes for Microsoft Graph API
   const scopes = encodeURIComponent(
     "openid profile offline_access email User.Read Presence.Read Presence.ReadWrite"
   );
 
-  // Determine the account type (common for both, organizations for work accounts only)
   const tenantId =
     req.nextUrl.searchParams.get("accountType") === "work"
       ? "organizations"
       : "common";
+
+  // Generate a unique state value
+  const state = uuidv4();
+
+  // TODO: Store this state value in your database or session storage
+  // This is crucial for preventing CSRF attacks
+  // await storeState(state);
 
   const msTeamsAuthUrl =
     `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?` +
@@ -26,7 +30,8 @@ export async function GET(req: NextRequest) {
     `&redirect_uri=${redirectUri}` +
     `&response_mode=query` +
     `&scope=${scopes}` +
-    `&prompt=consent`; // Added to ensure consent is always requested
+    `&state=${state}` +
+    `&prompt=consent`;
 
   return NextResponse.redirect(msTeamsAuthUrl);
 }

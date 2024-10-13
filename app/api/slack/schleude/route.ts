@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { WebClient } from "@slack/web-api";
-import { Workspace } from "@/types/supabase";
+import { Workspace, WorkingHours } from "@/types/supabase";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 
 export async function GET(request: NextRequest) {
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
       const now = new Date();
       const workspaceLocalTime = new Date(
         now.toLocaleString("en-US", {
-          timeZone: workHours.timezone as any,
+          timeZone: (workHours as WorkingHours).timezone,
         })
       );
 
@@ -116,11 +116,13 @@ export async function GET(request: NextRequest) {
       let action: string;
 
       if (
-        workHours.daysOfWeek.includes(currentDay) &&
-        (currentHour > workHours.startHour ||
-          (currentHour === workHours.startHour && currentMinute >= 0)) &&
-        (currentHour < workHours.endHour ||
-          (currentHour === workHours.endHour && currentMinute === 0))
+        (workHours as WorkingHours).daysOfWeek.includes(currentDay) &&
+        (currentHour > (workHours as WorkingHours).startHour ||
+          (currentHour === (workHours as WorkingHours).startHour &&
+            currentMinute >= 0)) &&
+        (currentHour < (workHours as WorkingHours).endHour ||
+          (currentHour === (workHours as WorkingHours).endHour &&
+            currentMinute === 0))
       ) {
         await slack.users.setPresence({ presence: "auto" });
         action = "set_active";
