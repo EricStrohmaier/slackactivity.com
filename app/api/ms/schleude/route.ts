@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     .from("workspace")
     .select("*")
     .eq("is_active", true)
-    .eq("team_id", "Ms Teams");
+    .eq("team_id", "MS Teams");
 
   if (error) {
     console.error("Error fetching active workspaces:", error);

@@ -77,7 +77,8 @@ export async function GET(req: NextRequest) {
     .upsert(
       {
         user_id: user.id,
-        team_id: "Ms Teams",
+        team_name: "MS Teams",
+        team_id: "MS Teams",
         is_active: true,
       },
       {

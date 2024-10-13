@@ -1,9 +1,8 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/utils/supabase/admin";
-
 import { generateActivityReport, getUser } from "@/app/action";
-import DashboardClient from "@/components/app/dashboard/dashboard";
+import DashboardSelector from "@/components/app/dashboard/dashboard";
 import { getUserWorkSpaces } from "@/lib/get/getUserWorkSpaces";
 
 export default async function DashboardPage({
@@ -32,7 +31,7 @@ export default async function DashboardPage({
     );
   }
 
-  // Fetch working hours and activity report
+  // Fetch workspaces and activity report
   const workspaces = await getUserWorkSpaces(user.id);
   const endDate = new Date();
   const startDate = new Date(endDate);
@@ -43,14 +42,12 @@ export default async function DashboardPage({
     endDate
   );
 
-  console.log("workingHours", workspaces);
-
   return (
     <div className="h-screen">
-      <DashboardClient
+      <DashboardSelector
         user={currentUser}
-        initialWorkspaces={workspaces}
-        initialActivityReport={activityReport}
+        workspaces={workspaces}
+        activityReport={activityReport}
       />
     </div>
   );
