@@ -66,7 +66,7 @@ export const landingpageContent = {
   },
   demoVideo: {
     src: "/Salackactivity_demo_movie.mov",
-    title: "Slacktivity in Action",
+    title: "",
   },
   fancyContent: {
     id: "appear-active",
