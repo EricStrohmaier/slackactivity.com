@@ -1,23 +1,10 @@
 "use client";
 
-import { siteConfig } from "@/config/site";
 import { PricePlan } from "./PricePlan";
-
 import { User } from "@supabase/supabase-js";
-import { useRouter } from "next/navigation";
 import { landingpageContent } from "@/constants/landingpage";
 
 const Pricing = ({ user }: { user: User | null }) => {
-  const router = useRouter();
-
-  const handleAction = () => {
-    if (!user) {
-      router.push(siteConfig.auth.loginUrl);
-    } else {
-      router.push(siteConfig.auth.slackAuth);
-    }
-  };
-
   return (
     <section className="overflow-hidden" id={landingpageContent.stripe.title}>
       <div className="py-24 px-8 max-w-5xl mx-auto">
@@ -33,7 +20,7 @@ const Pricing = ({ user }: { user: User | null }) => {
         <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
           {landingpageContent.stripe.plans.map((plan) => (
             <PricePlan
-              onAction={handleAction}
+              user={user || null}
               plan={plan}
               isLoading={false}
               key={plan.name}

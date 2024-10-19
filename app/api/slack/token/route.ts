@@ -6,8 +6,13 @@ import { getErrorRedirect, getStatusRedirect } from "@/utils/helpers";
 import { stripe } from "@/lib/stripe";
 import { siteConfig } from "@/config/site";
 import { v4 as uuidv4 } from "uuid";
+
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
+  const priceId = req.nextUrl.searchParams.get("priceId");
+  const mode = req.nextUrl.searchParams.get("mode");
+  console.log("in token route priceId", priceId);
+  console.log("in token route mode", mode);
   let redirectPath;
 
   if (!code) {
@@ -92,15 +97,7 @@ export async function GET(req: NextRequest) {
       payment_method_types: ["card"],
       line_items: [
         {
-          price_data: {
-            currency: "eur",
-            product_data: {
-              name: siteConfig.name,
-              description: `Payment for workspace ${data.team.name}`,
-            },
-            unit_amount: 2000, // Price in cents (€10)
-          },
-
+          price: priceId || "",
           quantity: 1,
         },
       ],
@@ -108,7 +105,7 @@ export async function GET(req: NextRequest) {
         user_id: user.id,
         workspace_id: workspaceId,
       },
-      mode: "payment",
+      mode: (mode as any) || "payment",
       success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/`,
     });

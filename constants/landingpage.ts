@@ -125,6 +125,8 @@ export const landingpageContent = {
     buttonText: "Get Started 🚀",
     plans: [
       {
+        priceId: "price_1QBhGFK0DN5oBxDUqgjRBTA3",
+        mode: "subscription",
         name: "Monthly Pro",
         description: "Flexible monthly subscription",
         price: 4.99,
@@ -138,6 +140,8 @@ export const landingpageContent = {
         ],
       },
       {
+        priceId: "price_1QBhHWK0DN5oBxDURPEsphgv",
+        mode: "payment",
         isFeatured: true,
         name: "Lifetime Access",
         description: "One-time payment for unlimited access",

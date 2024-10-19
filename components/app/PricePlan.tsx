@@ -1,16 +1,30 @@
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 import { landingpageContent } from "@/constants/landingpage";
+import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 
 // PlanCard component
 export const PricePlan = ({
+  user,
   plan,
-  onAction,
   isLoading,
 }: {
+  user: User | null;
   plan: any;
-  onAction?: () => void;
   isLoading: boolean;
 }) => {
+  const router = useRouter();
+
+  const handleAction = () => {
+    if (!user) {
+      router.push(siteConfig.auth.loginUrl);
+    } else {
+      router.push(
+        "/api/slack/auth?priceId=" + plan.priceId + "&mode=" + plan.mode
+      );
+    }
+  };
   return (
     <div className="relative w-full max-w-lg">
       {plan.isFeatured && (
@@ -86,7 +100,7 @@ export const PricePlan = ({
         )}
         <div className="flex justify-center">
           <Button
-            onClick={onAction}
+            onClick={handleAction}
             loading={isLoading}
             className="cursor-pointer hover:bg-primary-800 hover:text-white w-full sm:w-auto"
           >

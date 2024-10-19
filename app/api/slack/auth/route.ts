@@ -2,13 +2,22 @@ import { NextResponse } from "next/server";
 
 // This function is used to generate the Slack OAuth URL
 // It's called when a user wants to authenticate with Slack
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const priceId = searchParams.get("priceId");
+  const mode = searchParams.get("mode");
+  console.log("in auth route priceId", priceId);
+  console.log("in auth route mode", mode);
+
   const clientId = process.env.NEXT_PUBLIC_SLACK_CLIENT_ID;
 
   // Encode the Slack redirect URI
   const redirectUri = encodeURIComponent(
-    process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI!
+    `${process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI}${
+      priceId ? `?priceId=${priceId}` : ""
+    }${mode ? `&mode=${mode}` : ""} `
   );
+  console.log(redirectUri);
 
   // Define the user scope for the Slack OAuth
   const userScope =
