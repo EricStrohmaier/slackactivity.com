@@ -11,8 +11,7 @@ export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const priceId = req.nextUrl.searchParams.get("priceId");
   const mode = req.nextUrl.searchParams.get("mode");
-  console.log("in token route priceId", priceId);
-  console.log("in token route mode", mode);
+
   let redirectPath;
 
   if (!code) {
@@ -98,6 +97,7 @@ export async function GET(req: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
+      customer_creation: "always",
       line_items: [
         {
           price: priceId || "",

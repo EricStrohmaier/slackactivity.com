@@ -6,8 +6,6 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const priceId = searchParams.get("priceId");
   const mode = searchParams.get("mode");
-  console.log("in auth route priceId", priceId);
-  console.log("in auth route mode", mode);
 
   const clientId = process.env.NEXT_PUBLIC_SLACK_CLIENT_ID;
 
@@ -17,7 +15,6 @@ export async function GET(request: Request) {
       priceId ? `?priceId=${priceId}` : ""
     }${mode ? `&mode=${mode}` : ""} `
   );
-  console.log(redirectUri);
 
   // Define the user scope for the Slack OAuth
   const userScope =

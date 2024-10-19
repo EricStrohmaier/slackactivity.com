@@ -8,11 +8,11 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { user },
+    } = await supabase.auth.getUser();
 
     // User who are not logged in can't make a purchase
-    if (!session) {
+    if (!user) {
       return NextResponse.json(
         { error: "You must be logged in to view billing information." },
         { status: 401 }
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     const { data } = await supabase
       .from("users")
       .select("*")
-      .eq("id", session?.user?.id)
+      .eq("id", user?.id)
       .single();
     // @ts-ignore
     if (!data?.stripe_customer_id) {
