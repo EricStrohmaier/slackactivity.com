@@ -34,7 +34,10 @@ export async function GET(req: NextRequest) {
       code: code || "",
       client_id: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
       client_secret: process.env.SLACK_CLIENT_SECRET!,
-      redirect_uri: process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI!,
+      redirect_uri:
+        process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI +
+        (priceId ? `?priceId=${priceId}` : "") +
+        (mode ? `&mode=${mode}` : ""),
     }),
   });
 
