@@ -46,11 +46,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      {siteConfig.domain && (
-        <head>
-          <PlausibleProvider domain={siteConfig.domain} />
-        </head>
-      )}
+      <head>
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="8aa1afc7-b3eb-460c-ab50-fd386289cdaa"
+        ></script>
+      </head>
       <body className={`h-full ${inter.className}`}>
         <Provider>
           <div className="flex flex-col w-full h-full bg-background">

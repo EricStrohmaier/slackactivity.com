@@ -1,5 +1,4 @@
 import React from "react";
-import EmailSignUp from "@/components/landingpage/emailsignup";
 import { FeatureSteps } from "@/components/landingpage/FeatureSteps";
 import { Hero } from "@/components/landingpage/Hero";
 import { Testimonials } from "@/components/landingpage/Testimonials";
