@@ -37,7 +37,7 @@ export const landingpageContent = {
     highlightedText: "",
     suffix: "",
     subheadline:
-      "Keep your Slack status green and stay connected, even when you’re away from your desk.",
+      "Keep your Slack status green and stay connected, even when you're away from your desk.",
     socialCare: {
       active: true,
       image: productivityImg,
@@ -63,6 +63,10 @@ export const landingpageContent = {
         link: "/signin",
       },
     },
+  },
+  demoVideo: {
+    src: "/Salackactivity_demo_movie.mov",
+    title: "Slacktivity in Action",
   },
   fancyContent: {
     id: "appear-active",

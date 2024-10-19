@@ -2,6 +2,7 @@ import React from "react";
 import { FeatureSteps } from "@/components/landingpage/FeatureSteps";
 import { Hero } from "@/components/landingpage/Hero";
 import { Testimonials } from "@/components/landingpage/Testimonials";
+import { DemoVideo } from "@/components/landingpage/DemoVideo";
 import Pricing from "@/components/app/Pricing";
 import { getUser } from "./action";
 import { MiddleCTA } from "@/components/landingpage/MiddleCTA";
@@ -18,6 +19,7 @@ export default async function page({
   return (
     <div className="text-text">
       <Hero />
+      <DemoVideo />
       <FancyContent />
       <FeatureSteps />
       <Pricing user={user} />
