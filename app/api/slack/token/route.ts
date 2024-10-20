@@ -34,7 +34,9 @@ export async function GET(req: NextRequest) {
       client_id: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
       client_secret: process.env.SLACK_CLIENT_SECRET!,
       redirect_uri:
-        process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI +
+        (process.env.NODE_ENV === "development"
+          ? process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI_DEV
+          : process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI) +
         (priceId ? `?priceId=${priceId}` : "") +
         (mode ? `&mode=${mode}` : ""),
     }),
@@ -95,9 +97,21 @@ export async function GET(req: NextRequest) {
   } else {
     // Create a Stripe Checkout Session
 
+    const extraParams: {
+      customer?: string;
+      customer_creation?: "always";
+      customer_email?: string;
+      invoice_creation?: { enabled: boolean };
+      payment_intent_data?: { setup_future_usage: "on_session" };
+      tax_id_collection?: { enabled: boolean };
+    } = {};
+
+    if (mode === "payment") {
+      extraParams.customer_creation = "always";
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      customer_creation: "always",
       line_items: [
         {
           price: priceId || "",
@@ -111,6 +125,7 @@ export async function GET(req: NextRequest) {
       mode: (mode as any) || "payment",
       success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/`,
+      ...extraParams,
     });
 
     // Redirect to the Stripe checkout page

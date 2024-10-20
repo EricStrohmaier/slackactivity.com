@@ -9,11 +9,13 @@ export async function GET(request: Request) {
 
   const clientId = process.env.NEXT_PUBLIC_SLACK_CLIENT_ID;
 
-  // Encode the Slack redirect URI
+  // Use the development redirect URI when in development mode
   const redirectUri = encodeURIComponent(
-    `${process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI}${
-      priceId ? `?priceId=${priceId}` : ""
-    }${mode ? `&mode=${mode}` : ""} `
+    `${
+      process.env.NODE_ENV === "development"
+        ? process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI_DEV
+        : process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI
+    }${priceId ? `?priceId=${priceId}` : ""}${mode ? `&mode=${mode}` : ""}`
   );
 
   // Define the user scope for the Slack OAuth

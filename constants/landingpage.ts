@@ -125,7 +125,10 @@ export const landingpageContent = {
     buttonText: "Get Started 🚀",
     plans: [
       {
-        priceId: "price_1QBhGFK0DN5oBxDUqgjRBTA3",
+        priceId:
+          process.env.NODE_ENV === "development"
+            ? "price_1QBzOkK0DN5oBxDUxaIdEE2R"
+            : "price_1QBhGFK0DN5oBxDUqgjRBTA3",
         mode: "subscription",
         name: "Monthly Pro",
         description: "Flexible monthly subscription",

@@ -15,6 +15,7 @@ import Link from "next/link";
 import SlackDashboardClient from "./SlackDashboard";
 import MSTeamsDashboardClient from "./MSDashboard";
 import { User, ActivityReport, Workspace } from "@/types/supabase";
+import ButtonAccount from "../ButtonAccount";
 
 interface DashboardSelectorProps {
   user: User;

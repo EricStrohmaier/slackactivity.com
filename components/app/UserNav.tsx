@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,12 +14,35 @@ import {
 import Link from "next/link";
 import Signout from "@/components/auth-form/Signout";
 import { User } from "@/types/supabase";
+import { useState } from "react";
+import apiClient from "@/lib/api";
 
 interface iAppProps {
   user: User;
 }
 
 export function UserNav({ user }: iAppProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleBilling = async () => {
+    setIsLoading(true);
+
+    try {
+      const { url }: { url: string } = await apiClient.post(
+        "/stripe/create-portal",
+        {
+          returnUrl: window.location.href,
+        }
+      );
+
+      window.location.href = url;
+    } catch (e) {
+      console.error(e);
+    }
+
+    setIsLoading(false);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,6 +68,9 @@ export function UserNav({ user }: iAppProps) {
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link href="/dashboard">Dashboard</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleBilling} disabled={isLoading}>
+            {isLoading ? "Loading..." : "Billing"}
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

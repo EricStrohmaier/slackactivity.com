@@ -1,10 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createCustomerPortal } from "@/lib/stripe";
+import { createClient } from "@/utils/supabase/server";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = supabaseAdmin();
+    const supabase = createClient();
     const body = await req.json();
 
     const {
@@ -24,7 +25,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { data } = await supabase
+    const supabaseAdmi = supabaseAdmin();
+
+    const { data } = await supabaseAdmi
       .from("users")
       .select("*")
       .eq("id", user?.id)
