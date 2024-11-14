@@ -67,9 +67,39 @@ export async function GET(req: NextRequest) {
     return redirect(redirectPath); // Ensure redirection
   }
 
-  // Save the workspace info
+  // Check if workspace already exists for this user
   const supabase = supabaseAdmin();
-  const workspaceId = uuidv4();
+  const { data: existingWorkspace, error: fetchError } = await supabase
+    .from("workspace")
+    .select("*")
+    .eq("user_id", user?.id)
+    .single();
+
+  if (fetchError && fetchError.code !== "PGRST116") {
+    // PGRST116 is "not found" error
+    console.error("Error fetching workspace:", fetchError);
+    redirectPath = getErrorRedirect(
+      `/`,
+      "Something went wrong.",
+      "Could not check existing workspace"
+    );
+    return redirect(redirectPath);
+  }
+
+  // If workspace exists and is paid, redirect to dashboard
+  if (existingWorkspace?.stripe_is_paid) {
+    redirectPath = getStatusRedirect(
+      `/dashboard`,
+      "Workspace already connected",
+      "Redirecting to dashboard"
+    );
+    return redirect(redirectPath);
+  }
+
+  // Generate new workspace ID only if workspace doesn't exist
+  const workspaceId = existingWorkspace?.id || uuidv4();
+
+  // Update existing workspace or create new one
   const { error: upsertError } = await supabase.from("workspace").upsert({
     id: workspaceId,
     user_id: user?.id,
