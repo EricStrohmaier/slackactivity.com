@@ -26,7 +26,9 @@ export default function GlobalError({
               Go Home
             </Link>
             <Button asChild variant={"outline"} className="mt-6">
-              <Link href={siteConfig.supportEmail}>Contact Support </Link>
+              <Link href={`mailto:${siteConfig.supportEmail}`}>
+                Contact Support{" "}
+              </Link>
             </Button>
           </div>
         </main>

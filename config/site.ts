@@ -1,5 +1,5 @@
 export const siteConfig = {
-  supportEmail: "mailto:office@slackactivity.com",
+  supportEmail: "office@slackactivity.com",
   name: "Slackactivity",
   domain: "slackactivity.com",
   url: "https://slackactivity.com",

@@ -26,7 +26,7 @@ export default async function Page({ searchParams }: Props) {
             <Link href="/">Back to Homepage</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href={siteConfig.supportEmail}>
+            <Link href={`mailto:${siteConfig.supportEmail}`}>
               Contact support <span aria-hidden="true">&rarr;</span>
             </Link>
           </Button>
