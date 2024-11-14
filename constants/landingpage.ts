@@ -39,7 +39,7 @@ export const landingpageContent = {
     subheadline:
       "Keep your Slack status green and stay connected, even when you're away from your desk.",
     socialCare: {
-      active: true,
+      active: false,
       image: productivityImg,
       fatPrefix: "5k+ ",
       text: "staying active on Slack",
@@ -235,7 +235,7 @@ export const landingpageContent = {
   },
   footer: [
     { name: "Home", href: "/" },
-    { name: "Contact", href: "mailto:office@slackactivity.com" },
+    { name: "Contact", href: "/contact" },
     { name: "Terms of Service", href: "/terms" },
     { name: "Privacy Policy", href: "/privacy-policy" },
   ],
