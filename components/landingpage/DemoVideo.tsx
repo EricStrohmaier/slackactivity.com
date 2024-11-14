@@ -4,7 +4,7 @@ import { landingpageContent } from "@/constants/landingpage";
 
 export const DemoVideo = () => {
   return (
-    <section className="py-16">
+    <section className="pb-16">
       <Container>
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-text mb-4">

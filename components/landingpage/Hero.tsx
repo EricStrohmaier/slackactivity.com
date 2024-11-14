@@ -11,7 +11,7 @@ export function Hero({ isMarketplace = false }) {
     <>
       {renderSchemaTags()}
       <div className="relative overflow-hidden h-full flex flex-col justify-between">
-        <Container className="relative flex flex-col justify-center items-center pb-16 pt-12 text-center lg:pt-40 min-h-[700px] h-full">
+        <Container className="relative flex flex-col justify-center items-center pt-12 text-center lg:pt-20 min-h-[600px] h-full">
           <h1 className="text-xl text-center text-gray-600">
             {content.hero.preHeadline}
           </h1>

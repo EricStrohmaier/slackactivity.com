@@ -53,7 +53,7 @@ export const PricePlan = ({
             <div className="mb-1 text-lg">
               <p className="relative">
                 <span className="absolute bg-black/80 h-[1.5px] inset-x-0 top-[53%]"></span>
-                <span className="text-black/80">${plan.priceAnchor}</span>
+                <span className="text-black/80">€{plan.priceAnchor}</span>
               </p>
             </div>
           )}
