@@ -8,7 +8,6 @@ import { Header } from "@/components/landingpage/header";
 import { SiteFooter } from "@/components/app/Footer";
 import { getRowUser } from "./action";
 import { siteConfig } from "@/config/site";
-import PlausibleProvider from "next-plausible";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -51,7 +50,12 @@ export default async function RootLayout({
           defer
           src="https://cloud.umami.is/script.js"
           data-website-id="8aa1afc7-b3eb-460c-ab50-fd386289cdaa"
-        ></script>
+        />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2706727138311810"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className={`h-full ${inter.className}`}>
         <Provider>
