@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { landingpageContent } from "@/constants/landingpage";
@@ -20,9 +21,7 @@ export const PricePlan = ({
     if (!user) {
       router.push(siteConfig.auth.loginUrl);
     } else {
-      router.push(
-        "/api/slack/auth?priceId=" + plan.priceId + "&mode=" + plan.mode
-      );
+      router.push("/api/slack/auth");
     }
   };
   return (
