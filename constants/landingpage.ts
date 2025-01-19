@@ -1,9 +1,7 @@
 import avatarImage1 from "@/public/landingpage/avatars/avatar-1.png";
 import avatarImage5 from "@/public/landingpage/avatars/avatar-5.png";
-import abstractBackgroundImage from "@/public/landingpage/abstract-background.png";
 import productivityImg from "@/public/landingpage/socialcare.png";
 import logo from "@/public/logo.png";
-import { siteConfig } from "@/config/site";
 
 export const landingpageContent = {
   header: {
@@ -132,7 +130,7 @@ export const landingpageContent = {
         mode: "subscription",
         name: "Monthly Pro",
         description: "Flexible monthly subscription",
-        price: 4.99,
+        price: 0,
         priceAnchor: "7.99",
         pricePer: "/month",
         currency: "EUR",
@@ -148,8 +146,8 @@ export const landingpageContent = {
         isFeatured: true,
         name: "Lifetime Access",
         description: "One-time payment for unlimited access",
-        price: 39.99,
-        priceAnchor: "59.99",
+        price: 0,
+        priceAnchor: "39.99",
         pricePer: "workspace",
         currency: "EUR",
         features: [
@@ -233,10 +231,29 @@ export const landingpageContent = {
     placeholder: "Enter your work email",
     buttonText: "Get Started",
   },
-  footer: [
-    { name: "Home", href: "/" },
-    { name: "Contact", href: "/contact" },
-    { name: "Terms of Service", href: "/terms" },
-    { name: "Privacy Policy", href: "/privacy-policy" },
-  ],
+  footer: {
+    links: {
+      main: [
+        { name: "Login", href: "/signin" },
+        { name: "Pricing", href: "/#pricing" },
+        { name: "Support", href: "/contact" },
+      ],
+      legal: [
+        { name: "Terms of services", href: "/terms" },
+        { name: "Privacy policy", href: "/privacy" },
+      ],
+      products: [
+        {
+          name: "Local Boards",
+          target: "_blank",
+          href: "https://local-boards.com/?ref=slacktivity",
+        },
+        {
+          name: "Odd Pillow",
+          target: "_blank",
+          href: "https://oddpillow.com/?ref=slacktivity",
+        },
+      ],
+    },
+  },
 };

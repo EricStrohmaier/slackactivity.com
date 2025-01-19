@@ -1,17 +1,14 @@
-"use client";
-
 import { PricePlan } from "./PricePlan";
 import { User } from "@supabase/supabase-js";
 import { landingpageContent } from "@/constants/landingpage";
+import { siteConfig } from "@/config/site";
 
 const Pricing = ({ user }: { user: User | null }) => {
   return (
-    <section className="overflow-hidden" id={landingpageContent.stripe.title}>
+    <section className="overflow-hidden" id="pricing">
       <div className="py-24 px-8 max-w-5xl mx-auto">
         <div className="flex flex-col text-center w-full mb-20">
-          <p className="font-medium text-primary mb-8">
-            {landingpageContent.stripe.title}
-          </p>
+          <p className="font-medium text-primary mb-8">{siteConfig.tagline}</p>
           <h2 className="font-bold text-3xl lg:text-5xl tracking-tight">
             {landingpageContent.stripe.heading}
           </h2>

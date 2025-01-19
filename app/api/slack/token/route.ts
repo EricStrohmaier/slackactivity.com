@@ -3,24 +3,18 @@ import { NextRequest } from "next/server";
 import { supabaseAdmin } from "@/utils/supabase/admin";
 import { getUser } from "@/app/action";
 import { getErrorRedirect, getStatusRedirect } from "@/utils/helpers";
-import { stripe } from "@/lib/stripe";
-import { siteConfig } from "@/config/site";
 import { v4 as uuidv4 } from "uuid";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
-  const priceId = req.nextUrl.searchParams.get("priceId");
-  const mode = req.nextUrl.searchParams.get("mode");
-
-  let redirectPath;
 
   if (!code) {
-    redirectPath = getErrorRedirect(
+    const redirectPath = getErrorRedirect(
       `/`,
       "Hmm... Something went wrong.",
       "Code not provided"
     );
-    return redirect(redirectPath); // Ensure redirection
+    return redirect(redirectPath);
   }
 
   // Exchange code for access token
@@ -30,15 +24,13 @@ export async function GET(req: NextRequest) {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: new URLSearchParams({
-      code: code || "",
+      code: code,
       client_id: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
       client_secret: process.env.SLACK_CLIENT_SECRET!,
       redirect_uri:
-        (process.env.NODE_ENV === "development"
-          ? process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI_DEV
-          : process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI) +
-        (priceId ? `?priceId=${priceId}` : "") +
-        (mode ? `&mode=${mode}` : ""),
+        process.env.NODE_ENV === "development"
+          ? process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI_DEV!
+          : process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI!,
     }),
   });
 
@@ -46,12 +38,12 @@ export async function GET(req: NextRequest) {
   console.log("Slack OAuth data tokenResponse:", data);
 
   if (!data.ok) {
-    redirectPath = getErrorRedirect(
+    const redirectPath = getErrorRedirect(
       `/`,
       "You could not be signed in.",
       data.error
     );
-    return redirect(redirectPath); // Ensure redirection
+    return redirect(redirectPath);
   }
 
   // Get the current user
@@ -59,12 +51,12 @@ export async function GET(req: NextRequest) {
 
   if (!user) {
     console.error("User not found");
-    redirectPath = getErrorRedirect(
+    const redirectPath = getErrorRedirect(
       `/signin`,
       "You are not authenticated.",
       ""
     );
-    return redirect(redirectPath); // Ensure redirection
+    return redirect(redirectPath);
   }
 
   // Check if workspace already exists for this user
@@ -76,9 +68,8 @@ export async function GET(req: NextRequest) {
     .single();
 
   if (fetchError && fetchError.code !== "PGRST116") {
-    // PGRST116 is "not found" error
     console.error("Error fetching workspace:", fetchError);
-    redirectPath = getErrorRedirect(
+    const redirectPath = getErrorRedirect(
       `/`,
       "Something went wrong.",
       "Could not check existing workspace"
@@ -86,9 +77,9 @@ export async function GET(req: NextRequest) {
     return redirect(redirectPath);
   }
 
-  // If workspace exists and is paid, redirect to dashboard
-  if (existingWorkspace?.stripe_is_paid) {
-    redirectPath = getStatusRedirect(
+  // If workspace exists, redirect to dashboard
+  if (existingWorkspace) {
+    const redirectPath = getStatusRedirect(
       `/dashboard`,
       "Workspace already connected",
       "Redirecting to dashboard"
@@ -96,10 +87,10 @@ export async function GET(req: NextRequest) {
     return redirect(redirectPath);
   }
 
-  // Generate new workspace ID only if workspace doesn't exist
-  const workspaceId = existingWorkspace?.id || uuidv4();
+  // Generate new workspace ID
+  const workspaceId = uuidv4();
 
-  // Update existing workspace or create new one
+  // Create new workspace with stripe_is_paid set to true by default
   const { error: upsertError } = await supabase.from("workspace").upsert({
     id: workspaceId,
     user_id: user?.id,
@@ -108,6 +99,7 @@ export async function GET(req: NextRequest) {
     team_id: data.team.id,
     is_active: true,
     enterprise: data.team.enterprise,
+    stripe_is_paid: true, // Set to true by default since it's free
     working_hours: {
       startHour: 9,
       endHour: 17,
@@ -118,47 +110,14 @@ export async function GET(req: NextRequest) {
 
   if (upsertError) {
     console.error("Error saving workspace:", upsertError);
-    redirectPath = getErrorRedirect(
+    const redirectPath = getErrorRedirect(
       `/`,
       "Something went wrong.",
       "Workspace could not be saved"
     );
-    return redirect(redirectPath); // Ensure redirection
-  } else {
-    // Create a Stripe Checkout Session
-
-    const extraParams: {
-      customer?: string;
-      customer_creation?: "always";
-      customer_email?: string;
-      invoice_creation?: { enabled: boolean };
-      payment_intent_data?: { setup_future_usage: "on_session" };
-      tax_id_collection?: { enabled: boolean };
-    } = {};
-
-    if (mode === "payment") {
-      extraParams.customer_creation = "always";
-    }
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: priceId || "",
-          quantity: 1,
-        },
-      ],
-      metadata: {
-        user_id: user.id,
-        workspace_id: workspaceId,
-      },
-      mode: (mode as any) || "payment",
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/`,
-      ...extraParams,
-    });
-
-    // Redirect to the Stripe checkout page
-    return redirect(session.url || "/");
+    return redirect(redirectPath);
   }
+
+  // Redirect directly to dashboard
+  return redirect(`/dashboard`);
 }

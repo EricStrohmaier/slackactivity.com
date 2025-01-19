@@ -183,11 +183,8 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
 
   // Updated getCurrentActivityStatus function
   const getCurrentActivityStatus = (workspace: Workspace) => {
-    if (!workspace.stripe_is_paid) {
-      return "Unpaid";
-    }
     if (!workspace.is_active) {
-      return "Inactive";
+      return null; // Don't show any status if workspace is not active
     }
 
     const now = new Date();
@@ -200,7 +197,7 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
       currentHour >= startHour &&
       currentHour < endHour
     ) {
-      return "Active";
+      return "Online";
     } else {
       return "Away";
     }
@@ -221,24 +218,18 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
                 {!activeWorkspace.stripe_is_paid && (
                   <Badge variant="destructive">Unpaid</Badge>
                 )}
-                <Badge
-                  variant={activeWorkspace.is_active ? "default" : "default"}
-                >
-                  {activeWorkspace.is_active ? "Enabled" : "Disabled"}
-                </Badge>
-                {activeWorkspace.stripe_is_paid && (
-                  <Badge
-                    variant={
-                      getCurrentActivityStatus(activeWorkspace) === "Active"
-                        ? "success"
-                        : getCurrentActivityStatus(activeWorkspace) === "Away"
-                        ? "warning"
-                        : "secondary"
-                    }
-                  >
-                    {getCurrentActivityStatus(activeWorkspace)}
-                  </Badge>
-                )}
+                {activeWorkspace.is_active &&
+                  activeWorkspace.stripe_is_paid && (
+                    <Badge
+                      variant={
+                        getCurrentActivityStatus(activeWorkspace) === "Online"
+                          ? "success"
+                          : "warning"
+                      }
+                    >
+                      {getCurrentActivityStatus(activeWorkspace)}
+                    </Badge>
+                  )}
               </div>
             )}
           </div>
