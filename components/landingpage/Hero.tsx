@@ -11,10 +11,7 @@ export function Hero({ isMarketplace = false }) {
     <>
       {renderSchemaTags()}
       <div className="relative overflow-hidden h-full flex flex-col justify-between">
-        <Container className="relative flex flex-col justify-center items-center pt-12 text-center lg:pt-20 min-h-[600px] h-full">
-          <h1 className="text-xl text-center text-gray-600">
-            {content.hero.preHeadline}
-          </h1>
+        <Container className="relative flex flex-col justify-center items-center text-center min-h-[500px] h-full">
           <h1 className="mx-auto md:max-w-8xl w-full text-5xl md:text-8xl max-md:leading-10 font-medium tracking-tight text-text">
             {content.hero.headline}
             <div className="relative whitespace-nowrap text-accent-400">
@@ -22,10 +19,10 @@ export function Hero({ isMarketplace = false }) {
             </div>{" "}
             {content.hero.suffix}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-gray-600">
+          <p className="mx-auto mt-5 max-w-2xl text-lg tracking-tight text-gray-600">
             {content.hero.subheadline}
           </p>
-          <div className="mt-10 flex justify-center gap-x-6">
+          <div className="mt-2 flex justify-center gap-x-6">
             <HeroCTA content={content} />
           </div>
           {content.hero.socialCare.active && (

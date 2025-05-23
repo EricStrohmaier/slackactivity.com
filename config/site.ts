@@ -3,10 +3,9 @@ export const siteConfig = {
   name: "Slackactivity",
   domain: "slackactivity.com",
   url: "https://slackactivity.com",
-  //  Keep Slack Status Always Online
-  tagline: "Effortlessly manage your Slack status",
+  tagline: "Stay Active on Slack, Anytime.",
   description:
-    "Slackactivity is the ultimate tool for automatically managing your Slack status based on your work schedule and timezone. Ideal for professionals juggling multiple workspaces, it ensures that your status is always up-to-date, without manual intervention. Stay connected and boost productivity effortlessly.",
+    "Slackactivity is a tool for automatically managing your Slack status. Based on your work schedule and timezone it ensures that your status is always up-to-date, without manual intervention. It's free and open source.",
   keywords: [
     "Slack status",
     "Slack automation",

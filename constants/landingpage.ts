@@ -6,13 +6,13 @@ import logo from "@/public/logo.png";
 export const landingpageContent = {
   header: {
     company: {
-      name: "Slacktivity",
+      name: "Slackactivity",
       logo: logo,
       logoHref: "/",
     },
     button: {
       active: true,
-      text: "Get Started",
+      text: "Get Started - Free Forever",
       href: "/signin",
     },
     NavAndFooterLinks: [
@@ -31,7 +31,7 @@ export const landingpageContent = {
   // hero section
   hero: {
     preHeadline: "Slackactivity",
-    headline: "Stay Active on Slack, Anytime. Anywhere.",
+    headline: "Stay Active on Slack, Anytime.",
     highlightedText: "",
     suffix: "",
     subheadline:
@@ -57,7 +57,7 @@ export const landingpageContent = {
         },
       },
       button: {
-        text: "Get Started",
+        text: "Get Started - Free Forever",
         link: "/signin",
       },
     },
@@ -81,10 +81,10 @@ export const landingpageContent = {
     id: "setup",
     title: "",
     headline: "",
-    highlightedText: "Slacktivity",
+    highlightedText: "Slackactivity",
     suffix: "in 3 Simple Steps",
     subheadline:
-      "Set up in minutes and let Slacktivity manage your online status, so you stay active even when you're away.",
+      "Set up in minutes and let Slackactivity manage your online status, so you stay active even when you're away.",
     iconView: {
       active: true,
       steps: [
