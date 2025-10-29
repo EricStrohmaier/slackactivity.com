@@ -31,7 +31,7 @@ interface SharedWorkspaceDashboardProps {
   user: User;
   initialWorkspaces: Workspace[];
   initialActivityReport: ActivityReport;
-  platformName: "Slack" | "MS Teams";
+  platformName: "Slack";
   authEndpoint: string;
 }
 
