@@ -269,13 +269,16 @@ export const landingpageContent = {
   footer: {
     links: {
       main: [
-        { name: "Login", href: "/signin" },
-        { name: "Pricing", href: "/#pricing" },
+        { name: "How It Works", href: "/how-it-works" },
+        { name: "Pricing", href: "/pricing" },
+        { name: "Solutions", href: "/solutions" },
+        { name: "Guides", href: "/guides" },
+        { name: "Use Cases", href: "/use-cases" },
         { name: "Support", href: "/contact" },
       ],
       legal: [
         { name: "Terms of services", href: "/terms" },
-        { name: "Privacy policy", href: "/privacy" },
+        { name: "Privacy policy", href: "/privacy-policy" },
       ],
       products: [
         {
