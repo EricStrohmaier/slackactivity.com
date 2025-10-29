@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -38,14 +37,10 @@ interface SharedWorkspaceDashboardProps {
 const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
   user,
   initialWorkspaces,
-  initialActivityReport,
   platformName,
   authEndpoint,
 }) => {
   const [workspaces, setWorkspaces] = useState<Workspace[]>(initialWorkspaces);
-  const [activityReport, setActivityReport] = useState<ActivityReport>(
-    initialActivityReport
-  );
   const [activeWorkspace, setActiveWorkspace] = useState<Workspace | null>(
     workspaces[0] || null
   );
@@ -270,12 +265,8 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
               </div>
             </div>
           </div>
-          <Tabs className="mt-8" defaultValue="workspaces">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="workspaces">Workspaces</TabsTrigger>
-              <TabsTrigger value="activity">Activity Report</TabsTrigger>
-            </TabsList>
-            <TabsContent value="workspaces">
+          <div className="mt-8">
+            <div>
               {workspaces.length === 0 ? (
                 <Button asChild className="w-full" variant="slim">
                   <Link href={authEndpoint}>
@@ -373,20 +364,8 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
                   )}
                 </div>
               )}
-            </TabsContent>
-            <TabsContent value="activity">
-              {activityReport && (
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Activity Report (Last 7 Days)
-                  </h3>
-                  <p>Total Updates: {activityReport.totalUpdates}</p>
-                  <p>Active: {activityReport.activePercentage.toFixed(2)}%</p>
-                  <p>Away: {activityReport.awayPercentage.toFixed(2)}%</p>
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </CardContent>
         <CardFooter>
           <div className="flex flex-col md:flex-row w-full md:space-x-4 space-y-4 md:space-y-0">

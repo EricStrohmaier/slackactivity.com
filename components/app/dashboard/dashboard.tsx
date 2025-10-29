@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -21,9 +20,6 @@ const DashboardSelector: React.FC<DashboardSelectorProps> = ({
   activityReport,
 }) => {
   const slackWorkspaces = workspaces.filter((w) => w.slack_auth_token);
-  const [activeTab, setActiveTab] = useState<string>(
-    slackWorkspaces.length > 0 ? "slack" : "connect"
-  );
 
   const renderConnectButtons = () => (
     <div className="flex flex-col space-y-4 items-center">
@@ -38,32 +34,19 @@ const DashboardSelector: React.FC<DashboardSelectorProps> = ({
 
   return (
     <Card className="w-full max-w-3xl mx-auto py-2 mt-10">
-      <CardContent>
-        <Tabs className="pt-2" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList
-            className={`grid w-full max-w-md mx-auto ${
-              slackWorkspaces.length > 0 ? "grid-cols-2" : "grid-cols-1"
-            } gap-2`}
-          >
-            {slackWorkspaces.length > 0 && (
-              <TabsTrigger value="slack">Slack</TabsTrigger>
-            )}
-          </TabsList>
-          <TabsContent value="slack">
-            {slackWorkspaces.length > 0 ? (
-              <SlackDashboardClient
-                user={user}
-                initialWorkspaces={slackWorkspaces}
-                initialActivityReport={activityReport}
-              />
-            ) : (
-              <div className="text-center py-8">
-                <p className="mb-4">No Slack workspaces connected.</p>
-                {renderConnectButtons()}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+      <CardContent className="pt-2">
+        {slackWorkspaces.length > 0 ? (
+          <SlackDashboardClient
+            user={user}
+            initialWorkspaces={slackWorkspaces}
+            initialActivityReport={activityReport}
+          />
+        ) : (
+          <div className="text-center py-8">
+            <p className="mb-4">No Slack workspaces connected.</p>
+            {renderConnectButtons()}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
