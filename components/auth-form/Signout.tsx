@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
 import { signOut } from "@/utils/auth-helpers/server";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 export default function Signout() {
   const router = useRouter();
@@ -20,11 +20,13 @@ export default function Signout() {
     }
   }
   return (
-    <div
-      className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+    <Button
+      variant="ghost"
+      size="sm"
+      className="inline-flex"
       onClick={handleLogoutClick}
     >
-      <span>Sign Out</span>
-    </div>
+      Sign Out
+    </Button>
   );
 }

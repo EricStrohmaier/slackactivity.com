@@ -11,8 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Clock, Plus } from "lucide-react";
-import { updateWorkspace, updateUserPresence } from "@/app/action";
+import { Clock, Plus, Trash, Check, ChevronsUpDown } from "lucide-react";
+import {
+  updateWorkspace,
+  updateUserPresence,
+  deleteWorkspaceById,
+} from "@/app/action";
 import { User, ActivityReport, Workspace } from "@/types/supabase";
 import Link from "next/link";
 import {
@@ -25,6 +29,19 @@ import {
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
 interface SharedWorkspaceDashboardProps {
   user: User;
@@ -45,6 +62,11 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
     workspaces[0] || null
   );
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [tzOpen, setTzOpen] = useState(false);
+  const allTimezones = React.useMemo(
+    () => Intl.supportedValuesOf("timeZone"),
+    []
+  );
 
   // Shared handlers and utility functions
   const handleWorkspaceChange = (workspaceId: string) => {
@@ -77,6 +99,28 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
     },
     [activeWorkspace]
   );
+
+  const handleDeleteWorkspace = useCallback(async () => {
+    if (!activeWorkspace) return;
+    const confirmDelete = window.confirm(
+      `Delete workspace "${activeWorkspace.team_name}"? This cannot be undone.`
+    );
+    if (!confirmDelete) return;
+    try {
+      await deleteWorkspaceById(activeWorkspace.id);
+      const remaining = workspaces.filter((w) => w.id !== activeWorkspace.id);
+      setWorkspaces(remaining);
+      setActiveWorkspace(remaining[0] || null);
+      setHasUnsavedChanges(false);
+      toast.success("Workspace deleted", {
+        description: "The workspace has been removed from your account.",
+      });
+    } catch (error) {
+      toast.error("Error", {
+        description: `Failed to delete workspace: ${(error as Error).message}`,
+      });
+    }
+  }, [activeWorkspace, workspaces]);
 
   const handleDayChange = useCallback(
     (day: number) => {
@@ -176,26 +220,105 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
     [activeWorkspace]
   );
 
+  const getZonedNowInfo = (tz?: string) => {
+    try {
+      const local = new Date();
+      if (!tz) {
+        return {
+          day: local.getDay(),
+          hour: local.getHours(),
+          source: "local",
+        } as const;
+      }
+      const fmt = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        hour12: false,
+        weekday: "short",
+        hour: "numeric",
+      });
+      const parts = fmt.formatToParts(new Date());
+      const weekdayShort = parts.find((p) => p.type === "weekday")?.value;
+      const hourStr = parts.find((p) => p.type === "hour")?.value;
+      const dayMap: Record<string, number> = {
+        Sun: 0,
+        Mon: 1,
+        Tue: 2,
+        Wed: 3,
+        Thu: 4,
+        Fri: 5,
+        Sat: 6,
+      };
+      const day =
+        weekdayShort && weekdayShort in dayMap
+          ? dayMap[weekdayShort]
+          : local.getDay();
+      const hour = hourStr ? parseInt(hourStr, 10) : local.getHours();
+      return { day, hour, source: "tz" as const };
+    } catch (e) {
+      const fallback = new Date();
+      console.warn(
+        "[Presence] Timezone conversion failed, using local time",
+        e
+      );
+      return {
+        day: fallback.getDay(),
+        hour: fallback.getHours(),
+        source: "local" as const,
+      };
+    }
+  };
+
   // Updated getCurrentActivityStatus function
   const getCurrentActivityStatus = (workspace: Workspace) => {
     if (!workspace.is_active) {
+      console.log("[Presence] Workspace inactive, skipping status", {
+        workspaceId: workspace.id,
+        team: workspace.team_name,
+        is_active: workspace.is_active,
+        stripe_is_paid: workspace.stripe_is_paid,
+      });
       return null; // Don't show any status if workspace is not active
     }
 
     const now = new Date();
-    const currentDay = now.getDay();
-    const currentHour = now.getHours();
-    const { startHour, endHour, daysOfWeek } = workspace.working_hours;
+    const { startHour, endHour, daysOfWeek, timezone } =
+      workspace.working_hours as any;
+    const zoned = getZonedNowInfo(timezone);
+    const currentDay = zoned.day;
+    const currentHour = zoned.hour;
 
-    if (
-      daysOfWeek.includes(currentDay) &&
+    const decisionInput = {
+      workspaceId: workspace.id,
+      team: workspace.team_name,
+      stripe_is_paid: workspace.stripe_is_paid,
+      timezone,
+      localNowISO: now.toISOString(),
+      currentDay,
+      currentHour,
+      zonedSource: zoned.source,
+      startHour,
+      endHour,
+      daysOfWeek,
+    };
+
+    const inWorkingDay = daysOfWeek?.includes?.(currentDay);
+    const inWorkingHour =
+      typeof currentHour === "number" &&
+      typeof startHour === "number" &&
+      typeof endHour === "number" &&
       currentHour >= startHour &&
-      currentHour < endHour
-    ) {
-      return "Online";
-    } else {
-      return "Away";
-    }
+      currentHour < endHour;
+
+    const status = inWorkingDay && inWorkingHour ? "Online" : "Away";
+
+    console.log("[Presence] Decision", {
+      ...decisionInput,
+      inWorkingDay,
+      inWorkingHour,
+      status,
+    });
+
+    return status;
   };
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -222,7 +345,15 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
                           : "warning"
                       }
                     >
-                      {getCurrentActivityStatus(activeWorkspace)}
+                      {(() => {
+                        const s = getCurrentActivityStatus(activeWorkspace);
+                        console.log("[Presence] Rendering badge", {
+                          workspaceId: activeWorkspace.id,
+                          team: activeWorkspace.team_name,
+                          status: s,
+                        });
+                        return s;
+                      })()}
                     </Badge>
                   )}
               </div>
@@ -339,25 +470,62 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
                         </div>
                         <div className="w-[40%]">
                           <Label htmlFor="timezone">Timezone</Label>
-                          <Select
-                            value={
-                              activeWorkspace?.working_hours.timezone || ""
-                            }
-                            onValueChange={(value) =>
-                              handleInputChange("timezone", value)
-                            }
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select timezone" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Intl.supportedValuesOf("timeZone").map((tz) => (
-                                <SelectItem key={tz} value={tz}>
-                                  {tz}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Popover open={tzOpen} onOpenChange={setTzOpen}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={tzOpen}
+                                type="button"
+                                className="w-full justify-between text-left font-normal"
+                              >
+                                {activeWorkspace?.working_hours.timezone ||
+                                  "Select timezone"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              side="bottom"
+                              align="start"
+                              className="z-[9999] p-0 w-[300px] pointer-events-auto rounded-md border bg-popover shadow-md"
+                              onCloseAutoFocus={(e) => e.preventDefault()}
+                            >
+                              <Command className="pointer-events-auto">
+                                <CommandInput placeholder="Search timezone..." />
+                                <CommandEmpty>No timezone found.</CommandEmpty>
+                                <CommandList className="pointer-events-auto">
+                                  <CommandGroup>
+                                    {allTimezones.map((tz) => (
+                                      <CommandItem
+                                        key={tz}
+                                        value={tz}
+                                        className="cursor-pointer data-[disabled]:opacity-100 data-[disabled]:pointer-events-auto"
+                                        onSelect={(val) => {
+                                          handleInputChange("timezone", val);
+                                          setTzOpen(false);
+                                        }}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          handleInputChange("timezone", tz);
+                                          setTzOpen(false);
+                                        }}
+                                      >
+                                        <Check
+                                          className={`mr-2 h-4 w-4 ${
+                                            activeWorkspace?.working_hours
+                                              .timezone === tz
+                                              ? "opacity-100"
+                                              : "opacity-0"
+                                          }`}
+                                        />
+                                        {tz}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                       </div>
                     </>
@@ -385,6 +553,16 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
                 variant={hasUnsavedChanges ? "default" : "secondary"}
               >
                 Save Workspace Settings
+              </Button>
+            )}
+            {activeWorkspace && (
+              <Button
+                onClick={handleDeleteWorkspace}
+                className="w-full"
+                variant="destructive"
+              >
+                <Trash className="h-4 w-4 mr-2" />
+                Delete Workspace
               </Button>
             )}
           </div>

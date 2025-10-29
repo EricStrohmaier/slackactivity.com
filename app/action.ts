@@ -76,6 +76,26 @@ export async function updateWorkspace(workspace: Workspace) {
   return data;
 }
 
+export async function deleteWorkspaceById(workspaceId: string) {
+  const user = await getUser();
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+  const supabase = supabaseAdmin();
+  const { error } = await supabase
+    .from("workspace")
+    .delete()
+    .eq("id", workspaceId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+
+  return { success: true };
+}
+
 export async function updateUserPresence(workspace: Workspace) {
   const token = workspace.slack_auth_token;
   const workHours = workspace.working_hours;

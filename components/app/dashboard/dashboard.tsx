@@ -43,7 +43,9 @@ const DashboardSelector: React.FC<DashboardSelectorProps> = ({
           />
         ) : (
           <div className="text-center py-8">
-            <p className="mb-4">No Slack workspaces connected.</p>
+            <h2 className="mb-4 text-2xl font-bold">
+              No Slack workspaces connected.
+            </h2>
             {renderConnectButtons()}
           </div>
         )}
