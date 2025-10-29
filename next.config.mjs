@@ -10,6 +10,11 @@ const nextConfig = {
     domains: ["api.slack.com"],
     remotePatterns: [
       {
+        hostname: "promptsloth.com",
+        protocol: "https",
+        port: "",
+      },
+      {
         hostname: "utfs.io",
         protocol: "https",
         port: "",
@@ -35,7 +40,7 @@ const nextConfig = {
         destination: "https://plausible.io/api/event",
       },
     ];
-}
+  },
 };
 
 export default nextConfig;

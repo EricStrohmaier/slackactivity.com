@@ -26,7 +26,7 @@ const DashboardSelector: React.FC<DashboardSelectorProps> = ({
   );
 
   const renderConnectButtons = () => (
-    <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 items-center">
+    <div className="flex flex-col space-y-4 items-center">
       <Button asChild variant="outline" className="w-full max-w-md">
         <Link href="/api/slack/auth">
           <Plus className="h-4 w-4 mr-2" />
@@ -48,7 +48,6 @@ const DashboardSelector: React.FC<DashboardSelectorProps> = ({
             {slackWorkspaces.length > 0 && (
               <TabsTrigger value="slack">Slack</TabsTrigger>
             )}
-            <TabsTrigger value="connect">Connect</TabsTrigger>
           </TabsList>
           <TabsContent value="slack">
             {slackWorkspaces.length > 0 ? (
@@ -63,13 +62,6 @@ const DashboardSelector: React.FC<DashboardSelectorProps> = ({
                 {renderConnectButtons()}
               </div>
             )}
-          </TabsContent>
-
-          <TabsContent value="connect">
-            <div className="text-center py-8">
-              <p className="mb-4">Connect a new workspace:</p>
-              {renderConnectButtons()}
-            </div>
           </TabsContent>
         </Tabs>
       </CardContent>

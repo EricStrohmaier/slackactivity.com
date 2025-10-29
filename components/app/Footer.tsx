@@ -69,7 +69,14 @@ export function SiteFooter() {
               <h3 className="text-sm font-semibold">MORE FROM THE MAKER</h3>
               <ul className="mt-4 space-y-3">
                 {products.map((item) => (
-                  <li key={item.name}>
+                  <li key={item.name} className="flex items-center space-x-2">
+                    <Image
+                      src={item.icon}
+                      alt={item.name}
+                      width={24}
+                      height={24}
+                      className="h-6 w-6 rounded-sm"
+                    />
                     <Link
                       href={item.href}
                       target={item.target}

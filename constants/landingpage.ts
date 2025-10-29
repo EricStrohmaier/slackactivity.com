@@ -244,14 +244,10 @@ export const landingpageContent = {
       ],
       products: [
         {
-          name: "Local Boards",
+          icon: "https://promptsloth.com/logo.png",
+          name: "Prompt Sloth",
           target: "_blank",
-          href: "https://local-boards.com/?ref=slacktivity",
-        },
-        {
-          name: "Odd Pillow",
-          target: "_blank",
-          href: "https://oddpillow.com/?ref=slacktivity",
+          href: "https://promptsloth.com/?ref=slacktivity",
         },
       ],
     },

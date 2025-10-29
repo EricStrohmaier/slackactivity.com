@@ -27,7 +27,21 @@ export function UserNav({ user }: iAppProps) {
           <Avatar className="h-12 w-12">
             <AvatarImage src={user.avatar_url as string} alt="User Image" />
             <AvatarFallback>
-              <div className="h-full w-full bg-[linear-gradient(115deg,var(--tw-gradient-stops))] sm:bg-[linear-gradient(145deg,var(--tw-gradient-stops))] from-[#9ad4ae] 25% to-[#7fc8c9] 90% transition-all duration-500" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-6 w-6 text-gray-500"
+              >
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
             </AvatarFallback>
           </Avatar>
         </Button>
