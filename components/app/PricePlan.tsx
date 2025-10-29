@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
-import { landingpageContent } from "@/constants/landingpage";
+import { siteConfig } from "@/site";
+import { landingpageContent } from "@/site";
 import { User } from "@supabase/supabase-js";
 import Link from "next/link";
 // PlanCard component

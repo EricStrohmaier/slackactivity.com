@@ -1,6 +1,6 @@
 import axios from "axios";
 import { redirect } from "next/navigation";
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "@/site";
 import { toast } from "sonner";
 
 // use this to interact with our own API (/app/api folder) from the front-end side

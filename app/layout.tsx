@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "@/styles/globals.css";
 
 import { Toaster } from "@/components/ui/sonner";
@@ -7,7 +8,7 @@ import { Provider } from "@/components/Provider";
 import { Header } from "@/components/landingpage/header";
 import { SiteFooter } from "@/components/app/Footer";
 import { getRowUser } from "./action";
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "@/site";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -46,15 +47,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script
-          defer
+        <Script
           src="https://cloud.umami.is/script.js"
           data-website-id="8aa1afc7-b3eb-460c-ab50-fd386289cdaa"
-        />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2706727138311810"
-          crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
       </head>
       <body className={`h-full ${inter.className}`}>

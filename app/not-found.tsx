@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "@/site";
 import Link from "next/link";
 
 export default function GlobalError({

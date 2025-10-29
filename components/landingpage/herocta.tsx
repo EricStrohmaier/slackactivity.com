@@ -1,12 +1,11 @@
 "use client";
 
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/site";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useTransition } from "react";
 import { Button } from "../ui/button";
 import { Submitbutton } from "../app/SubmitButtons";
-import { toast } from "sonner";
 
 export default function HeroCTA({
   content,

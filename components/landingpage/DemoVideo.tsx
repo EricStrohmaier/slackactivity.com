@@ -1,7 +1,5 @@
-import React from "react";
 import { Container } from "@/components/landingpage/container";
-import { landingpageContent } from "@/constants/landingpage";
-
+import { landingpageContent } from "@/site";
 export const DemoVideo = () => {
   return (
     <section className="pb-16">

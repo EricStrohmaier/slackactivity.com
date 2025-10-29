@@ -1,5 +1,4 @@
-import { landingpageContent } from "@/constants/landingpage";
-
+import { landingpageContent } from "@/site";
 export default function EmailSignUp({ isMarketplace = false }) {
   const content = landingpageContent;
 

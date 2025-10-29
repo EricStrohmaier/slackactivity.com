@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "@/site";
 import type { Metadata } from "next";
 
 // These are all the SEO tags you can add to your pages.

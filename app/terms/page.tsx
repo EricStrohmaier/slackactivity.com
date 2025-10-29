@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "@/site";
 import { getSEOTags } from "@/lib/seo";
 import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";

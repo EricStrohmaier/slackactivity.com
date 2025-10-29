@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "@/site";
 import { stripe } from "@/lib/stripe";
 
 interface Props {

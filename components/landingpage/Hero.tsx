@@ -1,6 +1,6 @@
 import { Container } from "@/components/landingpage/container";
 import HeroCTA from "./herocta";
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/site";
 import Image from "next/image";
 import { renderSchemaTags } from "@/lib/seo";
 

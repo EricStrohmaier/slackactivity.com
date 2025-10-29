@@ -10,8 +10,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Clock, Plus, Trash, Check, ChevronsUpDown } from "lucide-react";
+import { Toggle } from "@/components/ui/toggle";
+import {
+  Clock,
+  Plus,
+  Trash,
+  Check,
+  ChevronsUpDown,
+  MoreVertical,
+} from "lucide-react";
 import {
   updateWorkspace,
   updateUserPresence,
@@ -19,6 +26,7 @@ import {
 } from "@/app/action";
 import { User, ActivityReport, Workspace } from "@/types/supabase";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -42,6 +50,22 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface SharedWorkspaceDashboardProps {
   user: User;
@@ -57,12 +81,14 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
   platformName,
   authEndpoint,
 }) => {
+  const router = useRouter();
   const [workspaces, setWorkspaces] = useState<Workspace[]>(initialWorkspaces);
   const [activeWorkspace, setActiveWorkspace] = useState<Workspace | null>(
     workspaces[0] || null
   );
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [tzOpen, setTzOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const allTimezones = React.useMemo(
     () => Intl.supportedValuesOf("timeZone"),
     []
@@ -102,16 +128,13 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
 
   const handleDeleteWorkspace = useCallback(async () => {
     if (!activeWorkspace) return;
-    const confirmDelete = window.confirm(
-      `Delete workspace "${activeWorkspace.team_name}"? This cannot be undone.`
-    );
-    if (!confirmDelete) return;
     try {
       await deleteWorkspaceById(activeWorkspace.id);
       const remaining = workspaces.filter((w) => w.id !== activeWorkspace.id);
       setWorkspaces(remaining);
       setActiveWorkspace(remaining[0] || null);
       setHasUnsavedChanges(false);
+      setDeleteOpen(false);
       toast.success("Workspace deleted", {
         description: "The workspace has been removed from your account.",
       });
@@ -271,12 +294,6 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
   // Updated getCurrentActivityStatus function
   const getCurrentActivityStatus = (workspace: Workspace) => {
     if (!workspace.is_active) {
-      console.log("[Presence] Workspace inactive, skipping status", {
-        workspaceId: workspace.id,
-        team: workspace.team_name,
-        is_active: workspace.is_active,
-        stripe_is_paid: workspace.stripe_is_paid,
-      });
       return null; // Don't show any status if workspace is not active
     }
 
@@ -311,17 +328,21 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
 
     const status = inWorkingDay && inWorkingHour ? "Online" : "Away";
 
-    console.log("[Presence] Decision", {
-      ...decisionInput,
-      inWorkingDay,
-      inWorkingHour,
-      status,
-    });
-
     return status;
   };
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const preset = React.useMemo(() => {
+    const s = activeWorkspace?.working_hours.startHour;
+    const e = activeWorkspace?.working_hours.endHour;
+    if (s === 9 && e === 17) return "9-5" as const;
+    if (s === 8 && e === 18) return "8-6" as const;
+    return "custom" as const;
+  }, [
+    activeWorkspace?.working_hours.startHour,
+    activeWorkspace?.working_hours.endHour,
+  ]);
 
   return (
     <div className="mx-auto h-full mt-2 max-w-3xl">
@@ -347,11 +368,6 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
                     >
                       {(() => {
                         const s = getCurrentActivityStatus(activeWorkspace);
-                        console.log("[Presence] Rendering badge", {
-                          workspaceId: activeWorkspace.id,
-                          team: activeWorkspace.team_name,
-                          status: s,
-                        });
                         return s;
                       })()}
                     </Badge>
@@ -363,36 +379,52 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
             Manage your {platformName} workspaces and settings
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-1 md:px-4">
           <div className="mb-4">
-            <div className="flex items-center justify-center space-x-4">
-              <div className="w-[70%]">
+            <div className="rounded-lg border bg-muted/30 p-4">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="workspace">Select Workspace</Label>
-                <Select
-                  value={activeWorkspace?.id}
-                  onValueChange={handleWorkspaceChange}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select workspace" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {workspaces.map((workspace) => (
-                      <SelectItem key={workspace.id} value={workspace.id}>
-                        {workspace.team_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-[30%] flex items-center justify-center space-x-2">
-                <Label htmlFor="active-toggle">Workspace Active</Label>
-                <Switch
-                  id="active-toggle"
-                  checked={activeWorkspace?.is_active || false}
-                  onCheckedChange={() =>
-                    activeWorkspace && handleToggleWorkspace(activeWorkspace)
-                  }
-                />
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex-1">
+                    <Select
+                      value={activeWorkspace?.id}
+                      onValueChange={(val) => {
+                        if (val === "__add__") {
+                          router.push(authEndpoint);
+                          return;
+                        }
+                        handleWorkspaceChange(val);
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select workspace" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {workspaces.map((workspace) => (
+                          <SelectItem key={workspace.id} value={workspace.id}>
+                            {workspace.team_name}
+                          </SelectItem>
+                        ))}
+                        <SelectItem value="__add__">
+                          <div className="flex items-center">
+                            <Plus className="mr-2 h-4 w-4" /> Add Workspace
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="active-toggle">Workspace Active</Label>
+                    <Switch
+                      id="active-toggle"
+                      checked={activeWorkspace?.is_active || false}
+                      onCheckedChange={() =>
+                        activeWorkspace &&
+                        handleToggleWorkspace(activeWorkspace)
+                      }
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -409,123 +441,135 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
                 <div className="space-y-4 mt-8">
                   {activeWorkspace && (
                     <>
-                      <div className="flex space-x-4 w-full">
+                      <div className="rounded-lg border bg-muted/30 p-4 space-y-4 w-full">
                         <div className="w-full">
-                          <Label htmlFor="startHour">Start Hour</Label>
-                          <Input
-                            id="startHour"
-                            type="number"
-                            value={
-                              activeWorkspace?.working_hours.startHour || ""
-                            }
-                            onChange={(e) =>
-                              handleInputChange(
-                                "startHour",
-                                parseInt(e.target.value, 10)
-                              )
-                            }
-                            min="0"
-                            max="23"
-                          />
-                        </div>
-                        <div className="w-full">
-                          <Label htmlFor="endHour">End Hour</Label>
-                          <Input
-                            id="endHour"
-                            type="number"
-                            value={activeWorkspace?.working_hours.endHour || ""}
-                            onChange={(e) =>
-                              handleInputChange(
-                                "endHour",
-                                parseInt(e.target.value, 10)
-                              )
-                            }
-                            min="0"
-                            max="23"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex space-x-4 w-full py-4">
-                        <div className="w-[60%]">
-                          <Label>Work Days</Label>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {days.map((day, index) => (
-                              <div
-                                key={day}
-                                className="flex items-center space-x-2"
-                              >
-                                <Checkbox
-                                  id={`day-${index}`}
-                                  checked={
-                                    activeWorkspace?.working_hours.daysOfWeek.includes(
-                                      index
-                                    ) || false
-                                  }
-                                  onCheckedChange={() => handleDayChange(index)}
-                                />
-                                <Label htmlFor={`day-${index}`}>{day}</Label>
-                              </div>
-                            ))}
+                          <Label htmlFor="startHour" className="sr-only">
+                            Appear online from
+                          </Label>
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <span>Appear online from</span>
+                            <Input
+                              id="startHour"
+                              type="number"
+                              className="w-24 text-base"
+                              value={
+                                activeWorkspace?.working_hours.startHour || ""
+                              }
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "startHour",
+                                  parseInt(e.target.value, 10)
+                                )
+                              }
+                              min="0"
+                              max="23"
+                            />
+                            <span>till</span>
+                            <Input
+                              id="endHour"
+                              type="number"
+                              className="w-24 text-base"
+                              value={
+                                activeWorkspace?.working_hours.endHour || ""
+                              }
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "endHour",
+                                  parseInt(e.target.value, 10)
+                                )
+                              }
+                              min="0"
+                              max="23"
+                            />
                           </div>
                         </div>
-                        <div className="w-[40%]">
-                          <Label htmlFor="timezone">Timezone</Label>
-                          <Popover open={tzOpen} onOpenChange={setTzOpen}>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={tzOpen}
-                                type="button"
-                                className="w-full justify-between text-left font-normal"
+
+                        <div className="w-full">
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <span>Timezone</span>
+                            <Popover open={tzOpen} onOpenChange={setTzOpen}>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  aria-expanded={tzOpen}
+                                  type="button"
+                                  className="min-w-[260px] justify-between text-left font-normal"
+                                >
+                                  {activeWorkspace?.working_hours.timezone ||
+                                    "Select timezone"}
+                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                side="bottom"
+                                align="start"
+                                className="z-[9999] p-0 w-[300px] outline-none pointer-events-auto rounded-md border bg-popover shadow-md"
+                                onCloseAutoFocus={(e) => e.preventDefault()}
                               >
-                                {activeWorkspace?.working_hours.timezone ||
-                                  "Select timezone"}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              side="bottom"
-                              align="start"
-                              className="z-[9999] p-0 w-[300px] pointer-events-auto rounded-md border bg-popover shadow-md"
-                              onCloseAutoFocus={(e) => e.preventDefault()}
-                            >
-                              <Command className="pointer-events-auto">
-                                <CommandInput placeholder="Search timezone..." />
-                                <CommandEmpty>No timezone found.</CommandEmpty>
-                                <CommandList className="pointer-events-auto">
-                                  <CommandGroup>
-                                    {allTimezones.map((tz) => (
-                                      <CommandItem
-                                        key={tz}
-                                        value={tz}
-                                        className="cursor-pointer data-[disabled]:opacity-100 data-[disabled]:pointer-events-auto"
-                                        onSelect={(val) => {
-                                          handleInputChange("timezone", val);
-                                          setTzOpen(false);
-                                        }}
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          handleInputChange("timezone", tz);
-                                          setTzOpen(false);
-                                        }}
-                                      >
-                                        <Check
-                                          className={`mr-2 h-4 w-4 ${
-                                            activeWorkspace?.working_hours
-                                              .timezone === tz
-                                              ? "opacity-100"
-                                              : "opacity-0"
-                                          }`}
-                                        />
-                                        {tz}
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
+                                <Command className="pointer-events-auto outline-none focus:outline-none ring-0">
+                                  <CommandInput
+                                    placeholder="Search timezone..."
+                                    className="outline-none ring-0 focus:ring-0 focus:ring-offset-0 border-0 shadow-none"
+                                  />
+                                  <CommandEmpty>
+                                    No timezone found.
+                                  </CommandEmpty>
+                                  <CommandList className="pointer-events-auto">
+                                    <CommandGroup>
+                                      {allTimezones.map((tz) => (
+                                        <CommandItem
+                                          key={tz}
+                                          value={tz}
+                                          className="cursor-pointer data-[disabled]:opacity-100 data-[disabled]:pointer-events-auto"
+                                          onSelect={(val) => {
+                                            handleInputChange("timezone", val);
+                                            setTzOpen(false);
+                                          }}
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            handleInputChange("timezone", tz);
+                                            setTzOpen(false);
+                                          }}
+                                        >
+                                          <Check
+                                            className={`mr-2 h-4 w-4 ${
+                                              activeWorkspace?.working_hours
+                                                .timezone === tz
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                            }`}
+                                          />
+                                          {tz}
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                        </div>
+
+                        <div className="w-full">
+                          <div className="flex items-center flex-wrap gap-2 mt-2">
+                            <Label>Days</Label>
+                            {days.map((day, index) => (
+                              <Toggle
+                                key={day}
+                                pressed={
+                                  activeWorkspace?.working_hours.daysOfWeek.includes(
+                                    index
+                                  ) || false
+                                }
+                                onPressedChange={() => handleDayChange(index)}
+                                className="rounded-full px-4 py-2 text-sm border data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                                aria-label={day}
+                              >
+                                {day}
+                              </Toggle>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </>
@@ -536,37 +580,73 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
           </div>
         </CardContent>
         <CardFooter>
-          <div className="flex flex-col md:flex-row w-full md:space-x-4 space-y-4 md:space-y-0">
-            <Button asChild variant="outline" className="w-full">
-              <Link href={authEndpoint}>
-                <Plus className="h-4 w-4 mr-2" />
-                {workspaces.length > 0
-                  ? `Add Another ${platformName} Workspace`
-                  : `Connect ${platformName} Workspace`}
-              </Link>
-            </Button>
-            {activeWorkspace && (
-              <Button
-                onClick={handleSave}
-                className="w-full mb-4 md:mb-0"
-                disabled={!hasUnsavedChanges}
-                variant={hasUnsavedChanges ? "default" : "secondary"}
-              >
-                Save Workspace Settings
-              </Button>
-            )}
-            {activeWorkspace && (
-              <Button
-                onClick={handleDeleteWorkspace}
-                className="w-full"
-                variant="destructive"
-              >
-                <Trash className="h-4 w-4 mr-2" />
-                Delete Workspace
-              </Button>
-            )}
+          <div className="flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex w-full md:w-auto"></div>
+            <div className="flex w-full md:w-auto items-center gap-2 md:justify-end">
+              {activeWorkspace && (
+                <Button
+                  onClick={handleSave}
+                  className={`w-full md:w-auto ${
+                    hasUnsavedChanges
+                      ? "bg-green-500 hover:bg-green-600 text-white"
+                      : ""
+                  }`}
+                  disabled={!hasUnsavedChanges}
+                  variant={hasUnsavedChanges ? "default" : "secondary"}
+                >
+                  Save Changes
+                </Button>
+              )}
+              {activeWorkspace && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="w-auto border">
+                      <MoreVertical className="h-4 w-4" />
+                      <span className="sr-only">More</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem className="text-primary focus:text-primary ">
+                      <Link href={authEndpoint} className="flex items-center">
+                        <Plus className="h-4 w-4 mr-2 " /> Add Workspace
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setDeleteOpen(true)}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <Trash className="h-4 w-4 mr-2" /> Delete Workspace
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
           </div>
         </CardFooter>
+        {activeWorkspace && (
+          <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {`Delete ${activeWorkspace.team_name} workspace?`}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently remove the
+                  workspace from your account.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={handleDeleteWorkspace}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </Card>
       <div>
         <p className="text-xs text-text-700 px-4">

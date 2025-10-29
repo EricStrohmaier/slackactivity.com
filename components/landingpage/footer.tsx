@@ -5,7 +5,7 @@ import {
   ContainerInner,
   ContainerOuter,
 } from "@/components/landingpage/container";
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/site";
 import { usePathname } from "next/navigation";
 
 function NavLink({

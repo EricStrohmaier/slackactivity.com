@@ -1,7 +1,7 @@
 import { PricePlan } from "./PricePlan";
 import { User } from "@supabase/supabase-js";
-import { landingpageContent } from "@/constants/landingpage";
-import { siteConfig } from "@/config/site";
+import { landingpageContent } from "@/site";
+import { siteConfig } from "@/site";
 
 const Pricing = ({ user }: { user: User | null }) => {
   return (

@@ -14,7 +14,7 @@ import {
 import clsx from "clsx";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/site";
 import { UserNav } from "../app/UserNav";
 import { Container } from "@/components/landingpage/container";
 import { User } from "@/types/supabase";

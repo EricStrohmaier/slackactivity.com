@@ -1,5 +1,5 @@
-import { siteConfig } from "@/config/site";
-import { landingpageContent } from "@/constants/landingpage";
+import { siteConfig } from "@/site";
+import { landingpageContent } from "@/site";
 import Link from "next/link";
 import Image from "next/image";
 

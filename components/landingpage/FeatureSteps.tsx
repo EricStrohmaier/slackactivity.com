@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 
 import { Container } from "@/components/landingpage/container";
-import { landingpageContent } from "@/constants/landingpage";
+import { landingpageContent } from "@/site";
 import { IconType } from "react-icons";
 import Image, { StaticImageData } from "next/image";
 

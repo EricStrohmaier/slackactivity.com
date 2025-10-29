@@ -1,7 +1,6 @@
 "use client";
 
-import { landingpageContent } from "@/constants/landingpage";
-
+import { landingpageContent } from "@/site";
 import Link from "next/link";
 import { Container } from "./container";
 import { Gradient } from "@/components/landingpage/gradient";

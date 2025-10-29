@@ -1,4 +1,3 @@
-import React from "react";
 import FeedbackForm from "@/components/app/FeedbackForm";
 import {
   Card,
@@ -6,7 +5,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { siteConfig } from "@/config/site";
+import { siteConfig } from "@/site";
 
 export default function ContactPage() {
   return (

@@ -43,7 +43,7 @@ export default async function DashboardPage({
   );
 
   return (
-    <div className="h-screen">
+    <div className="w-full overflow-x-hidden px-4 pb-8 sm:px-6 md:px-8">
       <DashboardSelector
         user={currentUser}
         workspaces={workspaces}
