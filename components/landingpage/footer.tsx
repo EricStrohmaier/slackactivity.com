@@ -53,10 +53,25 @@ export function Footer() {
                   ))}
                 </div>
               )}
-              <p className="text-sm text-gray-300 dark:text-gray-500">
-                &copy; {new Date().getFullYear()}{" "}
-                {landingpageContent.header.company.name}. All rights reserved.
-              </p>
+              <div className="flex flex-col items-center gap-6 sm:items-end">
+                <div className="flex flex-wrap justify-center gap-4">
+                  <a
+                    href="https://startupfa.me/s/slackactivity?utm_source=slackactivity.com"
+                    target="_blank"
+                  >
+                    <img
+                      src="https://startupfa.me/badges/featured-badge.webp"
+                      alt="Slackactivity - Featured on Startup Fame"
+                      width="171"
+                      height="54"
+                    />
+                  </a>
+                </div>
+                <p className="text-sm text-gray-300 dark:text-gray-500">
+                  &copy; {new Date().getFullYear()}{" "}
+                  {landingpageContent.header.company.name}. All rights reserved.
+                </p>
+              </div>
             </div>
           </ContainerInner>
         </div>
