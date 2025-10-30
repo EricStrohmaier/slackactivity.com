@@ -70,12 +70,12 @@ export const landingpageContent = {
     highlightedText: "",
     suffix: "",
     subheadline:
-      "Keep your Slack status green and stay connected, even when you're away from your desk.",
+      "Trusted by remote teams in 40+ countries to keep Slack status green and connected, even when you're away from your desk.",
     socialCare: {
-      active: false,
+      active: true,
       image: productivityImg,
-      fatPrefix: "5k+ ",
-      text: "staying active on Slack",
+      fatPrefix: "5k+ teams ",
+      text: "count on Slacktivity to stay present in Slack",
     },
     cta: {
       actions: {
@@ -211,7 +211,7 @@ export const landingpageContent = {
 
   // testimonials
   testimonials: {
-    active: false,
+    active: true,
     id: "testimonials",
     headline: "What Our Users Say",
     highlightedText: "About Slacktivity",
