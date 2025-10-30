@@ -136,6 +136,38 @@ export function SiteFooter() {
                 }}
               />
             </a>
+            <a href="https://www.aidirectori.es" target="_blank">
+              <img
+                src="https://cdn.aidirectori.es/ai-tools/badges/dark-mode.png"
+                alt="AI Directories Badge"
+                className="h-10 w-auto object-contain"
+                style={{
+                  borderRadius: "8px",
+                  minHeight: "40px",
+                  maxWidth: "150px",
+                  width: "auto",
+                  height: "auto",
+                  backgroundColor: "white",
+                  padding: "4px",
+                }}
+              />
+            </a>
+            <a href="https://twelve.tools" target="_blank">
+              <img
+                src="https://twelve.tools/badge0-white.svg"
+                alt="Featured on Twelve Tools"
+                className="h-10 w-auto object-contain"
+                style={{
+                  borderRadius: "8px",
+                  minHeight: "40px",
+                  maxWidth: "150px",
+                  width: "auto",
+                  height: "auto",
+                  backgroundColor: "white",
+                  padding: "4px",
+                }}
+              />
+            </a>
           </div>
         </div>
       </div>
