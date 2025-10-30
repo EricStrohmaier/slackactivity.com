@@ -90,6 +90,54 @@ export function SiteFooter() {
             </div>
           </div>
         </div>
+
+        {/* Badges Section */}
+        <div className="mt-12 pt-8 border-t border-border">
+          <h3 className="text-sm text-muted-foreground font-semibold text-center mb-6">
+            AS SEEN ON
+          </h3>
+          <div className="flex flex-wrap justify-center items-center gap-6">
+            <a
+              href="https://startupfa.me/s/slackactivity?utm_source=slackactivity.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block hover:opacity-90 transition-opacity"
+            >
+              <img
+                src="https://startupfa.me/badges/featured-badge.webp"
+                alt="Slackactivity - Featured on Startup Fame"
+                className="h-10 w-auto object-contain"
+                style={{
+                  minHeight: "40px",
+                  maxWidth: "150px",
+                  width: "auto",
+                  height: "auto",
+                }}
+              />
+            </a>
+            <a
+              href="https://submitaitools.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block hover:opacity-90 transition-opacity"
+            >
+              <img
+                src="https://submitaitools.org/static_submitaitools/images/submitaitools.png"
+                alt="Submit AI Tools – Discover and explore AI tools"
+                className="h-10 w-auto object-contain"
+                style={{
+                  borderRadius: "8px",
+                  minHeight: "40px",
+                  maxWidth: "150px",
+                  width: "auto",
+                  height: "auto",
+                  backgroundColor: "white",
+                  padding: "4px",
+                }}
+              />
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   );
