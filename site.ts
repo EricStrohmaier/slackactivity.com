@@ -287,6 +287,18 @@ export const landingpageContent = {
           target: "_blank",
           href: "https://promptsloth.com/?ref=slacktivity",
         },
+        {
+          icon: "https://getautoreview.com/favicon.ico",
+          name: "AutoReview",
+          target: "_blank",
+          href: "https://getautoreview.com/?ref=slackactivity",
+        },
+        {
+          icon: "https://adchat.app/favicon.ico",
+          name: "AdChat",
+          target: "_blank",
+          href: "https://adchat.app/?ref=slackactivity",
+        },
       ],
     },
   },
