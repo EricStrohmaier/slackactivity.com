@@ -40,6 +40,7 @@ Names only. Copy the values from the current Vercel project / `.env.local`.
 | `SLACK_SCHEDULE_SECRET` | yes | Guards the presence cron. **Use a new value, see below** |
 | `NEXT_PUBLIC_SITE_URL` | recommended | `https://slackactivity.com` (the default if unset). Also the base for the Google callback and password-email links |
 | `ADMIN_EMAILS` | optional | Comma-separated, gates `/admin` |
+| `GROWTH_HUB_SECRET` | optional | HMAC secret for the Growth Hub adapter at `/api/hub` (conversions + page inventory). Same value in the hub's Site adapter connection |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | optional | Enables "Continue with Google" (hidden when unset). See section 5 |
 | `GOOGLE_REDIRECT_URI` | optional | Override; default `<NEXT_PUBLIC_SITE_URL>/api/auth/google/callback` |
 | `CLOUDFLARE_API_TOKEN` | for passwords | Cloudflare Email Sending (token with Email Sending: Edit). Sends the "set a password" links. Email/password sign-in is hidden without it |
