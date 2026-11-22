@@ -38,10 +38,12 @@ Names only. Copy the values from the current Vercel project / `.env.local`.
 | `SLACK_CLIENT_SECRET` | yes | |
 | `NEXT_PUBLIC_SLACK_REDIRECT_URI` | yes | `https://slackactivity.com/api/slack/token` (unchanged) |
 | `SLACK_SCHEDULE_SECRET` | yes | Guards the presence cron. **Use a new value, see below** |
-| `NEXT_PUBLIC_SITE_URL` | recommended | `https://slackactivity.com` (falls back to that if unset) |
+| `NEXT_PUBLIC_SITE_URL` | recommended | `https://slackactivity.com` (the default if unset). Also the base for the Google callback and password-email links |
 | `ADMIN_EMAILS` | optional | Comma-separated, gates `/admin` |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | optional | Enables "Continue with Google" (hidden when unset). See section 5 |
 | `GOOGLE_REDIRECT_URI` | optional | Override; default `<NEXT_PUBLIC_SITE_URL>/api/auth/google/callback` |
+| `RESEND_API_KEY` | for passwords | Sends the "set a password" confirmation links. Email/password sign-in is hidden when this or `FROM_EMAIL` is unset |
+| `FROM_EMAIL` / `FROM_NAME` | for passwords | Sender. **Must be on a domain verified in Resend.** The current value is on `slacktivity.app`, which Resend rejects as unverified (checked 2026-11-22) |
 | `SLACK_WEBHOOK_URL` | optional | Contact form → Slack |
 | `ACTIVITY_LOG_RETENTION_DAYS` | optional | Prune raw logs older than N days; unset/0 keeps all |
 
@@ -50,8 +52,7 @@ would switch the OAuth redirect to the `_DEV` URI.
 `NEXT_PUBLIC_SLACK_REDIRECT_URI_DEV` is only for local dev.
 
 **No longer used. Don't copy these over:** all `SUPABASE_*` / `NEXT_PUBLIC_SUPABASE_*`,
-all `STRIPE_*`, `OPENAI_API_KEY`, `MJ_APIKEY_*`, `FROM_EMAIL`, `FROM_NAME`,
-`RESEND_API_KEY`, `AZURE_*`, `NEXT_PUBLIC_MS_TEAMS_REDIRECT_URI`, `MS_SCHEDULE_SECRET`,
+all `STRIPE_*`, `OPENAI_API_KEY`, `MJ_APIKEY_*`, `AZURE_*`, `NEXT_PUBLIC_MS_TEAMS_REDIRECT_URI`, `MS_SCHEDULE_SECRET`,
 `NEXT_PUBLIC_GET_URL`.
 
 ### Rotate `SLACK_SCHEDULE_SECRET`
@@ -124,6 +125,20 @@ OAuth & Permissions → Redirect URLs. Don't add the Coolify preview domain ther
 permanently. If you want to test sign-in on it before cutover, add it
 temporarily and remove it afterwards.
 
+### Email + password sign-in
+
+35 Supabase accounts used email; the 16 with a confirmed address had their
+bcrypt hashes imported (`scripts/migrate-passwords.mjs`), so their existing
+passwords work unchanged. Everyone else, and anyone who forgot their password,
+uses "Forgot your password, or never set one?": they choose a password, and it
+applies only after they click the emailed link. That needs a working sender:
+
+1. In Resend → Domains, add and verify `slackactivity.com` (a few DNS records;
+   easiest to do together with the DNS move in section 4).
+2. Set `FROM_EMAIL` to an address on it (e.g. `hello@slackactivity.com`) on Coolify.
+
+Until then, the form says the email couldn't be sent instead of failing silently.
+
 ### Google sign-in
 
 About 60 of the 125 Supabase-era accounts signed up with Google. "Continue with
@@ -138,7 +153,7 @@ redirect URIs**, add:
 - `https://slackactivity.com/api/auth/google/callback`
 - `http://localhost:3000/api/auth/google/callback` (local dev)
 - optionally `https://slackactivity.strohstacks.xyz/api/auth/google/callback`,
-  for testing before cutover (set `GOOGLE_REDIRECT_URI` to it on Coolify meanwhile)
+  for testing before cutover (while `NEXT_PUBLIC_SITE_URL` points at that domain)
 
 The old Supabase callback (`https://<project>.supabase.co/auth/v1/callback`) can
 stay until Supabase is retired.
@@ -184,10 +199,12 @@ also run `select * from cron.job;` in the Supabase SQL editor.
        `.env.local` containing the Supabase + Turso keys:
        `pnpm migrate --dry`, then `pnpm migrate`, then `pnpm verify:rollup`.
        (Idempotent: upserts users/workspaces, resumes logs from the max id.)
+       Then `SUPABASE_DB_URL=… node scripts/migrate-passwords.mjs` for any
+       passwords changed on the old site (Supabase → Connect → Session pooler URI).
 2. [ ] **Switch DNS** to the Coolify server (section 4.3).
-   - [ ] On Coolify, **delete `GOOGLE_REDIRECT_URI`** (it points at the temporary
-         domain for testing), so Google sign-in uses the production callback,
-         then redeploy.
+   - [ ] On Coolify, set **`NEXT_PUBLIC_SITE_URL=https://slackactivity.com`**
+         (it points at the temporary domain for testing, and Google sign-in and
+         password emails build their links from it), then redeploy.
 3. [ ] **Enable the Coolify Scheduled Task.**
 4. [ ] **Turn off the old external cron caller** (whatever section 6 found:
        stop the process / disable the cron-job.org job / `cron.unschedule(...)`).
@@ -198,8 +215,8 @@ also run `select * from cron.job;` in the Supabase SQL editor.
        body has `"processed": N` with mostly `"success"`; `/admin` (or the homepage
        live stats) shows a fresh last-activity time. Sign in with Slack once on
        `https://slackactivity.com` to confirm OAuth end to end.
-6. [ ] **Re-run `pnpm migrate`** once DNS has fully propagated, to catch anything
-       the old app wrote to Supabase in between.
+6. [ ] **Re-run `pnpm migrate`** (and `migrate-passwords.mjs`) once DNS has
+       fully propagated, to catch anything the old app wrote to Supabase in between.
 7. [ ] **Remove `slackactivity.com` (and `www`) from the Vercel project**
        (Project → Settings → Domains).
 8. [ ] In the Vercel project, **disconnect the Git repo** (or pause the project)

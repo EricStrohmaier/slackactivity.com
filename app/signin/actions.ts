@@ -85,7 +85,9 @@ export async function requestPasswordAction(formData: FormData) {
     });
 
     const link = `${siteUrl()}/signin/confirm?token=${token}`;
-    await sendEmail({
+    // Sent for any address, account or not, so reporting a failed send leaks
+    // nothing about which emails have accounts.
+    const sent = await sendEmail({
       to: email!,
       subject: "Confirm your Slackactivity password",
       text:
@@ -97,6 +99,14 @@ export async function requestPasswordAction(formData: FormData) {
         `<p style="color:#666">The link works once and expires in 1 hour. ` +
         `If you didn't ask for this, ignore this email; nothing changes.</p>`,
     });
+    if (!sent) {
+      to("/signin", {
+        view: "set-password",
+        email: email!,
+        error_description:
+          "We couldn't send the email right now. Please try again later, or continue with Slack or Google.",
+      });
+    }
   }
 
   to("/signin", {
