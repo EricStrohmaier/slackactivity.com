@@ -1,7 +1,11 @@
 import bcrypt from "bcryptjs";
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 
-/** Supabase Auth's cost; only used for the timing-equalising dummy hash. */
+export const MIN_PASSWORD_LENGTH = 8;
+/** bcrypt only looks at the first 72 bytes; reject longer instead of truncating silently. */
+export const MAX_PASSWORD_BYTES = 72;
+
+/** Same cost Supabase Auth used, so imported and new hashes behave alike. */
 const BCRYPT_COST = 10;
 
 /**
@@ -11,10 +15,34 @@ const BCRYPT_COST = 10;
  */
 const DUMMY_HASH = bcrypt.hashSync(randomBytes(16).toString("hex"), BCRYPT_COST);
 
+export function passwordProblem(password: string): string | null {
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return `Use at least ${MIN_PASSWORD_LENGTH} characters.`;
+  }
+  if (Buffer.byteLength(password, "utf8") > MAX_PASSWORD_BYTES) {
+    return "That password is too long.";
+  }
+  return null;
+}
+
+export function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, BCRYPT_COST);
+}
+
 /** Verifies imported Supabase hashes ($2a$10$…) and our own alike. */
 export async function verifyPassword(password: string, hash: string | null): Promise<boolean> {
   const ok = await bcrypt.compare(password, hash ?? DUMMY_HASH);
   return ok && hash !== null;
+}
+
+/** Opaque token for an emailed link; only its hash is stored. */
+export function newEmailToken(): { token: string; tokenHash: string } {
+  const token = randomBytes(32).toString("base64url");
+  return { token, tokenHash: sha256(token) };
+}
+
+export function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
 }
 
 export function normalizeEmail(email: unknown): string | null {
@@ -25,7 +53,7 @@ export function normalizeEmail(email: unknown): string | null {
 
 /**
  * Fixed-window counter, in memory. The app runs as a single container, so this
- * is enough to stop password guessing; it resets on deploy,
+ * is enough to stop password guessing and email flooding; it resets on deploy,
  * which is acceptable for a throttle.
  */
 const buckets = new Map<string, { count: number; resetAt: number }>();

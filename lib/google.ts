@@ -7,13 +7,9 @@
  * Google under Supabase Auth get back into their existing account.
  */
 
-const TIMEOUT_MS = 8_000;
+import { siteUrl } from "@/lib/email";
 
-/** Public base URL. Never derived from request headers. */
-function siteUrl(): string {
-  if (process.env.NODE_ENV === "development") return "http://localhost:3000";
-  return (process.env.NEXT_PUBLIC_SITE_URL || "https://slackactivity.com").replace(/\/+$/, "");
-}
+const TIMEOUT_MS = 8_000;
 
 export const GOOGLE_STATE_COOKIE = "g_oauth_state";
 

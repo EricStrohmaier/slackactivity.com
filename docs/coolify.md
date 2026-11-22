@@ -38,10 +38,13 @@ Names only. Copy the values from the current Vercel project / `.env.local`.
 | `SLACK_CLIENT_SECRET` | yes | |
 | `NEXT_PUBLIC_SLACK_REDIRECT_URI` | yes | `https://slackactivity.com/api/slack/token` (unchanged) |
 | `SLACK_SCHEDULE_SECRET` | yes | Guards the presence cron. **Use a new value, see below** |
-| `NEXT_PUBLIC_SITE_URL` | recommended | `https://slackactivity.com` (the default if unset). Also the base for the Google callback URL |
+| `NEXT_PUBLIC_SITE_URL` | recommended | `https://slackactivity.com` (the default if unset). Also the base for the Google callback and password-email links |
 | `ADMIN_EMAILS` | optional | Comma-separated, gates `/admin` |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | optional | Enables "Continue with Google" (hidden when unset). See section 5 |
 | `GOOGLE_REDIRECT_URI` | optional | Override; default `<NEXT_PUBLIC_SITE_URL>/api/auth/google/callback` |
+| `CLOUDFLARE_API_TOKEN` | for passwords | Cloudflare Email Sending (token with Email Sending: Edit). Sends the "set a password" links. Email/password sign-in is hidden without it |
+| `CLOUDFLARE_ACCOUNT_ID` | for passwords | `53b790c6264d7b1c4afe8a2ab231bb9b` |
+| `EMAIL_FROM` | for passwords | `welcome@slackactivity.com` (domain set up for Email Sending in Cloudflare; test send accepted 2026-11-22). Optional `EMAIL_FROM_NAME`, default "Slackactivity" |
 | `SLACK_WEBHOOK_URL` | optional | Contact form → Slack |
 | `ACTIVITY_LOG_RETENTION_DAYS` | optional | Prune raw logs older than N days; unset/0 keeps all |
 
@@ -133,12 +136,11 @@ temporarily and remove it afterwards.
 
 35 Supabase accounts used email; the 16 with a confirmed address had their
 bcrypt hashes imported (`scripts/migrate-passwords.mjs`), so their existing
-passwords work unchanged.
-
-The app sends **no email** (the Resend account is suspended): there's no
-password reset, no email sign-up and no confirmation link. Anyone without a
-password, or who forgot it, uses Slack or Google, which find the account by
-the same email address.
+passwords work unchanged. Everyone else, and anyone who forgot their password,
+uses "Forgot your password, or never set one?": they choose a password, and it
+applies only after they click the emailed link, sent through Cloudflare Email
+Sending from `welcome@slackactivity.com`. If sending fails, the form says so
+instead of claiming the link is on its way.
 
 ### Google sign-in
 
@@ -203,11 +205,9 @@ also run `select * from cron.job;` in the Supabase SQL editor.
        Then `SUPABASE_DB_URL=… node scripts/migrate-passwords.mjs` for any
        passwords changed on the old site (Supabase → Connect → Session pooler URI).
 2. [ ] **Switch DNS** to the Coolify server (section 4.3).
-   - [ ] On Coolify, delete `RESEND_API_KEY`, `FROM_EMAIL` and `FROM_NAME` (set
-         empty during setup; the app no longer sends email).
    - [ ] On Coolify, set **`NEXT_PUBLIC_SITE_URL=https://slackactivity.com`**
-         (it points at the temporary domain for testing, and the Google
-         callback URL is built from it), then redeploy.
+         (it points at the temporary domain for testing, and Google sign-in and
+         password emails build their links from it), then redeploy.
          `GOOGLE_REDIRECT_URI` is set to an empty value (the API token used for
          setup couldn't delete it); empty means "derive from the site URL".
          Delete it in the UI or leave it empty.

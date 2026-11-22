@@ -4,13 +4,13 @@
  *
  *   SUPABASE_DB_URL=postgresql://... node scripts/migrate-passwords.mjs [--dry]
  *
- * 1. Adds `users.password_hash` to an existing Turso database (fresh databases
- *    get it from lib/db/schema.sql).
+ * 1. Adds `users.password_hash` and the `email_tokens` table to an existing
+ *    Turso database (fresh databases get them from lib/db/schema.sql).
  * 2. Copies bcrypt hashes from auth.users so existing passwords keep working.
  *    Only accounts whose email Supabase confirmed are imported: an unconfirmed
  *    address was never proven, so importing it would let whoever typed someone
- *    else's email sign in as them. Those users sign in with Slack or Google,
- *    which match the account by email.
+ *    else's email sign in as them. Those users can use "Set a password", which
+ *    verifies the address by email.
  *
  * Safe to re-run (e.g. at cutover, to pick up password changes made on the old
  * site). Supabase is only read, inside a read-only transaction.
@@ -50,6 +50,20 @@ async function ensureSchema() {
       await db.execute("alter table users add column password_hash text");
       console.log("✔ added users.password_hash");
     }
+  }
+  if (!DRY) {
+    await db.executeMultiple(`
+      create table if not exists email_tokens (
+        token_hash    text primary key,
+        email         text not null,
+        password_hash text not null,
+        expires_at    text not null,
+        used_at       text,
+        created_at    text not null
+      );
+      create index if not exists email_tokens_email_idx on email_tokens (email, created_at);
+    `);
+    console.log("✔ email_tokens table ready");
   }
 }
 

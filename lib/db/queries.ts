@@ -600,3 +600,37 @@ export async function getPasswordLogin(
     [email]
   );
 }
+
+export async function setUserPassword(userId: string, passwordHash: string): Promise<void> {
+  await run(`update users set password_hash = ? where id = ?`, [passwordHash, userId]);
+}
+
+export async function createEmailToken(t: {
+  tokenHash: string;
+  email: string;
+  passwordHash: string;
+  expiresAt: string;
+}): Promise<void> {
+  await run(
+    `insert into email_tokens (token_hash, email, password_hash, expires_at, created_at)
+     values (?, ?, ?, ?, ?)`,
+    [t.tokenHash, t.email, t.passwordHash, t.expiresAt, isoNow()]
+  );
+}
+
+/**
+ * Marks a token used and returns it, in one statement, so a link can't be
+ * redeemed twice even by two simultaneous clicks. Null if unknown, used or
+ * expired.
+ */
+export async function consumeEmailToken(
+  tokenHash: string
+): Promise<{ email: string; password_hash: string } | null> {
+  const now = isoNow();
+  return one<{ email: string; password_hash: string }>(
+    `update email_tokens set used_at = ?
+      where token_hash = ? and used_at is null and expires_at > ?
+      returning email, password_hash`,
+    [now, tokenHash, now]
+  );
+}
