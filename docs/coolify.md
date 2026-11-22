@@ -17,9 +17,13 @@ talking to Turso (libSQL) and Slack. No other services.
   DNS points at the server (step 4).
 
 The image builds **without any env vars**. Everything is read at runtime, so set
-all variables below as normal runtime variables. Don't tick "Build Variable".
-(If you do, `NEXT_PUBLIC_*` values get baked into the build. That's harmless,
-but then changing them needs a rebuild.)
+all variables below as runtime-only variables.
+
+Coolify (4.7) marks new variables **"Available at Buildtime"** by default, and also
+creates a preview copy of each one. Untick buildtime on both copies (API:
+`is_buildtime: false`). Otherwise every secret is passed to `docker build` as a
+build arg, where it can show up in build logs and image history, and
+`NEXT_PUBLIC_*` values get baked into the bundle.
 
 ## 2. Environment variables
 
