@@ -162,9 +162,21 @@ export async function GET(request: NextRequest) {
   );
 
   const results = ticks.map((tick) => tick.result);
-  return json({
-    message: "Slack presence update complete",
-    processed: results.length,
-    results,
-  });
+  const failed = results.filter((r) => r.status === "error").length;
+  const attempted = results.filter((r) => r.status !== "skipped").length;
+  // Every Slack call failing is systemic (Slack outage, app disabled, network),
+  // not one bad token. Answer 502 so the scheduler's `curl -f` fails and
+  // Coolify sends its scheduled-task failure notification.
+  const systemic = attempted > 0 && failed === attempted;
+  return json(
+    {
+      message: systemic
+        ? "Every Slack call failed this tick"
+        : "Slack presence update complete",
+      processed: results.length,
+      failed,
+      results,
+    },
+    systemic ? 502 : 200
+  );
 }
