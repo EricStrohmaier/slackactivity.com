@@ -40,6 +40,8 @@ Names only. Copy the values from the current Vercel project / `.env.local`.
 | `SLACK_SCHEDULE_SECRET` | yes | Guards the presence cron. **Use a new value, see below** |
 | `NEXT_PUBLIC_SITE_URL` | recommended | `https://slackactivity.com` (falls back to that if unset) |
 | `ADMIN_EMAILS` | optional | Comma-separated, gates `/admin` |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | optional | Enables "Continue with Google" (hidden when unset). See section 5 |
+| `GOOGLE_REDIRECT_URI` | optional | Override; default `<NEXT_PUBLIC_SITE_URL>/api/auth/google/callback` |
 | `SLACK_WEBHOOK_URL` | optional | Contact form → Slack |
 | `ACTIVITY_LOG_RETENTION_DAYS` | optional | Prune raw logs older than N days; unset/0 keeps all |
 
@@ -121,6 +123,25 @@ Same domain, so **nothing changes.** For peace of mind, check that
 OAuth & Permissions → Redirect URLs. Don't add the Coolify preview domain there
 permanently. If you want to test sign-in on it before cutover, add it
 temporarily and remove it afterwards.
+
+### Google sign-in
+
+About 60 of the 125 Supabase-era accounts signed up with Google. "Continue with
+Google" signs into the existing account with the same **verified** email (all
+migrated users have one, and none are duplicated). A brand-new Google account
+has no workspace, so the dashboard asks it to connect Slack.
+
+In Google Cloud Console → APIs & Services → Credentials, use the OAuth client
+Supabase used (or create a new "Web application" client). Under **Authorized
+redirect URIs**, add:
+
+- `https://slackactivity.com/api/auth/google/callback`
+- `http://localhost:3000/api/auth/google/callback` (local dev)
+- optionally `https://slackactivity.strohstacks.xyz/api/auth/google/callback`,
+  for testing before cutover (set `GOOGLE_REDIRECT_URI` to it on Coolify meanwhile)
+
+The old Supabase callback (`https://<project>.supabase.co/auth/v1/callback`) can
+stay until Supabase is retired.
 
 ## 6. The current external cron caller (unknown)
 

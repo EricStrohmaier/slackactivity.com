@@ -77,7 +77,7 @@ scheduling, activity history — all of it, at no cost. No credit card, no trial
 
 Built with [Next.js](https://nextjs.org) (App Router), [Turso](https://turso.tech) (libSQL), [Slack Web API](https://api.slack.com/web), Tailwind CSS, and Radix UI.
 
-Sign-in **is** Slack OAuth — there is no separate account, no password, and no email flow. The session is a stateless HMAC-signed cookie, so there is no auth service and no session table.
+Sign-in is Slack OAuth, or Google for accounts that signed up that way (matched by verified email). There are no passwords and no email flow. The session is a stateless HMAC-signed cookie, so there is no auth service and no session table.
 
 ### Running it yourself
 
@@ -100,6 +100,7 @@ Required environment variables:
 | `NEXT_PUBLIC_SLACK_REDIRECT_URI` / `..._DEV` | Must match the Slack app's redirect URLs exactly |
 | `SLACK_SCHEDULE_SECRET` | Guards the presence cron at `/api/slack/schleude?secret=…` |
 | `ADMIN_EMAILS` | Comma-separated emails allowed to see `/admin` |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional. Enables "Continue with Google"; redirect URI `<site>/api/auth/google/callback` |
 | `ACTIVITY_LOG_RETENTION_DAYS` | Optional. Prune raw logs older than N days, a bounded slice per tick. Unset or `0` keeps everything |
 
 Apply the schema with `lib/db/schema.sql`. The presence cron should call

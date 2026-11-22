@@ -4,12 +4,14 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/app/icons/logo";
 import SlackIcon from "@/components/app/icons/slack";
+import GoogleIcon from "@/components/app/icons/google";
 import { getUser } from "@/lib/auth";
+import { googleEnabled } from "@/lib/google";
 
 export const metadata: Metadata = {
   title: "Sign in",
   description:
-    "Sign in with Slack to keep your status green automatically. Free forever, no credit card.",
+    "Sign in with Slack or Google to keep your status green automatically. Free forever, no credit card.",
   robots: { index: false, follow: true },
 };
 
@@ -21,6 +23,7 @@ export default async function SignIn({
   if (await getUser()) redirect("/dashboard");
 
   const error = searchParams.error_description || searchParams.error;
+  const google = googleEnabled();
 
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-4">
@@ -33,8 +36,9 @@ export default async function SignIn({
           Sign in to Slackactivity
         </h1>
         <p className="mb-8 text-text-600">
-          Connecting Slack is all it takes — there is no separate account to
-          create. Free forever, no credit card.
+          {google
+            ? "Use Slack, or the Google account you signed up with. Free forever, no credit card."
+            : "Connecting Slack is all it takes — there is no separate account to create. Free forever, no credit card."}
         </p>
 
         {error && (
@@ -49,6 +53,16 @@ export default async function SignIn({
             Continue with Slack
           </Link>
         </Button>
+
+        {google && (
+          <Button asChild size="lg" variant="outline" className="mt-3 w-full">
+            {/* A route handler, not a page: plain <a> skips client prefetch. */}
+            <a href="/api/auth/google">
+              <GoogleIcon className="mr-2 h-5 w-5" />
+              Continue with Google
+            </a>
+          </Button>
+        )}
 
         <p className="mt-6 text-xs text-text-500">
           We request only the permissions needed to set your presence.

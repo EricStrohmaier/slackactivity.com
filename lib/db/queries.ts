@@ -58,7 +58,7 @@ export async function getUserById(id: string): Promise<User | null> {
 export async function getUserByEmail(email: string): Promise<User | null> {
   return one<User>(
     `select id, email, full_name, avatar_url, created_at
-     from users where email = ? order by created_at limit 1`,
+     from users where email = ? collate nocase order by created_at limit 1`,
     [email]
   );
 }
