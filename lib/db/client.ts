@@ -12,8 +12,15 @@ function build(): Client {
   return createClient({
     url,
     authToken: process.env.TURSO_AUTH_TOKEN,
+    // The default fetch has no timeout, so a stalled Turso connection would
+    // hang the request (and the presence cron) indefinitely.
+    fetch: (request: Request) =>
+      fetch(request, { signal: AbortSignal.timeout(DB_TIMEOUT_MS) }),
   });
 }
+
+/** Hard ceiling for a single HTTP round-trip to Turso. */
+const DB_TIMEOUT_MS = 15_000;
 
 /**
  * Shared libSQL client. Cached on globalThis so Next.js dev's module reloading

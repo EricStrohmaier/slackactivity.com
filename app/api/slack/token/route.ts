@@ -13,7 +13,7 @@ import {
   refreshWorkspaceToken,
 } from "@/lib/db/queries";
 import { getErrorRedirect } from "@/utils/helpers";
-import { slackRedirectUri } from "@/lib/slack";
+import { SLACK_TIMEOUT_MS, slackRedirectUri } from "@/lib/slack";
 import { DEFAULT_WORKING_HOURS } from "@/types/db";
 
 interface SlackAccount {
@@ -49,7 +49,10 @@ async function fetchSlackAccount(
   try {
     const res = await fetch(
       `https://slack.com/api/users.info?user=${encodeURIComponent(slackUserId)}`,
-      { headers: { Authorization: `Bearer ${token}` } }
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(SLACK_TIMEOUT_MS),
+      }
     );
     const data = await res.json();
     if (!data.ok) return empty;
@@ -78,6 +81,7 @@ export async function GET(req: NextRequest) {
   // 1. Exchange the code for a user token.
   const tokenRes = await fetch("https://slack.com/api/oauth.v2.access", {
     method: "POST",
+    signal: AbortSignal.timeout(SLACK_TIMEOUT_MS),
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       code,

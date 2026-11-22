@@ -1,4 +1,14 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
+
+export const dynamic = "force-dynamic";
+
+/**
+ * Liveness probe for the container healthcheck and uptime monitors. Touches no
+ * database or third-party API, so it stays green when only Turso/Slack are down.
+ */
+export async function GET() {
+  return Response.json({ ok: true });
+}
 
 export async function POST(request: NextRequest) {
   console.log("ping");

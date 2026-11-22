@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { WebClient } from "@slack/web-api";
+import { slackClient } from "@/lib/slack";
 import { getUser as getSessionUser } from "@/lib/auth";
 import { clearSessionCookie } from "@/lib/auth/session";
 import {
@@ -64,7 +64,7 @@ export async function updateUserPresence(workspace: Workspace) {
   const active = isWithinWorkingHours(workHours, day, hour);
 
   try {
-    const slack = new WebClient(owned.slack_auth_token);
+    const slack = slackClient(owned.slack_auth_token);
     await slack.users.setPresence({ presence: active ? "auto" : "away" });
     // Only `source` is worth storing — the schedule this was derived from is
     // on the workspace row, and day/hour follow from the log's timestamp.

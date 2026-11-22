@@ -15,6 +15,7 @@ export async function sendSlackNotification(message: string): Promise<boolean> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: message }),
+      signal: AbortSignal.timeout(8_000),
     });
     if (!response.ok) {
       console.error(
