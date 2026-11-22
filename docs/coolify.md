@@ -119,7 +119,12 @@ call starts after 30s. Workspaces not reached are picked up next tick.
 
 ## 5. Slack OAuth redirect URL
 
-Same domain, so **nothing changes.** For peace of mind, check that
+Same domain, so **the URL doesn't change.** Under **User Token Scopes**, make
+sure `users:read.email` is listed next to `users:read` and `users:write`; the new
+sign-in requests it, and the old app didn't. Existing tokens keep working for the
+presence cron, which only needs `users:write`.
+
+ For peace of mind, check that
 `https://slackactivity.com/api/slack/token` is still listed under Slack app →
 OAuth & Permissions → Redirect URLs. Don't add the Coolify preview domain there
 permanently. If you want to test sign-in on it before cutover, add it
@@ -208,6 +213,9 @@ also run `select * from cron.job;` in the Supabase SQL editor.
          `GOOGLE_REDIRECT_URI` is set to an empty value (the API token used for
          setup couldn't delete it); empty means "derive from the site URL".
          Delete it in the UI or leave it empty.
+   - [ ] On Coolify, set **`NEXT_PUBLIC_SLACK_REDIRECT_URI=https://slackactivity.com/api/slack/token`**
+         (it points at the temporary domain for testing). Optionally remove the
+         temporary redirect URL from the Slack app afterwards.
 3. [ ] **Enable the Coolify Scheduled Task.**
 4. [ ] **Turn off the old external cron caller** (whatever section 6 found:
        stop the process / disable the cron-job.org job / `cron.unschedule(...)`).

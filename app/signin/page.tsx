@@ -15,6 +15,8 @@ import { requestPasswordAction, signInWithPasswordAction } from "./actions";
 // Every button and input on the auth pages shares one height and text size.
 const CONTROL = "h-12 w-full text-base font-medium";
 const FIELD = "h-12 px-4 text-base bg-white";
+// Secondary buttons: white like the inputs, not the beige page background.
+const SECONDARY = "bg-white hover:bg-gray-50";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -100,7 +102,7 @@ export default async function SignIn({
             </Button>
 
             {google && (
-              <Button asChild variant="outline" className={`${CONTROL} mt-3`}>
+              <Button asChild variant="outline" className={`${CONTROL} ${SECONDARY} mt-3`}>
                 {/* A route handler, not a page: plain <a> skips client prefetch. */}
                 <a href="/api/auth/google">
                   <GoogleIcon className="mr-2 h-5 w-5" />
@@ -119,7 +121,7 @@ export default async function SignIn({
                 <form action={signInWithPasswordAction} className="space-y-3 text-left">
                   <Input className={FIELD} name="email" type="email" required autoComplete="email" placeholder="you@example.com" defaultValue={email} />
                   <Input className={FIELD} name="password" type="password" required autoComplete="current-password" placeholder="Password" />
-                  <Button type="submit" variant="outline" className={CONTROL}>
+                  <Button type="submit" variant="outline" className={`${CONTROL} ${SECONDARY}`}>
                     Sign in with email
                   </Button>
                 </form>
