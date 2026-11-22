@@ -10,12 +10,27 @@
 --     day buckets without any date function calls.
 
 create table if not exists users (
-  id         text primary key,
-  email      text,
-  full_name  text,
-  avatar_url text,
-  created_at text not null
+  id            text primary key,
+  email         text,
+  full_name     text,
+  avatar_url    text,
+  created_at    text not null,
+  -- bcrypt; null for Slack/Google-only accounts. Existing databases get this
+  -- column from scripts/migrate-passwords.mjs (SQLite has no ADD COLUMN IF NOT EXISTS).
+  password_hash text
 );
+
+-- Pending "set my password" requests, confirmed by an emailed link. The raw
+-- token only ever exists in the email; we store its SHA-256.
+create table if not exists email_tokens (
+  token_hash    text primary key,
+  email         text not null,
+  password_hash text not null,
+  expires_at    text not null,
+  used_at       text,
+  created_at    text not null
+);
+create index if not exists email_tokens_email_idx on email_tokens (email, created_at);
 
 create index if not exists users_email_idx on users (email);
 

@@ -7,6 +7,8 @@
  * Google under Supabase Auth get back into their existing account.
  */
 
+import { siteUrl } from "@/lib/email";
+
 const TIMEOUT_MS = 8_000;
 
 export const GOOGLE_STATE_COOKIE = "g_oauth_state";
@@ -17,17 +19,12 @@ export function googleEnabled(): boolean {
 }
 
 /**
- * Must match an "Authorized redirect URI" on the Google OAuth client exactly.
- * Defaults to <NEXT_PUBLIC_SITE_URL>/api/auth/google/callback, or localhost in
- * development; GOOGLE_REDIRECT_URI overrides both.
+ * Must match an "Authorized redirect URI" on the Google OAuth client exactly:
+ * <site>/api/auth/google/callback, where <site> is NEXT_PUBLIC_SITE_URL
+ * (localhost in development). GOOGLE_REDIRECT_URI overrides it.
  */
 export function googleRedirectUri(): string {
-  if (process.env.GOOGLE_REDIRECT_URI) return process.env.GOOGLE_REDIRECT_URI;
-  const base =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : (process.env.NEXT_PUBLIC_SITE_URL || "https://slackactivity.com").replace(/\/+$/, "");
-  return `${base}/api/auth/google/callback`;
+  return process.env.GOOGLE_REDIRECT_URI || `${siteUrl()}/api/auth/google/callback`;
 }
 
 export function googleAuthorizeUrl(state: string): string {

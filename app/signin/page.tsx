@@ -2,43 +2,56 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Logo from "@/components/app/icons/logo";
 import SlackIcon from "@/components/app/icons/slack";
 import GoogleIcon from "@/components/app/icons/google";
 import { getUser } from "@/lib/auth";
 import { googleEnabled } from "@/lib/google";
+import { emailEnabled } from "@/lib/email";
+import { MIN_PASSWORD_LENGTH } from "@/lib/auth/password";
+import { requestPasswordAction, signInWithPasswordAction } from "./actions";
 
 export const metadata: Metadata = {
   title: "Sign in",
   description:
-    "Sign in with Slack or Google to keep your status green automatically. Free forever, no credit card.",
+    "Sign in with Slack, Google or email to keep your status green automatically. Free forever, no credit card.",
   robots: { index: false, follow: true },
 };
 
 export default async function SignIn({
   searchParams,
 }: {
-  searchParams: { error?: string; error_description?: string };
+  searchParams: {
+    error?: string;
+    error_description?: string;
+    notice?: string;
+    view?: string;
+    email?: string;
+  };
 }) {
   if (await getUser()) redirect("/dashboard");
 
   const error = searchParams.error_description || searchParams.error;
   const google = googleEnabled();
+  const passwords = emailEnabled();
+  const setPassword = passwords && searchParams.view === "set-password";
+  const email = searchParams.email ?? "";
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4">
+    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-md text-center">
         <div className="mb-6 flex justify-center">
           <Logo width="60px" height="75px" />
         </div>
 
         <h1 className="mb-3 text-3xl font-bold text-text-900">
-          Sign in to Slackactivity
+          {setPassword ? "Set a password" : "Sign in to Slackactivity"}
         </h1>
         <p className="mb-8 text-text-600">
-          {google
-            ? "Use Slack, or the Google account you signed up with. Free forever, no credit card."
-            : "Connecting Slack is all it takes — there is no separate account to create. Free forever, no credit card."}
+          {setPassword
+            ? "For a forgotten password, an older account without one, or a new account. We'll email you a link to confirm."
+            : "Use whichever you signed up with. New here? Continue with Slack. Free forever, no credit card."}
         </p>
 
         {error && (
@@ -46,27 +59,78 @@ export default async function SignIn({
             {error}
           </p>
         )}
+        {searchParams.notice && (
+          <p className="mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+            {searchParams.notice}
+          </p>
+        )}
 
-        <Button asChild size="lg" className="w-full">
-          <Link href="/api/slack/auth">
-            <SlackIcon className="mr-2 h-5 w-5" />
-            Continue with Slack
-          </Link>
-        </Button>
+        {setPassword ? (
+          <form action={requestPasswordAction} className="space-y-3 text-left">
+            <Input name="email" type="email" required autoComplete="email" placeholder="you@example.com" defaultValue={email} />
+            <Input
+              name="password"
+              type="password"
+              required
+              minLength={MIN_PASSWORD_LENGTH}
+              autoComplete="new-password"
+              placeholder={`New password (min. ${MIN_PASSWORD_LENGTH} characters)`}
+            />
+            <Button type="submit" size="lg" className="w-full">
+              Email me a confirmation link
+            </Button>
+            <p className="pt-2 text-center text-sm">
+              <Link href="/signin" className="underline">
+                Back to sign in
+              </Link>
+            </p>
+          </form>
+        ) : (
+          <>
+            <Button asChild size="lg" className="w-full">
+              <Link href="/api/slack/auth">
+                <SlackIcon className="mr-2 h-5 w-5" />
+                Continue with Slack
+              </Link>
+            </Button>
 
-        {google && (
-          <Button asChild size="lg" variant="outline" className="mt-3 w-full">
-            {/* A route handler, not a page: plain <a> skips client prefetch. */}
-            <a href="/api/auth/google">
-              <GoogleIcon className="mr-2 h-5 w-5" />
-              Continue with Google
-            </a>
-          </Button>
+            {google && (
+              <Button asChild size="lg" variant="outline" className="mt-3 w-full">
+                {/* A route handler, not a page: plain <a> skips client prefetch. */}
+                <a href="/api/auth/google">
+                  <GoogleIcon className="mr-2 h-5 w-5" />
+                  Continue with Google
+                </a>
+              </Button>
+            )}
+
+            {passwords && (
+              <>
+                <div className="my-6 flex items-center gap-3 text-xs uppercase text-text-500">
+                  <span className="h-px flex-1 bg-gray-200" />
+                  or with email
+                  <span className="h-px flex-1 bg-gray-200" />
+                </div>
+                <form action={signInWithPasswordAction} className="space-y-3 text-left">
+                  <Input name="email" type="email" required autoComplete="email" placeholder="you@example.com" defaultValue={email} />
+                  <Input name="password" type="password" required autoComplete="current-password" placeholder="Password" />
+                  <Button type="submit" size="lg" variant="outline" className="w-full">
+                    Sign in with email
+                  </Button>
+                </form>
+                <p className="mt-3 text-sm">
+                  <Link href="/signin?view=set-password" className="underline">
+                    Forgot your password, or never set one?
+                  </Link>
+                </p>
+              </>
+            )}
+          </>
         )}
 
         <p className="mt-6 text-xs text-text-500">
-          We request only the permissions needed to set your presence.
-          Slackactivity cannot read your messages, files, or channels. Read the{" "}
+          Slackactivity only asks Slack for the permissions needed to set your
+          presence. It cannot read your messages, files, or channels. Read the{" "}
           <Link href="/privacy-policy" className="underline">
             privacy policy
           </Link>
