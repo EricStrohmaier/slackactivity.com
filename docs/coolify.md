@@ -185,6 +185,9 @@ also run `select * from cron.job;` in the Supabase SQL editor.
        `pnpm migrate --dry`, then `pnpm migrate`, then `pnpm verify:rollup`.
        (Idempotent: upserts users/workspaces, resumes logs from the max id.)
 2. [ ] **Switch DNS** to the Coolify server (section 4.3).
+   - [ ] On Coolify, **delete `GOOGLE_REDIRECT_URI`** (it points at the temporary
+         domain for testing), so Google sign-in uses the production callback,
+         then redeploy.
 3. [ ] **Enable the Coolify Scheduled Task.**
 4. [ ] **Turn off the old external cron caller** (whatever section 6 found:
        stop the process / disable the cron-job.org job / `cron.unschedule(...)`).
