@@ -38,12 +38,10 @@ Names only. Copy the values from the current Vercel project / `.env.local`.
 | `SLACK_CLIENT_SECRET` | yes | |
 | `NEXT_PUBLIC_SLACK_REDIRECT_URI` | yes | `https://slackactivity.com/api/slack/token` (unchanged) |
 | `SLACK_SCHEDULE_SECRET` | yes | Guards the presence cron. **Use a new value, see below** |
-| `NEXT_PUBLIC_SITE_URL` | recommended | `https://slackactivity.com` (the default if unset). Also the base for the Google callback and password-email links |
+| `NEXT_PUBLIC_SITE_URL` | recommended | `https://slackactivity.com` (the default if unset). Also the base for the Google callback URL |
 | `ADMIN_EMAILS` | optional | Comma-separated, gates `/admin` |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | optional | Enables "Continue with Google" (hidden when unset). See section 5 |
 | `GOOGLE_REDIRECT_URI` | optional | Override; default `<NEXT_PUBLIC_SITE_URL>/api/auth/google/callback` |
-| `RESEND_API_KEY` | for passwords | Sends the "set a password" confirmation links. Email/password sign-in is hidden when this or `FROM_EMAIL` is unset |
-| `FROM_EMAIL` / `FROM_NAME` | for passwords | Sender. **Must be on a domain verified in Resend.** The current value is on `slacktivity.app`, which Resend rejects as unverified (checked 2026-11-22) |
 | `SLACK_WEBHOOK_URL` | optional | Contact form → Slack |
 | `ACTIVITY_LOG_RETENTION_DAYS` | optional | Prune raw logs older than N days; unset/0 keeps all |
 
@@ -52,7 +50,8 @@ would switch the OAuth redirect to the `_DEV` URI.
 `NEXT_PUBLIC_SLACK_REDIRECT_URI_DEV` is only for local dev.
 
 **No longer used. Don't copy these over:** all `SUPABASE_*` / `NEXT_PUBLIC_SUPABASE_*`,
-all `STRIPE_*`, `OPENAI_API_KEY`, `MJ_APIKEY_*`, `AZURE_*`, `NEXT_PUBLIC_MS_TEAMS_REDIRECT_URI`, `MS_SCHEDULE_SECRET`,
+all `STRIPE_*`, `OPENAI_API_KEY`, `MJ_APIKEY_*`, `RESEND_API_KEY`, `FROM_EMAIL`,
+`FROM_NAME`, `AZURE_*`, `NEXT_PUBLIC_MS_TEAMS_REDIRECT_URI`, `MS_SCHEDULE_SECRET`,
 `NEXT_PUBLIC_GET_URL`.
 
 ### Rotate `SLACK_SCHEDULE_SECRET`
@@ -134,15 +133,12 @@ temporarily and remove it afterwards.
 
 35 Supabase accounts used email; the 16 with a confirmed address had their
 bcrypt hashes imported (`scripts/migrate-passwords.mjs`), so their existing
-passwords work unchanged. Everyone else, and anyone who forgot their password,
-uses "Forgot your password, or never set one?": they choose a password, and it
-applies only after they click the emailed link. That needs a working sender:
+passwords work unchanged.
 
-1. In Resend → Domains, add and verify `slackactivity.com` (a few DNS records;
-   easiest to do together with the DNS move in section 4).
-2. Set `FROM_EMAIL` to an address on it (e.g. `hello@slackactivity.com`) on Coolify.
-
-Until then, the form says the email couldn't be sent instead of failing silently.
+The app sends **no email** (the Resend account is suspended): there's no
+password reset, no email sign-up and no confirmation link. Anyone without a
+password, or who forgot it, uses Slack or Google, which find the account by
+the same email address.
 
 ### Google sign-in
 
@@ -207,9 +203,11 @@ also run `select * from cron.job;` in the Supabase SQL editor.
        Then `SUPABASE_DB_URL=… node scripts/migrate-passwords.mjs` for any
        passwords changed on the old site (Supabase → Connect → Session pooler URI).
 2. [ ] **Switch DNS** to the Coolify server (section 4.3).
+   - [ ] On Coolify, delete `RESEND_API_KEY`, `FROM_EMAIL` and `FROM_NAME` (set
+         empty during setup; the app no longer sends email).
    - [ ] On Coolify, set **`NEXT_PUBLIC_SITE_URL=https://slackactivity.com`**
-         (it points at the temporary domain for testing, and Google sign-in and
-         password emails build their links from it), then redeploy.
+         (it points at the temporary domain for testing, and the Google
+         callback URL is built from it), then redeploy.
          `GOOGLE_REDIRECT_URI` is set to an empty value (the API token used for
          setup couldn't delete it); empty means "derive from the site URL".
          Delete it in the UI or leave it empty.
