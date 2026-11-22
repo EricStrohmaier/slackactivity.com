@@ -205,6 +205,9 @@ also run `select * from cron.job;` in the Supabase SQL editor.
    - [ ] On Coolify, set **`NEXT_PUBLIC_SITE_URL=https://slackactivity.com`**
          (it points at the temporary domain for testing, and Google sign-in and
          password emails build their links from it), then redeploy.
+         `GOOGLE_REDIRECT_URI` is set to an empty value (the API token used for
+         setup couldn't delete it); empty means "derive from the site URL".
+         Delete it in the UI or leave it empty.
 3. [ ] **Enable the Coolify Scheduled Task.**
 4. [ ] **Turn off the old external cron caller** (whatever section 6 found:
        stop the process / disable the cron-job.org job / `cron.unschedule(...)`).
