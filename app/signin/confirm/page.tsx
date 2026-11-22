@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import Logo from "@/components/app/icons/logo";
 import { confirmPasswordAction } from "../actions";
 
+// Every button and input on the auth pages shares one height and text size.
+const CONTROL = "h-12 w-full text-base font-medium";
+
 export const metadata: Metadata = {
   title: "Confirm password",
   robots: { index: false, follow: false },
@@ -33,7 +36,7 @@ export default function ConfirmPassword({
             <p className="mb-8 text-text-600">
               One click to save your new password and sign in.
             </p>
-            <Button type="submit" size="lg" className="w-full">
+            <Button type="submit" className={CONTROL}>
               Confirm and sign in
             </Button>
           </form>

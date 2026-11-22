@@ -12,6 +12,10 @@ import { emailEnabled } from "@/lib/email";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/password";
 import { requestPasswordAction, signInWithPasswordAction } from "./actions";
 
+// Every button and input on the auth pages shares one height and text size.
+const CONTROL = "h-12 w-full text-base font-medium";
+const FIELD = "h-12 px-4 text-base bg-white";
+
 export const metadata: Metadata = {
   title: "Sign in",
   description:
@@ -67,8 +71,9 @@ export default async function SignIn({
 
         {setPassword ? (
           <form action={requestPasswordAction} className="space-y-3 text-left">
-            <Input name="email" type="email" required autoComplete="email" placeholder="you@example.com" defaultValue={email} />
+            <Input className={FIELD} name="email" type="email" required autoComplete="email" placeholder="you@example.com" defaultValue={email} />
             <Input
+              className={FIELD}
               name="password"
               type="password"
               required
@@ -76,7 +81,7 @@ export default async function SignIn({
               autoComplete="new-password"
               placeholder={`New password (min. ${MIN_PASSWORD_LENGTH} characters)`}
             />
-            <Button type="submit" size="lg" className="w-full">
+            <Button type="submit" className={CONTROL}>
               Email me a confirmation link
             </Button>
             <p className="pt-2 text-center text-sm">
@@ -87,7 +92,7 @@ export default async function SignIn({
           </form>
         ) : (
           <>
-            <Button asChild size="lg" className="w-full">
+            <Button asChild className={CONTROL}>
               <Link href="/api/slack/auth">
                 <SlackIcon className="mr-2 h-5 w-5" />
                 Continue with Slack
@@ -95,7 +100,7 @@ export default async function SignIn({
             </Button>
 
             {google && (
-              <Button asChild size="lg" variant="outline" className="mt-3 w-full">
+              <Button asChild variant="outline" className={`${CONTROL} mt-3`}>
                 {/* A route handler, not a page: plain <a> skips client prefetch. */}
                 <a href="/api/auth/google">
                   <GoogleIcon className="mr-2 h-5 w-5" />
@@ -112,9 +117,9 @@ export default async function SignIn({
                   <span className="h-px flex-1 bg-gray-200" />
                 </div>
                 <form action={signInWithPasswordAction} className="space-y-3 text-left">
-                  <Input name="email" type="email" required autoComplete="email" placeholder="you@example.com" defaultValue={email} />
-                  <Input name="password" type="password" required autoComplete="current-password" placeholder="Password" />
-                  <Button type="submit" size="lg" variant="outline" className="w-full">
+                  <Input className={FIELD} name="email" type="email" required autoComplete="email" placeholder="you@example.com" defaultValue={email} />
+                  <Input className={FIELD} name="password" type="password" required autoComplete="current-password" placeholder="Password" />
+                  <Button type="submit" variant="outline" className={CONTROL}>
                     Sign in with email
                   </Button>
                 </form>
