@@ -51,7 +51,7 @@ Slackactivity uses cookies and similar tracking technologies to enhance your bro
 
 ### 4. Third-Party Service Providers
 
-We use third-party service providers to process payments (e.g., Stripe) and for email communication. These providers have access to your personal information but are obligated to use it only for specific purposes related to our services.
+We use a small number of third-party service providers to run Slackactivity: Slack (sign-in and setting your presence), Turso (database hosting) and Google AdSense (advertising, which may set its own cookies). These providers process only the data needed for their part of the service and are obligated to use it only for that purpose. Slackactivity is free and does not process payments.
 
 ### 5. Data Security
 
