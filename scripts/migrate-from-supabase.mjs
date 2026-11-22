@@ -113,16 +113,12 @@ const fmt = (n) => n.toLocaleString("en-US");
 // --------------------------------------------------------------- schema
 
 async function applySchema() {
+  // executeMultiple, not split(";"): the rollup triggers contain semicolons
+  // inside their bodies. Every statement is `if not exists`, so this is safe
+  // to run against an existing database.
   const sql = readFileSync(join(ROOT, "lib/db/schema.sql"), "utf8");
-  const statements = sql
-    .split(";")
-    .map((s) => s.trim())
-    .filter((s) => s && !s.split("\n").every((l) => l.trim().startsWith("--")));
-
-  for (const stmt of statements) {
-    await db.execute(stmt);
-  }
-  console.log(`✔ schema applied (${statements.length} statements)`);
+  await db.executeMultiple(sql);
+  console.log("✔ schema applied");
 }
 
 // ---------------------------------------------------------------- users
@@ -213,6 +209,9 @@ async function migrateWorkspaces() {
                 team_id       = coalesce(excluded.team_id, workspace.team_id),
                 team_name     = coalesce(excluded.team_name, workspace.team_name),
                 slack_user_id = coalesce(excluded.slack_user_id, workspace.slack_user_id),
+                -- Supabase is the source of truth until cutover: a user who
+                -- reconnected Slack there has a new token we must carry over.
+                slack_auth_token = coalesce(excluded.slack_auth_token, workspace.slack_auth_token),
                 working_hours = excluded.working_hours,
                 is_active     = excluded.is_active`,
         args: [
@@ -362,7 +361,7 @@ async function main() {
   console.log(DRY ? "DRY RUN — no writes\n" : "Migrating Supabase → Turso\n");
 
   if (!LOGS_ONLY) {
-    await applySchema();
+    if (!DRY) await applySchema();
     console.log("\n▸ users");
     await migrateUsers();
     console.log("\n▸ workspaces");
