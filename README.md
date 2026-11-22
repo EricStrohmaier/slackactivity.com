@@ -105,6 +105,10 @@ Required environment variables:
 Apply the schema with `lib/db/schema.sql`. The presence cron should call
 `/api/slack/schleude?secret=$SLACK_SCHEDULE_SECRET` every ~5 minutes.
 
+Production runs as a Docker container (`Dockerfile`, Next.js standalone output) on
+Coolify. See [`docs/coolify.md`](docs/coolify.md) for env vars, the cron task, DNS
+and the cutover checklist.
+
 ### Stats and the rollup tables
 
 `activity_logs` grows by one row per workspace per tick — a few thousand a day.
