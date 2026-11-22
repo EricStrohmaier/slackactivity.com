@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/site";
 import { landingpageContent } from "@/site";
-import { User } from "@supabase/supabase-js";
+import { User } from "@/types/db";
 import Link from "next/link";
 // PlanCard component
 export const PricePlan = ({
@@ -93,7 +93,7 @@ export const PricePlan = ({
             asChild
             className="cursor-pointer hover:bg-primary-800 hover:text-white w-full sm:w-auto"
           >
-            <Link href={loginUrl}>{landingpageContent.stripe.buttonText}</Link>
+            <Link href={loginUrl}>{landingpageContent.pricing.buttonText}</Link>
           </Button>
         </div>
       </div>

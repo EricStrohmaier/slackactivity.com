@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import SlackDashboardClient from "./SlackDashboard";
-import { User, Workspace } from "@/types/supabase";
+import { User, Workspace } from "@/types/db";
 
 interface DashboardSelectorProps {
   user: User;

@@ -1,6 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getAdminStats, isAdminUser } from "@/app/stats-actions";
+import { isAdminUser } from "@/lib/auth";
+import { getAdminStats } from "@/app/stats-actions";
 import AdminDashboard from "@/components/app/admin/AdminDashboard";
 
 export const dynamic = "force-dynamic";

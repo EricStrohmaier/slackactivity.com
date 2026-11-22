@@ -1,123 +1,172 @@
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
-import { supabaseAdmin } from "@/utils/supabase/admin";
-import { getUser } from "@/app/action";
-import { getErrorRedirect, getStatusRedirect } from "@/utils/helpers";
-import { v4 as uuidv4 } from "uuid";
+import { getUser } from "@/lib/auth";
+import { setSessionCookie } from "@/lib/auth/session";
+import {
+  backfillUserProfile,
+  createUser,
+  createWorkspace,
+  findUnlinkedWorkspaceForUser,
+  findWorkspaceBySlackIdentity,
+  getUserByEmail,
+  linkWorkspaceToSlackUser,
+  refreshWorkspaceToken,
+} from "@/lib/db/queries";
+import { getErrorRedirect } from "@/utils/helpers";
+import { slackRedirectUri } from "@/lib/slack";
+import { DEFAULT_WORKING_HOURS } from "@/types/db";
+
+interface SlackAccount {
+  email: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+  /** IANA name from Slack (e.g. "Europe/Vienna"); seeds a new schedule. */
+  timezone: string | null;
+}
+
+/** Slack sends a sensible `tz`, but a bad one would break every cron tick. */
+function validTimezone(tz: unknown): string | null {
+  if (typeof tz !== "string" || !tz) return null;
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: tz });
+    return tz;
+  } catch {
+    return null;
+  }
+}
+
+/** Best-effort: a workspace can withhold email, and that must not break login. */
+async function fetchSlackAccount(
+  token: string,
+  slackUserId: string
+): Promise<SlackAccount> {
+  const empty = {
+    email: null,
+    full_name: null,
+    avatar_url: null,
+    timezone: null,
+  };
+  try {
+    const res = await fetch(
+      `https://slack.com/api/users.info?user=${encodeURIComponent(slackUserId)}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const data = await res.json();
+    if (!data.ok) return empty;
+
+    const profile = data.user?.profile ?? {};
+    return {
+      email: profile.email ?? null,
+      full_name: data.user?.real_name ?? profile.real_name ?? null,
+      avatar_url: profile.image_192 ?? profile.image_72 ?? null,
+      timezone: validTimezone(data.user?.tz),
+    };
+  } catch {
+    return empty;
+  }
+}
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
 
   if (!code) {
-    const redirectPath = getErrorRedirect(
-      `/`,
-      "Hmm... Something went wrong.",
-      "Code not provided"
+    return redirect(
+      getErrorRedirect("/signin", "Something went wrong.", "No code provided")
     );
-    return redirect(redirectPath);
   }
 
-  // Exchange code for access token
-  const tokenResponse = await fetch("https://slack.com/api/oauth.v2.access", {
+  // 1. Exchange the code for a user token.
+  const tokenRes = await fetch("https://slack.com/api/oauth.v2.access", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      code: code,
+      code,
       client_id: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!,
       client_secret: process.env.SLACK_CLIENT_SECRET!,
-      redirect_uri:
-        process.env.NODE_ENV === "development"
-          ? process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI_DEV!
-          : process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI!,
+      redirect_uri: slackRedirectUri(),
     }),
   });
 
-  const data = await tokenResponse.json();
-  console.log("Slack OAuth data tokenResponse:", data);
+  const data = await tokenRes.json();
 
-  if (!data.ok) {
-    const redirectPath = getErrorRedirect(
-      `/`,
-      "You could not be signed in.",
-      data.error
+  const accessToken: string | undefined = data?.authed_user?.access_token;
+  const slackUserId: string | undefined = data?.authed_user?.id;
+  const teamId: string | undefined = data?.team?.id;
+
+  if (!data?.ok || !accessToken || !slackUserId || !teamId) {
+    console.error("Slack OAuth failed:", data?.error, data);
+    return redirect(
+      getErrorRedirect(
+        "/signin",
+        "You could not be signed in.",
+        data?.error ?? "Slack did not return a user token"
+      )
     );
-    return redirect(redirectPath);
   }
 
-  // Get the current user
-  const user = await getUser();
+  const teamName: string | null = data?.team?.name ?? null;
+  const { timezone, ...profile } = await fetchSlackAccount(
+    accessToken,
+    slackUserId
+  );
 
-  if (!user) {
-    console.error("User not found");
-    const redirectPath = getErrorRedirect(
-      `/signin`,
-      "You are not authenticated.",
-      ""
-    );
-    return redirect(redirectPath);
+  // 2. Resolve the account. Slack user ids are per-workspace, so identity is
+  //    the (team_id, slack_user_id) pair.
+  const existing = await findWorkspaceBySlackIdentity(teamId, slackUserId);
+  let userId: string;
+
+  if (existing) {
+    // Returning user (or a re-auth after the token was revoked).
+    userId = existing.user_id;
+    await refreshWorkspaceToken(existing.id, accessToken, teamName);
+    await backfillUserProfile(userId, profile);
+  } else {
+    // A logged-in user connecting an additional workspace keeps their account.
+    const current = await getUser();
+    // Otherwise fall back to email before minting a second account for someone
+    // who already exists but whose Slack identity was never resolved.
+    const priorUser =
+      current ?? (profile.email ? await getUserByEmail(profile.email) : null);
+
+    if (priorUser) {
+      userId = priorUser.id;
+      await backfillUserProfile(userId, profile);
+    } else {
+      userId = crypto.randomUUID();
+      await createUser({ id: userId, ...profile });
+    }
+
+    // A known user may already have a workspace for this team that predates the
+    // Slack identity columns — adopt it rather than shadowing it with a new one.
+    const unlinked = priorUser
+      ? await findUnlinkedWorkspaceForUser(userId, teamId)
+      : null;
+
+    if (unlinked) {
+      await linkWorkspaceToSlackUser(
+        unlinked.id,
+        slackUserId,
+        accessToken,
+        teamName
+      );
+    } else {
+      await createWorkspace({
+        id: crypto.randomUUID(),
+        user_id: userId,
+        team_id: teamId,
+        team_name: teamName,
+        slack_user_id: slackUserId,
+        slack_auth_token: accessToken,
+        // Slack knows the user's timezone; defaulting to UTC would put the
+        // schedule hours off by the user's offset on their very first tick.
+        working_hours: timezone
+          ? { ...DEFAULT_WORKING_HOURS, timezone }
+          : undefined,
+      });
+    }
   }
 
-  // Check if workspace already exists for this user
-  const supabase = supabaseAdmin();
-  const { data: existingWorkspace, error: fetchError } = await supabase
-    .from("workspace")
-    .select("*")
-    .eq("user_id", user?.id)
-    .single();
-
-  if (fetchError && fetchError.code !== "PGRST116") {
-    console.error("Error fetching workspace:", fetchError);
-    const redirectPath = getErrorRedirect(
-      `/`,
-      "Something went wrong.",
-      "Could not check existing workspace"
-    );
-    return redirect(redirectPath);
-  }
-
-  // If workspace exists, redirect to dashboard
-  if (existingWorkspace) {
-    const redirectPath = getStatusRedirect(
-      `/dashboard`,
-      "Workspace already connected",
-      "Redirecting to dashboard"
-    );
-    return redirect(redirectPath);
-  }
-
-  // Generate new workspace ID
-  const workspaceId = uuidv4();
-
-  // Create new workspace with stripe_is_paid set to true by default
-  const { error: upsertError } = await supabase.from("workspace").upsert({
-    id: workspaceId,
-    user_id: user?.id,
-    slack_auth_token: data.authed_user.access_token,
-    team_name: data.team.name,
-    team_id: data.team.id,
-    is_active: true,
-    enterprise: data.team.enterprise,
-    stripe_is_paid: true, // Set to true by default since it's free
-    working_hours: {
-      startHour: 9,
-      endHour: 17,
-      daysOfWeek: [1, 2, 3, 4, 5],
-      timezone: "UTC",
-    },
-  });
-
-  if (upsertError) {
-    console.error("Error saving workspace:", upsertError);
-    const redirectPath = getErrorRedirect(
-      `/`,
-      "Something went wrong.",
-      "Workspace could not be saved"
-    );
-    return redirect(redirectPath);
-  }
-
-  // Redirect directly to dashboard
-  return redirect(`/dashboard`);
+  // 3. Issue the session and land on the dashboard.
+  await setSessionCookie(userId);
+  return redirect("/dashboard");
 }

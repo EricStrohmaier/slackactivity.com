@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { landingpageContent } from "@/site";
 import { UserNav } from "../app/UserNav";
 import { Container } from "@/components/landingpage/container";
-import { User } from "@/types/supabase";
+import { User } from "@/types/db";
 
 function CloseIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   return (

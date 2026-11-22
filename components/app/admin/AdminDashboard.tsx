@@ -111,7 +111,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           value={overview.total_workspaces}
           hint={`${overview.active_workspaces} active`}
         />
-        <OverviewCard label="Paid workspaces" value={overview.paid_workspaces} />
+        <OverviewCard label="Signups (30d)" value={overview.signups_30d} />
         <OverviewCard
           label="Presence updates (30d)"
           value={overview.logs_30d.toLocaleString()}
@@ -221,9 +221,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             <Badge variant="success">active</Badge>
                           ) : (
                             <Badge variant="secondary">inactive</Badge>
-                          )}
-                          {!w.stripe_is_paid && (
-                            <Badge variant="destructive">unpaid</Badge>
                           )}
                           {stale && <Badge variant="warning">stale</Badge>}
                           {w.is_active &&

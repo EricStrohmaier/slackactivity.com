@@ -25,7 +25,17 @@ export function SiteFooter() {
             <p className="mt-6 text-sm text-muted-foreground">
               {siteConfig.tagline}
             </p>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-4 text-sm text-muted-foreground">
+              Built and supported by Eric, one person in Austria.{" "}
+              <Link
+                href="/contact"
+                className="font-medium text-foreground underline decoration-muted-foreground underline-offset-4 hover:decoration-foreground"
+              >
+                Say hi
+              </Link>
+              .
+            </p>
+            <p className="mt-4 text-sm text-muted-foreground">
               &copy; {new Date().getFullYear()} {siteConfig.name}. All rights
               reserved.
             </p>

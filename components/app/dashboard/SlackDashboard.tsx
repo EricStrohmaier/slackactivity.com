@@ -1,6 +1,6 @@
 import React from "react";
 import SharedWorkspaceDashboard from "./shared";
-import { User, Workspace } from "@/types/supabase";
+import { User, Workspace } from "@/types/db";
 
 interface SlackDashboardClientProps {
   user: User;

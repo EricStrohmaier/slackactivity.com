@@ -24,8 +24,8 @@ import {
   updateUserPresence,
   deleteWorkspaceById,
 } from "@/app/action";
-import { User, Workspace } from "@/types/supabase";
-import { isWithinWorkingHours } from "@/lib/workingHours";
+import { User, Workspace } from "@/types/db";
+import { isWithinWorkingHours, localNow } from "@/lib/workingHours";
 import WorkspaceStats from "./stats";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -188,19 +188,11 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
     if (!activeWorkspace) return;
     try {
       await updateWorkspace(activeWorkspace);
-
-      // Update user presence only if the workspace is paid
-      if (activeWorkspace.stripe_is_paid) {
-        await updateUserPresence(activeWorkspace);
-        console.log("User presence updated successfully");
-      } else {
-        console.log("Skipping presence update: workspace not paid");
-      }
+      await updateUserPresence(activeWorkspace);
 
       toast.success("Workspace settings updated", {
         description:
-          "Your workspace settings have been successfully saved" +
-          (activeWorkspace.stripe_is_paid ? " and presence updated." : "."),
+          "Your workspace settings have been saved and presence updated.",
       });
       setHasUnsavedChanges(false);
     } catch (error) {
@@ -244,80 +236,16 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
     [activeWorkspace]
   );
 
-  const getZonedNowInfo = (tz?: string) => {
-    try {
-      const local = new Date();
-      if (!tz) {
-        return {
-          day: local.getDay(),
-          hour: local.getHours(),
-          source: "local",
-        } as const;
-      }
-      const fmt = new Intl.DateTimeFormat("en-US", {
-        timeZone: tz,
-        hour12: false,
-        weekday: "short",
-        hour: "numeric",
-      });
-      const parts = fmt.formatToParts(new Date());
-      const weekdayShort = parts.find((p) => p.type === "weekday")?.value;
-      const hourStr = parts.find((p) => p.type === "hour")?.value;
-      const dayMap: Record<string, number> = {
-        Sun: 0,
-        Mon: 1,
-        Tue: 2,
-        Wed: 3,
-        Thu: 4,
-        Fri: 5,
-        Sat: 6,
-      };
-      const day =
-        weekdayShort && weekdayShort in dayMap
-          ? dayMap[weekdayShort]
-          : local.getDay();
-      const hour = hourStr ? parseInt(hourStr, 10) : local.getHours();
-      return { day, hour, source: "tz" as const };
-    } catch (e) {
-      const fallback = new Date();
-      console.warn(
-        "[Presence] Timezone conversion failed, using local time",
-        e
-      );
-      return {
-        day: fallback.getDay(),
-        hour: fallback.getHours(),
-        source: "local" as const,
-      };
-    }
-  };
-
-  // Updated getCurrentActivityStatus function
+  // Mirrors what the cron will decide on its next tick, in the workspace's
+  // own timezone.
   const getCurrentActivityStatus = (workspace: Workspace) => {
     if (!workspace.is_active) {
       return null; // Don't show any status if workspace is not active
     }
 
-    const now = new Date();
     const { startHour, endHour, daysOfWeek, timezone } =
-      workspace.working_hours as any;
-    const zoned = getZonedNowInfo(timezone);
-    const currentDay = zoned.day;
-    const currentHour = zoned.hour;
-
-    const decisionInput = {
-      workspaceId: workspace.id,
-      team: workspace.team_name,
-      stripe_is_paid: workspace.stripe_is_paid,
-      timezone,
-      localNowISO: now.toISOString(),
-      currentDay,
-      currentHour,
-      zonedSource: zoned.source,
-      startHour,
-      endHour,
-      daysOfWeek,
-    };
+      workspace.working_hours;
+    const { day: currentDay, hour: currentHour } = localNow(timezone);
 
     const valid =
       Array.isArray(daysOfWeek) &&
@@ -357,24 +285,17 @@ const SharedWorkspaceDashboard: React.FC<SharedWorkspaceDashboardProps> = ({
             </CardTitle>
             {activeWorkspace && (
               <div className="flex items-center space-x-2">
-                {!activeWorkspace.stripe_is_paid && (
-                  <Badge variant="destructive">Unpaid</Badge>
+                {activeWorkspace.is_active && (
+                  <Badge
+                    variant={
+                      getCurrentActivityStatus(activeWorkspace) === "Online"
+                        ? "success"
+                        : "warning"
+                    }
+                  >
+                    {getCurrentActivityStatus(activeWorkspace)}
+                  </Badge>
                 )}
-                {activeWorkspace.is_active &&
-                  activeWorkspace.stripe_is_paid && (
-                    <Badge
-                      variant={
-                        getCurrentActivityStatus(activeWorkspace) === "Online"
-                          ? "success"
-                          : "warning"
-                      }
-                    >
-                      {(() => {
-                        const s = getCurrentActivityStatus(activeWorkspace);
-                        return s;
-                      })()}
-                    </Badge>
-                  )}
               </div>
             )}
           </div>

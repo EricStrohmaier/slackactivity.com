@@ -1,219 +1,129 @@
 import { NextRequest } from "next/server";
 import { WebClient } from "@slack/web-api";
-import { Workspace, WorkingHours } from "@/types/supabase";
-import { supabaseAdmin } from "@/utils/supabase/admin";
-import { isWithinWorkingHours } from "@/lib/workingHours";
+import {
+  commitTick,
+  getActiveWorkspaces,
+  type TickOutcome,
+} from "@/lib/db/queries";
+import { iso } from "@/lib/db/client";
+import { isWithinWorkingHours, localNow } from "@/lib/workingHours";
 
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
+/** Slack errors that mean the token will never work again. */
+const DEAD_TOKEN = new Set([
+  "token_revoked",
+  "invalid_auth",
+  "account_inactive",
+  "token_expired",
+]);
+
+/**
+ * Raw-log retention, in days. Unset or 0 keeps everything forever.
+ *
+ * `activity_rollup` holds every aggregate the dashboards read, so pruning
+ * costs no visible history — it only drops the per-tick rows behind it.
+ */
+const RETENTION_DAYS = Number(process.env.ACTIVITY_LOG_RETENTION_DAYS ?? 0);
+
+/**
+ * Rows to prune per tick. At 288 ticks/day this clears ~575k rows/day, so any
+ * backlog drains in a couple of days and steady state is a no-op.
+ */
+const PRUNE_PER_TICK = 2000;
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+/**
+ * Presence cron. Called every ~5 minutes with ?secret=SLACK_SCHEDULE_SECRET.
+ * Each tick sets every active workspace to "auto" or "away" depending on
+ * whether the workspace's local time falls inside its configured hours, and
+ * records one activity_logs row (which is what the stats pages aggregate).
+ *
+ * Slack is talked to concurrently; the database is touched exactly once, at
+ * the end, in a single batched transaction.
+ */
 export async function GET(request: NextRequest) {
-  const secretToken = request.nextUrl.searchParams.get("secret");
-
-  if (secretToken !== process.env.SLACK_SCHEDULE_SECRET) {
-    return new Response(JSON.stringify({ message: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+  if (request.nextUrl.searchParams.get("secret") !== process.env.SLACK_SCHEDULE_SECRET) {
+    return json({ message: "Unauthorized" }, 401);
   }
 
-  const supabase = supabaseAdmin();
-
-  // Ensure no caching for up-to-date data
-  const { data: workspaces, error } = await supabase
-    .from("workspace")
-    .select("*")
-    .eq("is_active", true);
-
-  if (error) {
-    console.error("Error fetching active workspaces:", error);
-    return new Response(
-      JSON.stringify({ message: "Error fetching workspaces" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
-  if (!workspaces || workspaces.length === 0) {
-    console.error("No active workspaces found");
-    return new Response(
-      JSON.stringify({ message: "No active workspaces found" }),
-      {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+  const workspaces = await getActiveWorkspaces();
+  if (workspaces.length === 0) {
+    return json({ message: "No active workspaces", results: [] });
   }
 
-  console.log(
-    `Updating Slack presence for ${workspaces.length} active workspaces`
-  );
-
-  const updateResults = await Promise.all(
+  const ticks = await Promise.all(
     workspaces.map(async (workspace) => {
-      const {
-        slack_auth_token: token,
-        working_hours: workHours,
-        stripe_is_paid: isPaid,
-      } = workspace as Workspace;
+      const workHours = workspace.working_hours;
+      const { day, hour } = localNow(workHours?.timezone);
+      const shouldBeActive = isWithinWorkingHours(workHours, day, hour);
+      const action = shouldBeActive ? "set_active" : "set_away";
 
-      console.log(
-        `Processing workspace ${workspace.id} (${workspace.team_name})`
-      );
+      try {
+        const slack = new WebClient(workspace.slack_auth_token!);
+        await slack.users.setPresence({
+          presence: shouldBeActive ? "auto" : "away",
+        });
+      } catch (err: any) {
+        const slackError: string | undefined = err?.data?.error;
+        console.error(
+          `Slack error for ${workspace.id} (${workspace.team_name}): ${slackError ?? err?.message}`
+        );
 
-      // Log activity for unpaid workspaces
-      if (!isPaid) {
-        console.log(`Skipping workspace ${workspace.id}: not paid`);
-        const { error: activityError } = await supabase
-          .from("activity_logs")
-          .insert({
-            workspace_id: workspace.id,
-            action: "not_paid",
-            details: { message: "Workspace is not paid" },
-          });
-
-        if (activityError) {
-          console.error(
-            `Error inserting activity log for workspace ${workspace.id}:`,
-            activityError
-          );
+        if (slackError && DEAD_TOKEN.has(slackError)) {
+          // Stop retrying a token that can't recover. The user reconnects by
+          // signing in with Slack again, which refreshes the token in place.
           return {
-            id: workspace.id,
-            status: "error",
-            message: activityError,
+            result: { id: workspace.id, status: "deactivated", error: slackError },
+            outcome: {
+              workspaceId: workspace.id,
+              action: "deactivated",
+              details: { message: `Slack token invalid (${slackError})` },
+              deactivate: true,
+            } satisfies TickOutcome,
           };
         }
 
-        return { id: workspace.id, status: "not_paid" };
+        return {
+          result: { id: workspace.id, status: "error", error: slackError },
+          outcome: {
+            workspaceId: workspace.id,
+            action: "error",
+            details: { message: `Slack API error: ${slackError ?? err?.message}` },
+          } satisfies TickOutcome,
+        };
       }
 
-      // Skip if token or work hours are missing
-      if (!token || !workHours) {
-        console.error(
-          `Missing token or work hours for workspace ${workspace.id}`
-        );
-        return { id: workspace.id, status: "missing_data" };
-      }
-
-      const slack = new WebClient(token);
-
-      // Get the current time in the workspace's timezone
-      const now = new Date();
-      const workspaceLocalTime = new Date(
-        now.toLocaleString("en-US", {
-          timeZone: (workHours as WorkingHours).timezone,
-        })
-      );
-
-      const currentDay = workspaceLocalTime.getDay();
-      const currentHour = workspaceLocalTime.getHours();
-      const currentMinute = workspaceLocalTime.getMinutes();
-
-      console.log(
-        `Workspace ${
-          workspace.id
-        } local time: ${workspaceLocalTime.toISOString()}`
-      );
-      console.log(
-        `Current day: ${currentDay}, Current hour: ${currentHour}, Current minute: ${currentMinute}`
-      );
-
-      let action: string;
-
-      try {
-        if (
-          isWithinWorkingHours(
-            workHours as WorkingHours,
-            currentDay,
-            currentHour
-          )
-        ) {
-          await slack.users.setPresence({ presence: "auto" });
-          action = "set_active";
-          console.log(`Setting workspace ${workspace.id} to active`);
-        } else {
-          await slack.users.setPresence({ presence: "away" });
-          action = "set_away";
-          console.log(`Setting workspace ${workspace.id} to away`);
-        }
-      } catch (err: any) {
-        const slackError: string | undefined = err?.data?.error;
-        const isAuthError =
-          slackError === "token_revoked" ||
-          slackError === "invalid_auth" ||
-          slackError === "account_inactive";
-
-        console.error(
-          `Slack API error for workspace ${workspace.id} (${workspace.team_name}): ${slackError ?? err?.message}`
-        );
-
-        if (isAuthError) {
-          // Token is no longer valid, deactivate the workspace so the
-          // cron stops retrying it. The user must reconnect Slack.
-          const { error: deactivateError } = await supabase
-            .from("workspace")
-            .update({ is_active: false })
-            .eq("id", workspace.id);
-
-          if (deactivateError) {
-            console.error(
-              `Failed to deactivate workspace ${workspace.id}:`,
-              deactivateError
-            );
-          } else {
-            console.log(
-              `Deactivated workspace ${workspace.id} due to ${slackError}`
-            );
-          }
-
-          await supabase.from("activity_logs").insert({
-            workspace_id: workspace.id,
-            action: "deactivated",
-            details: {
-              message: `Slack token invalid (${slackError}), workspace deactivated`,
-            },
-          });
-
-          return { id: workspace.id, status: "deactivated", error: slackError };
-        }
-
-        await supabase.from("activity_logs").insert({
-          workspace_id: workspace.id,
-          action: "error",
-          details: {
-            message: `Slack API error: ${slackError ?? err?.message}`,
-          },
-        });
-
-        return { id: workspace.id, status: "error", error: slackError };
-      }
-
-      const { data: activityLog, error: activityError } = await supabase
-        .from("activity_logs")
-        .insert({
-          workspace_id: workspace.id,
-          action,
-          details: { currentDay, currentHour, currentMinute, workHours },
-        });
-
-      if (activityError) {
-        console.error(
-          `Error inserting activity log for workspace ${workspace.id}:`,
-          activityError
-        );
-        return { id: workspace.id, status: "error", message: activityError };
-      }
-
-      return { id: workspace.id, status: "success" };
+      // No `details` on the happy path: the working hours are already on the
+      // workspace row, and day/hour are recoverable from the timestamp.
+      return {
+        result: { id: workspace.id, status: "success", action },
+        outcome: { workspaceId: workspace.id, action } satisfies TickOutcome,
+      };
     })
   );
 
-  return new Response(
-    JSON.stringify({
-      message: "Slack presence update complete",
-      results: updateResults,
-    }),
-    {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    }
+  await commitTick(
+    ticks.map((tick) => tick.outcome),
+    RETENTION_DAYS > 0
+      ? {
+          before: iso(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000),
+          limit: PRUNE_PER_TICK,
+        }
+      : undefined
   );
+
+  const results = ticks.map((tick) => tick.result);
+  return json({
+    message: "Slack presence update complete",
+    processed: results.length,
+    results,
+  });
 }

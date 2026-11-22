@@ -38,3 +38,7 @@ next-env.d.ts
 
 # supabase local state
 supabase/.temp/
+
+# env backups (contain secrets)
+.env*.bak*
+.env.local.bak-*

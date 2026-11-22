@@ -31,10 +31,6 @@ const nextConfig = {
         hostname: "getautoreview.com",
         protocol: "https",
       },
-      {
-        hostname: "adchat.app",
-        protocol: "https",
-      },
     ],
   },
   async rewrites() {
