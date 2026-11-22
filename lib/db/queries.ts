@@ -1,5 +1,5 @@
 import type { InStatement } from "@libsql/client";
-import { db, all, one, run, scalar, bool, json, isoNow, iso, hourKey } from "./client";
+import { getDb, all, one, run, scalar, bool, json, isoNow, iso, hourKey } from "./client";
 import {
   DEFAULT_WORKING_HOURS,
   type ActivityAction,
@@ -351,7 +351,7 @@ export async function commitTick(
     });
   }
 
-  if (statements.length > 0) await db.batch(statements, "write");
+  if (statements.length > 0) await getDb().batch(statements, "write");
 }
 
 /**

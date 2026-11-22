@@ -14,6 +14,10 @@ import { slackRedirectUri } from "@/lib/slack";
  */
 const USER_SCOPES = "users:write,users:read,users:read.email";
 
+// Without this Next prerenders the GET at build time and freezes the redirect
+// with whatever client id / redirect URI existed during the build.
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const url = new URL("https://slack.com/oauth/v2/authorize");
   url.searchParams.set("client_id", process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!);

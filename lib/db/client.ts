@@ -1,4 +1,7 @@
-import { createClient, type Client, type InValue } from "@libsql/client";
+// The `/web` entry is the pure-JS HTTP client: no native libsql binary, which
+// Next's standalone output can't trace (it's a dynamic require per platform).
+// Supports libsql:// and https:// URLs; local `file:` databases are not used.
+import { createClient, type Client, type InValue } from "@libsql/client/web";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -23,11 +26,16 @@ function build(): Client {
 const DB_TIMEOUT_MS = 15_000;
 
 /**
- * Shared libSQL client. Cached on globalThis so Next.js dev's module reloading
- * doesn't open a new connection on every request.
+ * Shared libSQL client, created on first use. Cached on globalThis so Next.js
+ * dev's module reloading doesn't open a new connection on every request.
+ *
+ * Lazy on purpose: `next build` imports every route module to collect page
+ * data, and building must work without database credentials (Docker/Coolify
+ * builds get env only at runtime).
  */
-export const db: Client =
-  global.__tursoClient ?? (global.__tursoClient = build());
+export function getDb(): Client {
+  return global.__tursoClient ?? (global.__tursoClient = build());
+}
 
 /**
  * All rows for a query, typed.
@@ -39,7 +47,7 @@ export const db: Client =
  * server/client boundary without each one having to remap it by hand.
  */
 export async function all<T>(sql: string, args: InValue[] = []): Promise<T[]> {
-  const rs = await db.execute({ sql, args });
+  const rs = await getDb().execute({ sql, args });
   return rs.rows.map((row) => ({ ...row })) as unknown as T[];
 }
 
@@ -54,7 +62,7 @@ export async function one<T>(
 
 /** Statement with no result rows. */
 export async function run(sql: string, args: InValue[] = []): Promise<void> {
-  await db.execute({ sql, args });
+  await getDb().execute({ sql, args });
 }
 
 /** A single integer aggregate (count/sum), coerced to a number. */
