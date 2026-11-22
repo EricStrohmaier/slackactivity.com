@@ -234,3 +234,19 @@ also run `select * from cron.job;` in the Supabase SQL editor.
        as a rollback target, then delete it. Rollback = point DNS back to Vercel
        and disable the Coolify task.
 9. [ ] Later: retire Supabase once you're confident nothing reads it.
+
+## 8. Monitoring
+
+- **Coolify email** (team settings): deployment failures, restart limit,
+  server unreachable/disk, and **scheduled-task failures** (enabled
+  2026-11-22) are emailed. The cron answers 502 when every Slack call in a
+  tick fails, and 500 on a database error, so `curl -f` fails and the
+  scheduled-task email goes out. Single revoked tokens are handled per
+  workspace and do not alert.
+- **Weekly check**: `node scripts/weekly-check.mjs [--days=7]` prints a
+  read-only JSON snapshot (endpoints, ticks per day, expected 288; errors,
+  deactivations, sign-ups, Coolify deployments and cron runs). It needs
+  `COOLIFY_API_URL`, `COOLIFY_API_TOKEN`, `COOLIFY_APP_UUID` and
+  `COOLIFY_TASK_UUID` in `.env.local` for the Coolify part. A scheduled agent
+  runs it every Monday together with Growth Hub (`hub_health`,
+  `goals_progress` for project `slackactivity`) and reports with proposed fixes.
