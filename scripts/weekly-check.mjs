@@ -75,6 +75,31 @@ out.cron.minutesSinceLastTick = out.cron.lastTick
   ? Math.round((Date.now() - new Date(out.cron.lastTick).getTime()) / 60_000)
   : null;
 
+// Does the last tick see the live workspace list? Both lists should be empty.
+// A non-empty one means the cron read stale data (the Nov 2026 fetch-cache
+// bug): workspaces that are active but weren't ticked, or ticked but inactive.
+const lastCronTick = (
+  await rows(`select max(timestamp) as at from activity_logs where details is null`)
+)[0]?.at;
+out.cron.staleness = {
+  tick: lastCronTick ?? null,
+  activeButNotTicked: (
+    await rows(
+      `select team_name from workspace
+        where is_active = 1 and slack_auth_token is not null and created_at < ?
+          and id not in (select workspace_id from activity_logs where timestamp = ?)`,
+      [lastCronTick ?? "", lastCronTick ?? ""]
+    )
+  ).map((r) => r.team_name),
+  tickedButInactive: (
+    await rows(
+      `select w.team_name from activity_logs l join workspace w on w.id = l.workspace_id
+        where l.timestamp = ? and w.is_active = 0 and l.action <> 'deactivated'`,
+      [lastCronTick ?? ""]
+    )
+  ).map((r) => r.team_name),
+};
+
 out.growth = {
   signups: await scalar(`select count(*) from users where created_at >= ?`, [since]),
   workspacesConnected: await scalar(`select count(*) from workspace where created_at >= ?`, [since]),

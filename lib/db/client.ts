@@ -17,18 +17,34 @@ function build(): Client {
     authToken: process.env.TURSO_AUTH_TOKEN,
     // The default fetch has no timeout, so a stalled Turso connection would
     // hang the request (and the presence cron) indefinitely.
-    //
-    // `cache: "no-store"`: every query is a POST to Turso, and Next 14's Data
-    // Cache caches POST fetches outside POST route handlers. A query with an
-    // identical body (the cron's `select … from workspace`) was then served
-    // from a snapshot taken at deploy time, forever: new workspaces never got
-    // ticks, deactivated ones kept getting them, and edited hours were ignored.
     fetch: (request: Request) =>
-      fetch(request, {
+      rawFetch()(request, {
         cache: "no-store",
         signal: AbortSignal.timeout(DB_TIMEOUT_MS),
       }),
   });
+}
+
+/**
+ * Database queries must never go through Next's Data Cache.
+ *
+ * Every libSQL query is a POST to Turso, and Next 14 caches POST fetches
+ * (outside POST route handlers) for a year. A query whose body never changes,
+ * like the cron's `select … from workspace`, was then answered from a snapshot
+ * taken after each deploy: edited working hours were ignored, a new workspace
+ * was never ticked, and a deactivated one still was (Nov 2026). Reproduced on a
+ * local production build: the entry landed in .next/cache/fetch-cache with
+ * revalidate 31536000.
+ *
+ * So the client skips Next's patched fetch entirely and uses the original
+ * one Next keeps on it. `cache: "no-store"` is the fallback, should a Next
+ * upgrade drop `_nextOriginalFetch`.
+ */
+function rawFetch(): typeof fetch {
+  const f = globalThis.fetch as typeof fetch & {
+    _nextOriginalFetch?: typeof fetch;
+  };
+  return f._nextOriginalFetch ?? f;
 }
 
 /** Hard ceiling for a single HTTP round-trip to Turso. */
