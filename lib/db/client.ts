@@ -17,8 +17,17 @@ function build(): Client {
     authToken: process.env.TURSO_AUTH_TOKEN,
     // The default fetch has no timeout, so a stalled Turso connection would
     // hang the request (and the presence cron) indefinitely.
+    //
+    // `cache: "no-store"`: every query is a POST to Turso, and Next 14's Data
+    // Cache caches POST fetches outside POST route handlers. A query with an
+    // identical body (the cron's `select … from workspace`) was then served
+    // from a snapshot taken at deploy time, forever: new workspaces never got
+    // ticks, deactivated ones kept getting them, and edited hours were ignored.
     fetch: (request: Request) =>
-      fetch(request, { signal: AbortSignal.timeout(DB_TIMEOUT_MS) }),
+      fetch(request, {
+        cache: "no-store",
+        signal: AbortSignal.timeout(DB_TIMEOUT_MS),
+      }),
   });
 }
 
